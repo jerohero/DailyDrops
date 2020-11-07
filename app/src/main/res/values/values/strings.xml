@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SQLDemo</string>
+    <string name="DropTitle">Drop Title</string>
+    <string name="DropNote">Note</string>
+    <string name="ViewAll">View All</string>
+    <string name="Add">Add</string>
+</resources>

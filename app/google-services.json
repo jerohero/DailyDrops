@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "839541132536",
+    "firebase_url": "https://dailydrops.firebaseio.com",
+    "project_id": "dailydrops",
+    "storage_bucket": "dailydrops.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839541132536:android:a49023ac6a9f9678997f0d",
+        "android_client_info": {
+          "package_name": "com.jbol.dailydrops"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "839541132536-3m1f4vur9l4rba9m506fki04gdpr4j23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQmpmIpUjYy6trCOa9DoQe9_3oNT_ghB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "839541132536-3m1f4vur9l4rba9m506fki04gdpr4j23.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

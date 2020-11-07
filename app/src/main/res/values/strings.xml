@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Daily Drops</string>
+    <string name="DropTitle">Title</string>
+    <string name="DropNote">Note</string>
+    <string name="DropDate">Date</string>
+    <string name="ViewAll">View all</string>
+    <string name="Add">Add</string>
+    <string name="logo">DailyDrops logo</string>
+</resources>
