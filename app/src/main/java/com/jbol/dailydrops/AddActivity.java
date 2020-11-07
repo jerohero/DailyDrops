@@ -1,36 +1,20 @@
 package com.jbol.dailydrops;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-
 import com.jbol.dailydrops.database.DataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
-
-import java.text.DateFormat;
+import com.jbol.dailydrops.services.DateService;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class AddActivity extends AppCompatActivity {
-
     Button btn_add;
     EditText et_note, et_title, et_date;
     CalendarView cv_date;
@@ -74,23 +58,14 @@ public class AddActivity extends AppCompatActivity {
                         .show());
     }
 
-    private long dateStringToEpochMilli(String dateString) {
-        try {
-            Date date = sdf.parse(dateString);
-            return date != null ? date.getTime() : 0L;
-        } catch (Exception e) {
-            Toast.makeText(AddActivity.this, "An error occurred while parsing the date. Please try again.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        return 0L;
-    }
-
     private void initializeAddBtn() {
         btn_add.setOnClickListener(v -> {
             DropModel drop;
             try {
                 drop = new DropModel(
-                        -1, et_title.getText().toString(), et_note.getText().toString(), dateStringToEpochMilli(et_date.getText().toString()));
+                        -1, et_title.getText().toString(), et_note.getText().toString(),
+                        DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString()));
+
                 Toast.makeText(AddActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
             }
             catch (Exception e) {

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,10 +22,13 @@ import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
 
+import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     DataBaseHelper dataBaseHelper;
@@ -68,14 +72,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         dataBaseHelper = DataBaseHelper.getHelper(MainActivity.this);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
 
         dropModelArrayList = new ArrayList<>();
         DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);
@@ -103,10 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity getInstance() {
         return instance;
-    }
-
-    public static ZoneId getZoneId() {
-        return ZoneId.of("Europe/Amsterdam"); // https://en.m.wikipedia.org/wiki/List_of_tz_database_time_zones
     }
 
     public void showDetails(DropModel item) {

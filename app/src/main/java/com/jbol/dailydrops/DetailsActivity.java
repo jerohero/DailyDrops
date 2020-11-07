@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.jbol.dailydrops.database.DataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.services.DateService;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -47,13 +48,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         tv_date = findViewById(R.id.tv_date);
 
-        Instant instant = Instant.ofEpochMilli(drop.getDate());
-
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, MainActivity.getZoneId());
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
-
-        tv_date.setText(zdt.format(formatter));
+        tv_date.setText(DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.FULL));
     }
 
     private void initializeDeleteBtn() {
