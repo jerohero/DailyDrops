@@ -39,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
 
         instance = this;
 
+        MainActivity.context = getApplicationContext();
+
+        dataBaseHelper = DataBaseHelper.getHelper(MainActivity.this);
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("message");
-
-        MainActivity.context = getApplicationContext();
 
         myRef.setValue("Hello, World!");
 
@@ -62,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.w("dev", "Failed to read value.", error.toException());
             }
         });
-
-        dataBaseHelper = DataBaseHelper.getHelper(MainActivity.this);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -96,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
-    public void showDetails(DropModel item) {
-        // Show details of clicked item
-        Intent i = new Intent(MainActivity.getContext(), DetailsActivity.class);
+    public void showDetails(DropModel drop) {
+        // Show details of clicked drop
+        Intent i = new Intent(MainActivity.this, DetailsActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.putExtra("item", item);
+        i.putExtra("drop", drop);
         MainActivity.getContext().startActivity(i);
     }
 

@@ -19,7 +19,7 @@ public class AddActivity extends AppCompatActivity {
 
     final Calendar dateCalendar = Calendar.getInstance();
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
     DataBaseHelper dataBaseHelper;
 
@@ -29,7 +29,7 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        btn_add = findViewById(R.id.btn_add);
+        btn_add = findViewById(R.id.btn_save);
         et_title = findViewById(R.id.et_title);
         et_note = findViewById(R.id.et_note);
 

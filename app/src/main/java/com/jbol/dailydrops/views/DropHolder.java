@@ -3,11 +3,9 @@ package com.jbol.dailydrops.views;
 import android.view.View;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.jbol.dailydrops.R;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
-
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
