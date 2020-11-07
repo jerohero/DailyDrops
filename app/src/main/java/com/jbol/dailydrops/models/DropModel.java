@@ -12,7 +12,7 @@ public class DropModel implements Serializable {
     private long date;
 
     // constructors
-    public DropModel(int id, String title, String note, Long date) {
+    public DropModel(int id, String title, String note, long date) {
         this.id = id;
         this.title = title;
         this.note = note;

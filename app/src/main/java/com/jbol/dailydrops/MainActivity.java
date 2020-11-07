@@ -21,6 +21,8 @@ import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,12 +85,9 @@ public class MainActivity extends AppCompatActivity {
         updateListData();
 
         Button btn_addOne = findViewById(R.id.btn_addOne);
-        btn_addOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, AddActivity.class);
-                startActivity(i);
-            }
+        btn_addOne.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, AddActivity.class);
+            startActivity(i);
         });
     }
 
@@ -104,6 +103,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static MainActivity getInstance() {
         return instance;
+    }
+
+    public static ZoneId getZoneId() {
+        return ZoneId.of("Europe/Amsterdam"); // https://en.m.wikipedia.org/wiki/List_of_tz_database_time_zones
     }
 
     public void showDetails(DropModel item) {

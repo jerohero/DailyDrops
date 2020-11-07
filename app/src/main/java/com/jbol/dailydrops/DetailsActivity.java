@@ -47,10 +47,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         tv_date = findViewById(R.id.tv_date);
 
-        Instant instant = java.time.Instant.ofEpochMilli(drop.getDate());
+        Instant instant = Instant.ofEpochMilli(drop.getDate());
 
-        ZoneId zoneId = ZoneId.of("Europe/Amsterdam"); // https://en.m.wikipedia.org/wiki/List_of_tz_database_time_zones
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, zoneId);
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, MainActivity.getZoneId());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
 
