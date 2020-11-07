@@ -75,25 +75,27 @@ public class EditActivity extends AppCompatActivity {
 
     private void initializeSaveBtn() {
         btn_save.setOnClickListener(v -> {
+
+            drop.setTitle(et_title.getText().toString());
+            drop.setNote(et_note.getText().toString());
+            drop.setDate(DateService.dateStringToEpochMilli(EditActivity.this, et_date.getText().toString()));
+
             try {
-                drop.setTitle(et_title.getText().toString());
-                drop.setNote(et_note.getText().toString());
-                drop.setDate(DateService.dateStringToEpochMilli(EditActivity.this, et_date.getText().toString()));
-
-
+                DataBaseHelper.getHelper(EditActivity.this).updateDrop(drop);
                 Toast.makeText(EditActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
             }
             catch (Exception e) {
                 Toast.makeText(EditActivity.this, "Error updating drop", Toast.LENGTH_SHORT).show();
-//                drop = new DropModel(-1, "error", "error", 0L);
             }
 
-            DataBaseHelper dataBaseHelper = DataBaseHelper.getHelper(EditActivity.this);
-
-            boolean success = dataBaseHelper.addDrop(drop);
-
-            Toast.makeText(EditActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
-
+            backToDetails();
         });
+    }
+
+    private void backToDetails() {
+        Intent i = new Intent(EditActivity.this, DetailsActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("drop", drop);
+        MainActivity.getContext().startActivity(i);
     }
 }

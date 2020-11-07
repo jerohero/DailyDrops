@@ -15,8 +15,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -96,8 +98,36 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateDrop(DropModel drop) {
-//        String queryString = "UPDATE " + DataBaseInfo.DropTables.USER_DROPS_TABLE + " SET " +
+        DropModel oldDrop = getDropById(drop.getId());
+
+        ContentValues cv = new ContentValues();
+
+        if (!drop.getTitle().equals(oldDrop.getTitle())) {
+            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_TITLE, drop.getTitle()); }
+        if (!drop.getNote().equals(oldDrop.getNote())) {
+            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_NOTE, drop.getNote()); }
+        if (drop.getDate() != (oldDrop.getDate())) {
+            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_DATE, drop.getDate()); }
+        getWritableDatabase().update(DataBaseInfo.DropTables.USER_DROPS_TABLE, cv, DataBaseInfo.DropColumn.COLUMN_ID + "=" + drop.getId(), null);
+
         return false;
+    }
+
+    public DropModel getDropById(int dropId) {
+        String queryString = String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE id = %d", DataBaseInfo.DropTables.USER_DROPS_TABLE, dropId);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        DropModel drop = null;
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(0);
+            String title = cursor.getString(1);
+            String note = cursor.getString(2);
+            long date = cursor.getLong(3);
+
+            drop = new DropModel(id, title, note, date);
+        }
+        return drop;
     }
 
     public List<DropModel> getAllDrops() {
