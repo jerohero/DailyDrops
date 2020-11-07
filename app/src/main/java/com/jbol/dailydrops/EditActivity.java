@@ -54,6 +54,7 @@ public class EditActivity extends AppCompatActivity {
     private void initializeValues() {
         et_title.setText(drop.getTitle());
         et_note.setText(drop.getNote());
+//        et_date.setText("hoi");
 //        et_date.setText(DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.SHORT));
     }
 

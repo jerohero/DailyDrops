@@ -6,4 +6,9 @@
     <string name="ViewAll">View all</string>
     <string name="Add">Add</string>
     <string name="logo">DailyDrops logo</string>
+    <string name="dialog_image_options">Select Image Option</string>
+    <string-array name="image_options">
+        <item>Choose photo from gallery</item>
+        <item>Take picture with camera</item>
+    </string-array>
 </resources>
