@@ -4,12 +4,9 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.models.DropModel;
-
 import java.util.ArrayList;
 
 public class DropClickListener implements View.OnClickListener {

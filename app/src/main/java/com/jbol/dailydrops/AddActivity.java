@@ -3,7 +3,6 @@ package com.jbol.dailydrops;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import java.util.Locale;
 public class AddActivity extends AppCompatActivity {
     Button btn_add;
     EditText et_note, et_title, et_date;
-    CalendarView cv_date;
 
     final Calendar dateCalendar = Calendar.getInstance();
 
@@ -34,7 +32,6 @@ public class AddActivity extends AppCompatActivity {
         btn_add = findViewById(R.id.btn_add);
         et_title = findViewById(R.id.et_title);
         et_note = findViewById(R.id.et_note);
-        cv_date = findViewById(R.id.cv_date);
 
         dataBaseHelper = DataBaseHelper.getHelper(AddActivity.this);
 

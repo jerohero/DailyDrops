@@ -77,7 +77,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public List<DropModel> getAllDrops() {
         List<DropModel> returnList = new ArrayList<>();
 
-        String queryString = "SELECT * FROM " + DataBaseInfo.DropTables.USER_DROPS_TABLE;
+        String queryString = "SELECT * FROM " + DataBaseInfo.DropTables.USER_DROPS_TABLE + " ORDER BY " + DataBaseInfo.DropColumn.COLUMN_DROP_DATE;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryString, null);
 

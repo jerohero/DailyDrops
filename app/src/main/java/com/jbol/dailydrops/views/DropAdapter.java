@@ -4,14 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-
 import com.jbol.dailydrops.R;
 import com.jbol.dailydrops.models.DropModel;
-
 import java.util.ArrayList;
 
 public class DropAdapter extends RecyclerView.Adapter<DropHolder> {

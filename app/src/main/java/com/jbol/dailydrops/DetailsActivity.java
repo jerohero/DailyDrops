@@ -3,23 +3,14 @@ package com.jbol.dailydrops;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.jbol.dailydrops.database.DataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Date;
 
 public class DetailsActivity extends AppCompatActivity {
 

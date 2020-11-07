@@ -1,7 +1,6 @@
 package com.jbol.dailydrops.models;
 
 import com.google.gson.Gson;
-
 import java.io.Serializable;
 
 public class DropModel implements Serializable {

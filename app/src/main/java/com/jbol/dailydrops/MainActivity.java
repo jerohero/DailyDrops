@@ -8,10 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,14 +18,8 @@ import com.jbol.dailydrops.database.DataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
-
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     DataBaseHelper dataBaseHelper;
