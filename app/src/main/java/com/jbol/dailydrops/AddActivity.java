@@ -2,16 +2,14 @@ package com.jbol.dailydrops;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +20,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jbol.dailydrops.database.DataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
+import com.jbol.dailydrops.services.FileService;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -41,6 +43,8 @@ public class AddActivity extends AppCompatActivity {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
     DataBaseHelper dataBaseHelper;
+
+    private Bitmap selectedImageBitmap;
 
 
     @Override
@@ -109,8 +113,8 @@ public class AddActivity extends AppCompatActivity {
     }
 
     private void capturePictureFromCamera(){
-        Intent cameraIntent = new Intent();
-        cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
@@ -120,46 +124,58 @@ public class AddActivity extends AppCompatActivity {
 
         //Check if the intent was to pick image, was successful and an image was picked
         if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
-
             //Get selected image uri from phone gallery
             Uri selectedImage = data.getData();
 
+            try {
+                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //Display selected photo in image view
-            iv_image.setImageURI(selectedImage);
+            iv_image.setImageBitmap(selectedImageBitmap);
         }
         //Handle camera request
         else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
 
             //We need a bitmap variable to store the photo
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
 
             //Display taken picture in image view
-            iv_image.setImageBitmap(bitmap);
+            iv_image.setImageBitmap(selectedImageBitmap);
         }
     }
-
 
     private void initializeAddBtn() {
         btn_add.setOnClickListener(v -> {
             DropModel drop;
+            boolean hasImage = false;
             try {
+                if (selectedImageBitmap != null) {
+                    hasImage = true;
+                }
                 drop = new DropModel(
                         -1, et_title.getText().toString(), et_note.getText().toString(),
-                        DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString()));
+                        DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString()), hasImage);
 
                 Toast.makeText(AddActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
             }
             catch (Exception e) {
                 Toast.makeText(AddActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
-                drop = new DropModel(-1, "error", "error", 0L);
+                drop = new DropModel(-1, "error", "error", 0L, false);
             }
 
             DataBaseHelper dataBaseHelper = DataBaseHelper.getHelper(AddActivity.this);
 
             boolean success = dataBaseHelper.addDrop(drop);
 
-            Toast.makeText(AddActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
+            if (!success) { return; }
 
+            if (hasImage) {
+                int lastId = dataBaseHelper.getLastInsertedDropId();
+                FileService.saveToInternalStorage(this, selectedImageBitmap, lastId);
+            }
         });
     }
 }

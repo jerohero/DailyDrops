@@ -4,20 +4,20 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 
 public class DropModel implements Serializable {
-
     private int id;
     private String title;
     private String note;
     private long date;
+    private boolean hasImage;
 
     // constructors
-    public DropModel(int id, String title, String note, long date) {
+    public DropModel(int id, String title, String note, long date, boolean hasImage) {
         this.id = id;
         this.title = title;
         this.note = note;
         this.date = date;
+        this.hasImage = hasImage;
     }
-
 
     @Override
     public String toString() {
@@ -55,5 +55,13 @@ public class DropModel implements Serializable {
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public boolean hasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(boolean hasImage) {
+        this.hasImage = hasImage;
     }
 }

@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +75,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_TITLE, drop.getTitle());
         cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_NOTE, drop.getNote());
         cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_DATE, drop.getDate());
+        cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_IMAGE, drop.hasImage() ? 1 : 0);
 
         long insert = sqldb.insert(DataBaseInfo.DropTables.USER_DROPS_TABLE, null, cv);
         if (insert == -1) {
@@ -124,27 +124,41 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String title = cursor.getString(1);
             String note = cursor.getString(2);
             long date = cursor.getLong(3);
+            boolean hasImage = cursor.getInt(4) == 1;
 
-            drop = new DropModel(id, title, note, date);
+            drop = new DropModel(id, title, note, date, hasImage);
         }
+        cursor.close();
         return drop;
+    }
+
+    public int getLastInsertedDropId() {
+        String queryString = "SELECT last_insert_rowid()";
+        Cursor cursor = getReadableDatabase().rawQuery(queryString, null);
+
+        int dropId = 0;
+        if (cursor.moveToFirst()) {
+            dropId = cursor.getInt(0);
+        }
+        cursor.close();
+        return dropId;
     }
 
     public List<DropModel> getAllDrops() {
         List<DropModel> returnList = new ArrayList<>();
 
         String queryString = "SELECT * FROM " + DataBaseInfo.DropTables.USER_DROPS_TABLE + " ORDER BY " + DataBaseInfo.DropColumn.COLUMN_DROP_DATE;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = getReadableDatabase().rawQuery(queryString, null);
 
         if (cursor.moveToFirst()) {
             do {
-                    int id = cursor.getInt(0);
-                    String title = cursor.getString(1);
-                    String note = cursor.getString(2);
-                    long date = cursor.getLong(3);
+                int id = cursor.getInt(0);
+                String title = cursor.getString(1);
+                String note = cursor.getString(2);
+                long date = cursor.getLong(3);
+                boolean hasImage = cursor.getInt(4) == 1;
 
-                    DropModel newDrop = new DropModel(id, title, note, date);
+                DropModel newDrop = new DropModel(id, title, note, date, hasImage);
                     returnList.add(newDrop);
             } while (cursor.moveToNext());
         } else {
