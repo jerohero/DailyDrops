@@ -63,6 +63,7 @@ public class DetailsActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(v -> {
             DataBaseHelper dataBaseHelper = DataBaseHelper.getHelper(DetailsActivity.this);
             boolean success = dataBaseHelper.deleteDrop(drop);
+            FileService.deleteImageFromStorage(this, drop.getId());
 
             Toast.makeText(DetailsActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
         });
