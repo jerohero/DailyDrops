@@ -1,18 +1,27 @@
 package com.jbol.dailydrops;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jbol.dailydrops.database.DataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
+import com.jbol.dailydrops.services.FileService;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.FormatStyle;
@@ -20,8 +29,14 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class EditActivity extends AppCompatActivity {
-    Button btn_save;
+    Button btn_save, btn_add_image;
     EditText et_note, et_title, et_date;
+    ImageView iv_image;
+
+    //Request code gallery
+    private static final int GALLERY_REQUEST = 9;
+    //Request code for camera
+    private static final int CAMERA_REQUEST = 11;
 
     final Calendar dateCalendar = Calendar.getInstance();
 
@@ -30,6 +45,8 @@ public class EditActivity extends AppCompatActivity {
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
     DataBaseHelper dataBaseHelper;
+
+    private Bitmap selectedImageBitmap;
 
 
     @Override
@@ -46,9 +63,79 @@ public class EditActivity extends AppCompatActivity {
 
         dataBaseHelper = DataBaseHelper.getHelper(EditActivity.this);
 
+        initializeImage();
         initializeValues();
         initializeDatePicker();
         initializeSaveBtn();
+    }
+
+    private void initializeImage() {
+        iv_image = findViewById(R.id.iv_image);
+        btn_add_image = findViewById(R.id.btn_add_image);
+
+        btn_add_image.setOnClickListener(v -> {
+            showImageOptionDialog();
+        });
+
+        if (!drop.hasImage()) {
+            return;
+        }
+        Bitmap image = FileService.loadImageFromStorage(this, drop.getId());
+        iv_image.setImageBitmap(image);
+    }
+
+    private void showImageOptionDialog(){
+        final String[] options = getResources().getStringArray(R.array.image_options);
+        AlertDialog.Builder builder = new AlertDialog.Builder(EditActivity.this);
+        builder.setTitle(R.string.dialog_image_options)
+                .setItems(options, (dialog, which) -> {
+                    switch (which){
+                        case 0:
+                            getImageFromGallery();
+                            break;
+                        case 1:
+                            capturePictureFromCamera();
+                            break;
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void getImageFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALLERY_REQUEST);
+    }
+
+    private void capturePictureFromCamera(){
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Check if the intent was to pick image, was successful and an image was picked
+        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
+            //Get selected image uri from phone gallery
+            Uri selectedImage = data.getData();
+            try {
+                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Display selected photo in image view
+            iv_image.setImageBitmap(selectedImageBitmap);
+        }
+        //Handle camera request
+        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
+            //We need a bitmap variable to store the photo
+            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+            //Display taken picture in image view
+            iv_image.setImageBitmap(selectedImageBitmap);
+        }
     }
 
     private void initializeValues() {
@@ -76,17 +163,32 @@ public class EditActivity extends AppCompatActivity {
 
     private void initializeSaveBtn() {
         btn_save.setOnClickListener(v -> {
-
             drop.setTitle(et_title.getText().toString());
             drop.setNote(et_note.getText().toString());
             drop.setDate(DateService.dateStringToEpochMilli(EditActivity.this, et_date.getText().toString()));
 
-            try {
-                DataBaseHelper.getHelper(EditActivity.this).updateDrop(drop);
-                Toast.makeText(EditActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
+            if (selectedImageBitmap != null && !drop.hasImage()) {
+                drop.setHasImage(true);
+            } else if (selectedImageBitmap == null && drop.hasImage()) {
+                drop.setHasImage(false);
             }
-            catch (Exception e) {
+
+            boolean success = false;
+            try {
+                success = DataBaseHelper.getHelper(EditActivity.this).updateDrop(drop);
+                Toast.makeText(EditActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
                 Toast.makeText(EditActivity.this, "Error updating drop", Toast.LENGTH_SHORT).show();
+            }
+
+            if (!success) {
+                backToDetails();
+                return;
+            }
+
+            if (drop.hasImage()) {
+                FileService.saveToInternalStorage(this, selectedImageBitmap, drop.getId());
             }
 
             backToDetails();

@@ -3,5 +3,5 @@ CREATE TABLE user_drops (
     title TEXT NOT NULL,
     note TEXT,
     date INTEGER NOT NULL,
-    image TEXT
+    has_image INT NOT NULL
 );

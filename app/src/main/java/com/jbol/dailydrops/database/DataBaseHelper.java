@@ -58,7 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
 
         String sql = sb.toString();
-        Log.d("fliepflap", "convertStreamToString: " + sql);
+
         return sql;
     }
 
@@ -75,7 +75,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_TITLE, drop.getTitle());
         cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_NOTE, drop.getNote());
         cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_DATE, drop.getDate());
-        cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_IMAGE, drop.hasImage() ? 1 : 0);
+        cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_HAS_IMAGE, drop.hasImage() ? 1 : 0);
 
         long insert = sqldb.insert(DataBaseInfo.DropTables.USER_DROPS_TABLE, null, cv);
         if (insert == -1) {
@@ -97,20 +97,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean updateDrop(DropModel drop) {
-        DropModel oldDrop = getDropById(drop.getId());
+    public boolean updateDrop(DropModel newDrop) {
+        DropModel oldDrop = getDropById(newDrop.getId());
 
         ContentValues cv = new ContentValues();
 
-        if (!drop.getTitle().equals(oldDrop.getTitle())) {
-            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_TITLE, drop.getTitle()); }
-        if (!drop.getNote().equals(oldDrop.getNote())) {
-            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_NOTE, drop.getNote()); }
-        if (drop.getDate() != (oldDrop.getDate())) {
-            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_DATE, drop.getDate()); }
-        getWritableDatabase().update(DataBaseInfo.DropTables.USER_DROPS_TABLE, cv, DataBaseInfo.DropColumn.COLUMN_ID + "=" + drop.getId(), null);
+        if (!newDrop.getTitle().equals(oldDrop.getTitle())) {
+            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_TITLE, newDrop.getTitle()); }
+        if (!newDrop.getNote().equals(oldDrop.getNote())) {
+            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_NOTE, newDrop.getNote()); }
+        if (newDrop.getDate() != (oldDrop.getDate())) {
+            cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_DATE, newDrop.getDate()); }
+        cv.put(DataBaseInfo.DropColumn.COLUMN_DROP_HAS_IMAGE, newDrop.hasImage() ? 1 : 0);
 
-        return false;
+        getWritableDatabase().update(DataBaseInfo.DropTables.USER_DROPS_TABLE, cv, DataBaseInfo.DropColumn.COLUMN_ID + "=" + newDrop.getId(), null);
+
+        return true;
     }
 
     public DropModel getDropById(int dropId) {

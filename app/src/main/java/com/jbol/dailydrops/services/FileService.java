@@ -35,7 +35,7 @@ public class FileService {
                 e.printStackTrace();
             }
         }
-        Log.d("FLIEPFLAP", "saveToInternalStorage: " + directory.getAbsolutePath() + "/" + id);
+
         return directory.getAbsolutePath();
     }
 

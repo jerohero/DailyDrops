@@ -151,10 +151,10 @@ public class AddActivity extends AppCompatActivity {
         btn_add.setOnClickListener(v -> {
             DropModel drop;
             boolean hasImage = false;
+            if (selectedImageBitmap != null) {
+                hasImage = true;
+            }
             try {
-                if (selectedImageBitmap != null) {
-                    hasImage = true;
-                }
                 drop = new DropModel(
                         -1, et_title.getText().toString(), et_note.getText().toString(),
                         DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString()), hasImage);
@@ -180,7 +180,3 @@ public class AddActivity extends AppCompatActivity {
     }
 }
 
-//    private void showCustomersOnListView(DataBaseHelper dataBaseHelper2) {
-//        customerArrayAdapter = new ArrayAdapter<CustomerModel>(MainActivity.this, android.R.layout.simple_list_item_1, dataBaseHelper2.getEveryone());
-//        lv_customerList.setAdapter(customerArrayAdapter);
-//    }

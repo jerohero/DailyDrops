@@ -18,7 +18,7 @@ import java.time.format.FormatStyle;
 public class DetailsActivity extends AppCompatActivity {
 
     private TextView tv_title, tv_date;
-    private Button btn_delete, btn_edit;
+    private Button btn_delete, btn_edit, btn_back;
     private ImageView iv_image;
 
     private DropModel drop;
@@ -35,6 +35,7 @@ public class DetailsActivity extends AppCompatActivity {
         tv_title.setText(drop.getTitle());
 
         initializeImage();
+        initializeBackBtn();
         initializeDeleteBtn();
         initializeEditBtn();
         initializeDate();
@@ -64,6 +65,15 @@ public class DetailsActivity extends AppCompatActivity {
             boolean success = dataBaseHelper.deleteDrop(drop);
 
             Toast.makeText(DetailsActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void initializeBackBtn() {
+        btn_back = findViewById(R.id.btn_back);
+
+        btn_back.setOnClickListener(v -> {
+            Intent i = new Intent(DetailsActivity.this, MainActivity.class);
+            DetailsActivity.this.startActivity(i);
         });
     }
 
