@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/android/.idea/modules/AndroidStudioProjects-DailyDrops.iml" filepath="$PROJECT_DIR$/android/.idea/modules/AndroidStudioProjects-DailyDrops.iml" group="DailyDrops" />
+      <module fileurl="file://$PROJECT_DIR$/android/.idea/modules/DailyDrops.iml" filepath="$PROJECT_DIR$/android/.idea/modules/DailyDrops.iml" group="DailyDrops" />
+    </modules>
+  </component>
+</project>
