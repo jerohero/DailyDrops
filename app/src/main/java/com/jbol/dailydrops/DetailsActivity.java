@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.jbol.dailydrops.database.DataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
@@ -61,8 +61,8 @@ public class DetailsActivity extends AppCompatActivity {
         btn_delete = findViewById(R.id.btn_delete);
 
         btn_delete.setOnClickListener(v -> {
-            DataBaseHelper dataBaseHelper = DataBaseHelper.getHelper(DetailsActivity.this);
-            boolean success = dataBaseHelper.deleteDrop(drop);
+            SQLiteDataBaseHelper sqldbHelper = SQLiteDataBaseHelper.getHelper(DetailsActivity.this);
+            boolean success = sqldbHelper.deleteDrop(drop);
             FileService.deleteImageFromStorage(this, drop.getId());
 
             Toast.makeText(DetailsActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();

@@ -10,7 +10,10 @@ public class DropModel implements Serializable {
     private long date;
     private boolean hasImage;
 
-    // constructors
+    // default constructor
+    public DropModel() {}
+
+    // constructor
     public DropModel(int id, String title, String note, long date, boolean hasImage) {
         this.id = id;
         this.title = title;

@@ -16,15 +16,13 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.jbol.dailydrops.database.DataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -44,7 +42,7 @@ public class EditActivity extends AppCompatActivity {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
-    DataBaseHelper dataBaseHelper;
+    SQLiteDataBaseHelper sqldbHelper;
 
     private Bitmap selectedImageBitmap;
 
@@ -61,7 +59,7 @@ public class EditActivity extends AppCompatActivity {
         et_title = findViewById(R.id.et_title);
         et_note = findViewById(R.id.et_note);
 
-        dataBaseHelper = DataBaseHelper.getHelper(EditActivity.this);
+        sqldbHelper = SQLiteDataBaseHelper.getHelper(EditActivity.this);
 
         initializeImage();
         initializeValues();
@@ -175,7 +173,7 @@ public class EditActivity extends AppCompatActivity {
 
             boolean success = false;
             try {
-                success = DataBaseHelper.getHelper(EditActivity.this).updateDrop(drop);
+                success = SQLiteDataBaseHelper.getHelper(EditActivity.this).updateDrop(drop);
                 Toast.makeText(EditActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();

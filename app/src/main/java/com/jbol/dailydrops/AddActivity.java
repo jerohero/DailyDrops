@@ -4,12 +4,10 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,13 +15,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.jbol.dailydrops.database.DataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -42,7 +39,7 @@ public class AddActivity extends AppCompatActivity {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
-    DataBaseHelper dataBaseHelper;
+    SQLiteDataBaseHelper sqldbHelper;
 
     private Bitmap selectedImageBitmap;
 
@@ -56,7 +53,7 @@ public class AddActivity extends AppCompatActivity {
         et_title = findViewById(R.id.et_title);
         et_note = findViewById(R.id.et_note);
 
-        dataBaseHelper = DataBaseHelper.getHelper(AddActivity.this);
+        sqldbHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
 
         initializeDatePicker();
         initializeImage();
@@ -166,14 +163,14 @@ public class AddActivity extends AppCompatActivity {
                 drop = new DropModel(-1, "error", "error", 0L, false);
             }
 
-            DataBaseHelper dataBaseHelper = DataBaseHelper.getHelper(AddActivity.this);
+            SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
 
-            boolean success = dataBaseHelper.addDrop(drop);
+            boolean success = mSQLiteDataBaseHelper.addDrop(drop);
 
             if (!success) { return; }
 
             if (hasImage) {
-                int lastId = dataBaseHelper.getLastInsertedDropId();
+                int lastId = mSQLiteDataBaseHelper.getLastInsertedDropId();
                 FileService.saveToInternalStorage(this, selectedImageBitmap, lastId);
             }
         });

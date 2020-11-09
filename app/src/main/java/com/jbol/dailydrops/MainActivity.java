@@ -14,7 +14,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.jbol.dailydrops.database.DataBaseHelper;
+import com.jbol.dailydrops.database.FirebaseDataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.DropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
@@ -22,11 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    DataBaseHelper dataBaseHelper;
+    private SQLiteDataBaseHelper sqldbHelper;
+    private FirebaseDataBaseHelper fbdbHelper;
 
     private RecyclerView recyclerView;
     private DropAdapter adapter;
     private ArrayList<DropModel> dropModelArrayList;
+
+    private DatabaseReference fbDropsReference;
 
     private static MainActivity instance;
 
@@ -41,29 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         MainActivity.context = getApplicationContext();
 
-        dataBaseHelper = DataBaseHelper.getHelper(MainActivity.this);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-
-        myRef.setValue("Hello, World!");
-
-        // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d("dev", "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("dev", "Failed to read value.", error.toException());
-            }
-        });
+        sqldbHelper = SQLiteDataBaseHelper.getHelper(MainActivity.this);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,12 +62,36 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, AddActivity.class);
             startActivity(i);
         });
+
+        initializeFirebase();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         updateListData();
+    }
+
+    private void initializeFirebase() {
+        fbdbHelper = FirebaseDataBaseHelper.getHelper();
+        fbDropsReference = FirebaseDatabase.getInstance().getReference("drops");
+
+        // Read from the database
+        fbDropsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getValue(String.class);
+                Log.d("dev", "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("dev", "Failed to read value.", error.toException());
+            }
+        });
     }
 
     public static Context getContext() {
@@ -105,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateListData() {
-        List<DropModel> drops = dataBaseHelper.getAllDrops();
+        List<DropModel> drops = sqldbHelper.getAllDrops();
         dropModelArrayList.clear();
         dropModelArrayList.addAll(drops);
 //        customerClickListener.setCustomerModelArrayList(customerModelArrayList);

@@ -1,6 +1,6 @@
 package com.jbol.dailydrops.database;
 
-public class DataBaseInfo {
+public class SQLiteDataBaseInfo {
 
     public class DropTables {
         public static final String USER_DROPS_TABLE = "user_drops";
