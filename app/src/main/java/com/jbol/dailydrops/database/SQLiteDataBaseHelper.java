@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.R;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,7 +69,7 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addDrop(DropModel drop) {
+    public boolean addDrop(SQLiteDropModel drop) {
         ContentValues cv = new ContentValues();
 
         cv.put(SQLiteDataBaseInfo.DropColumn.COLUMN_DROP_TITLE, drop.getTitle());
@@ -85,7 +85,7 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean deleteDrop(DropModel drop) {
+    public boolean deleteDrop(SQLiteDropModel drop) {
         String queryString = "DELETE FROM " + SQLiteDataBaseInfo.DropTables.USER_DROPS_TABLE + " WHERE " + SQLiteDataBaseInfo.DropColumn.COLUMN_ID + " = " + drop.getId();
 
         Cursor cursor = sqldb.rawQuery(queryString, null);
@@ -97,8 +97,8 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean updateDrop(DropModel newDrop) {
-        DropModel oldDrop = getDropById(newDrop.getId());
+    public boolean updateDrop(SQLiteDropModel newDrop) {
+        SQLiteDropModel oldDrop = getDropById(newDrop.getId());
 
         ContentValues cv = new ContentValues();
 
@@ -115,12 +115,12 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public DropModel getDropById(int dropId) {
+    public SQLiteDropModel getDropById(int dropId) {
         String queryString = String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE id = %d", SQLiteDataBaseInfo.DropTables.USER_DROPS_TABLE, dropId);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(queryString, null);
 
-        DropModel drop = null;
+        SQLiteDropModel drop = null;
         if (cursor.moveToFirst()) {
             int id = cursor.getInt(0);
             String title = cursor.getString(1);
@@ -128,7 +128,7 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
             long date = cursor.getLong(3);
             boolean hasImage = cursor.getInt(4) == 1;
 
-            drop = new DropModel(id, title, note, date, hasImage);
+            drop = new SQLiteDropModel(id, title, note, date, hasImage);
         }
         cursor.close();
         return drop;
@@ -146,8 +146,8 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         return dropId;
     }
 
-    public List<DropModel> getAllDrops() {
-        List<DropModel> returnList = new ArrayList<>();
+    public List<SQLiteDropModel> getAllDrops() {
+        List<SQLiteDropModel> returnList = new ArrayList<>();
 
         String queryString = "SELECT * FROM " + SQLiteDataBaseInfo.DropTables.USER_DROPS_TABLE + " ORDER BY " + SQLiteDataBaseInfo.DropColumn.COLUMN_DROP_DATE;
         Cursor cursor = getReadableDatabase().rawQuery(queryString, null);
@@ -160,7 +160,7 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
                 long date = cursor.getLong(3);
                 boolean hasImage = cursor.getInt(4) == 1;
 
-                DropModel newDrop = new DropModel(id, title, note, date, hasImage);
+                SQLiteDropModel newDrop = new SQLiteDropModel(id, title, note, date, hasImage);
                     returnList.add(newDrop);
             } while (cursor.moveToNext());
         } else {

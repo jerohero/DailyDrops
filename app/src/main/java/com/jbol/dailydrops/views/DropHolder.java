@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.R;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -21,7 +21,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         txtId = itemView.findViewById(R.id.txtId);
     }
 
-    public void setDetails(DropModel drop) {
+    public void setDetails(SQLiteDropModel drop) {
         txtTitle.setText(drop.getTitle());
         txtNote.setText(String.format(Locale.ENGLISH, "Note: %s", drop.getNote()));
         txtDate.setText(String.format(Locale.ENGLISH, "Date: %s", DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.MEDIUM)));

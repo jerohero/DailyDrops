@@ -14,13 +14,26 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.jbol.dailydrops.database.FirebaseDataBaseHelper;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.FirebaseDropList;
+import com.jbol.dailydrops.models.FirebaseDropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private SQLiteDataBaseHelper sqldbHelper;
@@ -28,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private DropAdapter adapter;
-    private ArrayList<DropModel> dropModelArrayList;
+    private ArrayList<SQLiteDropModel> SQLiteDropModelArrayList;
 
     private DatabaseReference fbDropsReference;
 
@@ -50,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        dropModelArrayList = new ArrayList<>();
-        DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);
+        SQLiteDropModelArrayList = new ArrayList<>();
+        DropClickListener dropClickListener = new DropClickListener(this, recyclerView, SQLiteDropModelArrayList);
 
-        adapter = new DropAdapter(this, dropModelArrayList, dropClickListener);
+        adapter = new DropAdapter(this, SQLiteDropModelArrayList, dropClickListener);
         recyclerView.setAdapter(adapter);
         updateListData();
 
@@ -72,23 +85,39 @@ public class MainActivity extends AppCompatActivity {
         updateListData();
     }
 
+    private ArrayList<FirebaseDropModel> collectDrops(Object snapshotValue) {
+        ArrayList<FirebaseDropModel> drops = new ArrayList<>();
+
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.toJsonTree(snapshotValue);
+        FirebaseDropList dropList = gson.fromJson(jsonElement, FirebaseDropList.class);
+
+        Iterator it = dropList.getDrops().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            FirebaseDropModel drop = (FirebaseDropModel) pair.getValue();
+            drops.add(drop);
+            it.remove();
+        }
+
+        return drops;
+    }
+
     private void initializeFirebase() {
         fbdbHelper = FirebaseDataBaseHelper.getHelper();
-        fbDropsReference = FirebaseDatabase.getInstance().getReference("drops");
+        fbDropsReference = FirebaseDatabase.getInstance().getReference();
 
         // Read from the database
-        fbDropsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        fbDropsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d("dev", "Value is: " + value);
+                if (dataSnapshot.getValue() == null) { return; }
+                Log.d("dev", "Changed after return");
+                collectDrops(dataSnapshot.getValue());
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                // Failed to read value
                 Log.w("dev", "Failed to read value.", error.toException());
             }
         });
@@ -102,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
-    public void showDetails(DropModel drop) {
+    public void showDetails(SQLiteDropModel drop) {
         // Show details of clicked drop
         Intent i = new Intent(MainActivity.this, DetailsActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -111,9 +140,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateListData() {
-        List<DropModel> drops = sqldbHelper.getAllDrops();
-        dropModelArrayList.clear();
-        dropModelArrayList.addAll(drops);
+        List<SQLiteDropModel> drops = sqldbHelper.getAllDrops();
+        SQLiteDropModelArrayList.clear();
+        SQLiteDropModelArrayList.addAll(drops);
 //        customerClickListener.setCustomerModelArrayList(customerModelArrayList);
         adapter.notifyDataSetChanged();
     }

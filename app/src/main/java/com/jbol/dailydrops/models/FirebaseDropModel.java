@@ -1,38 +1,39 @@
 package com.jbol.dailydrops.models;
 
-import com.google.gson.Gson;
-import java.io.Serializable;
+import android.util.Log;
 
-public class DropModel implements Serializable {
-    private int id;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+public class FirebaseDropModel {
+    private String id;
     private String title;
     private String note;
     private long date;
-    private boolean hasImage;
+    private String imagePath;
 
     // default constructor
-    public DropModel() {}
+    public FirebaseDropModel() {}
 
     // constructor
-    public DropModel(int id, String title, String note, long date, boolean hasImage) {
+    public FirebaseDropModel(String id, String title, String note, long date, String imagePath) {
         this.id = id;
         this.title = title;
         this.note = note;
         this.date = date;
-        this.hasImage = hasImage;
+        this.imagePath = imagePath;
     }
 
     @Override
     public String toString() {
-//        Log.d("dev", new GsonBuilder().setPrettyPrinting().create().toJson(this));
         return new Gson().toJson(this);
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -60,11 +61,11 @@ public class DropModel implements Serializable {
         this.date = date;
     }
 
-    public boolean hasImage() {
-        return hasImage;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setHasImage(boolean hasImage) {
-        this.hasImage = hasImage;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

@@ -9,7 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
 
@@ -21,7 +21,7 @@ public class DetailsActivity extends AppCompatActivity {
     private Button btn_delete, btn_edit, btn_back;
     private ImageView iv_image;
 
-    private DropModel drop;
+    private SQLiteDropModel drop;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         Intent intent = getIntent();
-        drop = (DropModel) intent.getSerializableExtra("drop");
+        drop = (SQLiteDropModel) intent.getSerializableExtra("drop");
 
         tv_title = findViewById(R.id.tv_title);
         tv_title.setText(drop.getTitle());

@@ -1,10 +1,10 @@
 package com.jbol.dailydrops.database;
 
-import android.content.Context;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
+
+import java.util.ArrayList;
 
 public class FirebaseDataBaseHelper {
 
@@ -23,12 +23,8 @@ public class FirebaseDataBaseHelper {
         return fbdb;
     }
 
-    public void addDrop(DropModel drop) {
-        fbdb.child("drops").child(String.valueOf(drop.getId())).setValue(drop);
-    }
-
-    public void updateDrop(DropModel drop) {
-//        fbdb.child("drops").child(String.valueOf(drop.getId()))
+    public ArrayList<SQLiteDropModel> getDrops() {
+        return null;
     }
 
 

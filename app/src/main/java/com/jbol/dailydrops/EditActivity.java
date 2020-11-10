@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
 
@@ -38,7 +38,7 @@ public class EditActivity extends AppCompatActivity {
 
     final Calendar dateCalendar = Calendar.getInstance();
 
-    private DropModel drop;
+    private SQLiteDropModel drop;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
@@ -53,7 +53,7 @@ public class EditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit);
 
         Intent intent = getIntent();
-        drop = (DropModel) intent.getSerializableExtra("drop");
+        drop = (SQLiteDropModel) intent.getSerializableExtra("drop");
 
         btn_save = findViewById(R.id.btn_save);
         et_title = findViewById(R.id.et_title);

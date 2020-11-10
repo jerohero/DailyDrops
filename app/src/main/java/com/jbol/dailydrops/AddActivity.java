@@ -16,7 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
-import com.jbol.dailydrops.models.DropModel;
+import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
 
@@ -146,13 +146,13 @@ public class AddActivity extends AppCompatActivity {
 
     private void initializeAddBtn() {
         btn_add.setOnClickListener(v -> {
-            DropModel drop;
+            SQLiteDropModel drop;
             boolean hasImage = false;
             if (selectedImageBitmap != null) {
                 hasImage = true;
             }
             try {
-                drop = new DropModel(
+                drop = new SQLiteDropModel(
                         -1, et_title.getText().toString(), et_note.getText().toString(),
                         DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString()), hasImage);
 
@@ -160,7 +160,7 @@ public class AddActivity extends AppCompatActivity {
             }
             catch (Exception e) {
                 Toast.makeText(AddActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
-                drop = new DropModel(-1, "error", "error", 0L, false);
+                drop = new SQLiteDropModel(-1, "error", "error", 0L, false);
             }
 
             SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
