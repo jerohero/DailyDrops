@@ -26,6 +26,15 @@ public class GlobalDropModel implements Serializable {
             this.image = sqLiteDropModel.hasImage() ? String.valueOf(sqLiteDropModel.getId()) : null;
             this.type = OFFLINE_TYPE;
         }
+        else if (inputDrop instanceof FirebaseDropModel) {
+            FirebaseDropModel firebaseDropModel = (FirebaseDropModel) inputDrop;
+            this.id = firebaseDropModel.getId();
+            this.title = firebaseDropModel.getTitle();
+            this.note = firebaseDropModel.getNote();
+            this.date = firebaseDropModel.getDate();
+            this.image = firebaseDropModel.getImagePath();
+            this.type = ONLINE_TYPE;
+        }
     }
 
     public String getTitle() {

@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private DropAdapter adapter;
-    private ArrayList<FirebaseDropModel> firebaseDropModelArrayList;
+    private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
 
     private DatabaseReference fbDropsReference;
@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         instance = this;
 
         MainActivity.context = getApplicationContext();
+
+        initializeFirebase();
 
         sqldbHelper = SQLiteDataBaseHelper.getHelper(MainActivity.this);
 
@@ -71,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, AddActivity.class);
             startActivity(i);
         });
-
-        initializeFirebase();
     }
 
     @Override
@@ -108,9 +108,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) { return; }
-                Log.d("dev", "Changed after return");
-                ArrayList<FirebaseDropModel> drops = collectFirebaseDrops(dataSnapshot.getValue());
-                showFirebaseDrops(drops);
+                firebaseDropModelArrayList = collectFirebaseDrops(dataSnapshot.getValue());
+                updateListData();
             }
 
             @Override
@@ -136,21 +135,16 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.getContext().startActivity(i);
     }
 
-    private void showFirebaseDrops(ArrayList<FirebaseDropModel> drops) {
-
-    }
-
     private void updateListData() {
-//        List<SQLiteDropModel> drops = sqldbHelper.getAllDrops();
-//        SQLiteDropModelArrayList.clear();
-//        SQLiteDropModelArrayList.addAll(drops);
-//        customerClickListener.setCustomerModelArrayList(customerModelArrayList);
-
         dropModelArrayList.clear();
 
         List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDrops();
         for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
             dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+        }
+
+        for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
+            dropModelArrayList.add(new GlobalDropModel(firebaseDropModel));
         }
 
         adapter.notifyDataSetChanged();
