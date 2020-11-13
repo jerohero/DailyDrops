@@ -16,7 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
 import com.jbol.dailydrops.database.FirebaseDataBaseHelper;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.FirebaseDropList;
@@ -25,12 +24,7 @@ import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private DropAdapter adapter;
     private ArrayList<SQLiteDropModel> SQLiteDropModelArrayList;
+    private ArrayList<FirebaseDropModel> firebaseDropModelArrayList;
+    private ArrayList<Object> dropModelArrayList;
 
     private DatabaseReference fbDropsReference;
 
@@ -85,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         updateListData();
     }
 
-    private ArrayList<FirebaseDropModel> collectDrops(Object snapshotValue) {
+    private ArrayList<FirebaseDropModel> collectFirebaseDrops(Object snapshotValue) {
         ArrayList<FirebaseDropModel> drops = new ArrayList<>();
 
         Gson gson = new Gson();
@@ -113,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) { return; }
                 Log.d("dev", "Changed after return");
-                collectDrops(dataSnapshot.getValue());
+                ArrayList<FirebaseDropModel> drops = collectFirebaseDrops(dataSnapshot.getValue());
+                showFirebaseDrops(drops);
             }
 
             @Override
@@ -137,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         i.putExtra("drop", drop);
         MainActivity.getContext().startActivity(i);
+    }
+
+    private void showFirebaseDrops(ArrayList<FirebaseDropModel> drops) {
+
     }
 
     private void updateListData() {
