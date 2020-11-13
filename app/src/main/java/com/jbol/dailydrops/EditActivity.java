@@ -24,6 +24,7 @@ import com.jbol.dailydrops.services.ImageService;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class EditActivity extends AppCompatActivity {
@@ -62,8 +63,8 @@ public class EditActivity extends AppCompatActivity {
         sqldbHelper = SQLiteDataBaseHelper.getHelper(EditActivity.this);
 
         initializeImage();
-        initializeValues();
         initializeDatePicker();
+        initializeValues();
         initializeSaveBtn();
     }
 
@@ -139,11 +140,12 @@ public class EditActivity extends AppCompatActivity {
     private void initializeValues() {
         et_title.setText(drop.getTitle());
         et_note.setText(drop.getNote());
-//        et_date.setText("hoi");
-//        et_date.setText(DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.SHORT));
+        et_date.setText(sdf.format(drop.getDate()));
     }
 
     private void initializeDatePicker() {
+        dateCalendar.setTime(new Date(drop.getDate()));
+
         et_date = findViewById(R.id.et_date);
         DatePickerDialog.OnDateSetListener date = (view, year, month, dayOfMonth) -> {
             dateCalendar.set(Calendar.YEAR, year);
@@ -153,10 +155,12 @@ public class EditActivity extends AppCompatActivity {
             et_date.setText(sdf.format(dateCalendar.getTime()));
         };
 
-        et_date.setOnClickListener(v ->
-                new DatePickerDialog(EditActivity.this, date, dateCalendar.get(Calendar.YEAR),
-                        dateCalendar.get(Calendar.MONTH), dateCalendar.get(Calendar.DAY_OF_MONTH))
-                        .show());
+        et_date.setOnClickListener(v -> {
+            DatePickerDialog datePicker = new DatePickerDialog(EditActivity.this, date, dateCalendar.get(Calendar.YEAR),
+                    dateCalendar.get(Calendar.MONTH), dateCalendar.get(Calendar.DAY_OF_MONTH));
+            datePicker.updateDate(dateCalendar.get(Calendar.YEAR), dateCalendar.get(Calendar.MONTH), dateCalendar.get(Calendar.DAY_OF_MONTH));
+            datePicker.show();
+        });
     }
 
     private void initializeSaveBtn() {
