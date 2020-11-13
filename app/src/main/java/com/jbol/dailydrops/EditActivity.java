@@ -18,9 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
-import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
-import com.jbol.dailydrops.services.FileService;
+import com.jbol.dailydrops.services.ImageService;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -79,7 +78,7 @@ public class EditActivity extends AppCompatActivity {
         if (drop.getImage() == null) {
             return;
         }
-        Bitmap image = FileService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
+        Bitmap image = ImageService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
         iv_image.setImageBitmap(image);
     }
 
@@ -187,7 +186,7 @@ public class EditActivity extends AppCompatActivity {
             }
 
             if (drop.getImage() != null) {
-                FileService.saveToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
+                ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
             }
 
             backToDetails();

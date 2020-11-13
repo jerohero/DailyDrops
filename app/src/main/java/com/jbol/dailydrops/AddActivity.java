@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
-import com.jbol.dailydrops.services.FileService;
+import com.jbol.dailydrops.services.ImageService;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -171,7 +171,7 @@ public class AddActivity extends AppCompatActivity {
 
             if (hasImage) {
                 int lastId = mSQLiteDataBaseHelper.getLastInsertedDropId();
-                FileService.saveToInternalStorage(this, selectedImageBitmap, lastId);
+                ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
             }
         });
     }

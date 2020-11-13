@@ -14,10 +14,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class FileService {
+public class ImageService {
 
-    public static String saveToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
+    public static String saveImageToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
         File directory = getImagesDir(ctx);
         File imgFile = new File(directory,id + ".png");
 
@@ -62,4 +65,19 @@ public class FileService {
         // path to /data/user/0/com.jbol.dailydrops/app_images
         return cw.getDir("images", Context.MODE_PRIVATE);
     }
+
+    public static Bitmap getImageFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            return BitmapFactory.decodeStream(input);
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
+
 }

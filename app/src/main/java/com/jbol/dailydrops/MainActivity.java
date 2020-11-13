@@ -26,9 +26,12 @@ import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     private SQLiteDataBaseHelper sqldbHelper;
@@ -88,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
         JsonElement jsonElement = gson.toJsonTree(snapshotValue);
         FirebaseDropList dropList = gson.fromJson(jsonElement, FirebaseDropList.class);
 
-        Iterator it = dropList.getDrops().entrySet().iterator();
+        Iterator<Map.Entry<String, FirebaseDropModel>> it = dropList.getDrops().entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry<String, FirebaseDropModel> pair = (Map.Entry<String, FirebaseDropModel>)it.next();
             FirebaseDropModel drop = (FirebaseDropModel) pair.getValue();
             drops.add(drop);
             it.remove();
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         dropModelArrayList.clear();
 
         List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDrops();
+
         for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
             dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
         }
@@ -147,6 +151,9 @@ public class MainActivity extends AppCompatActivity {
             dropModelArrayList.add(new GlobalDropModel(firebaseDropModel));
         }
 
+        Collections.sort(dropModelArrayList);
+
         adapter.notifyDataSetChanged();
     }
+
 }

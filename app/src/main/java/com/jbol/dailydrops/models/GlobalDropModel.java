@@ -5,7 +5,7 @@ import android.util.Log;
 
 import java.io.Serializable;
 
-public class GlobalDropModel implements Serializable {
+public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel>{
     public static final String ONLINE_TYPE = "ON";
     public static final String OFFLINE_TYPE = "OFF";
 
@@ -35,6 +35,12 @@ public class GlobalDropModel implements Serializable {
             this.image = firebaseDropModel.getImagePath();
             this.type = ONLINE_TYPE;
         }
+    }
+
+    @Override
+    public int compareTo(GlobalDropModel drop) {
+        if (getDate() == 0 || drop.getDate() == 0) { return 0; }
+        return (int) (getDate() - drop.getDate());
     }
 
     public String getTitle() {

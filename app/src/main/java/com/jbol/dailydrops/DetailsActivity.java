@@ -3,7 +3,7 @@ package com.jbol.dailydrops;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,9 +11,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
-import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
-import com.jbol.dailydrops.services.FileService;
+import com.jbol.dailydrops.services.ImageService;
+import com.jbol.dailydrops.services.AsyncURLService;
 
 import java.time.format.FormatStyle;
 
@@ -38,9 +38,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         initializeImage();
         initializeBackBtn();
+        initializeDate();
         initializeDeleteBtn();
         initializeEditBtn();
-        initializeDate();
     }
 
     private void initializeImage() {
@@ -50,11 +50,12 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
 
-        Bitmap image = null;
-        if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) {
-            image = FileService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
+        if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
+            Bitmap image = ImageService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
+            iv_image.setImageBitmap(image);
+        } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
+            new AsyncURLService(output -> iv_image.setImageBitmap(output)).execute(drop.getImage());
         }
-        iv_image.setImageBitmap(image);
     }
 
     private void initializeDate() {
@@ -67,10 +68,14 @@ public class DetailsActivity extends AppCompatActivity {
     private void initializeDeleteBtn() {
         btn_delete = findViewById(R.id.btn_delete);
 
+        if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
+            btn_delete.setVisibility(View.INVISIBLE);
+            return;
+        }
         btn_delete.setOnClickListener(v -> {
             SQLiteDataBaseHelper sqldbHelper = SQLiteDataBaseHelper.getHelper(DetailsActivity.this);
             boolean success = sqldbHelper.deleteDrop(Integer.parseInt(drop.getId()));
-            FileService.deleteImageFromStorage(this, Integer.parseInt(drop.getId()));
+            ImageService.deleteImageFromStorage(this, Integer.parseInt(drop.getId()));
 
             Toast.makeText(DetailsActivity.this, "Success= " + success, Toast.LENGTH_SHORT).show();
         });
@@ -88,6 +93,10 @@ public class DetailsActivity extends AppCompatActivity {
     private void initializeEditBtn() {
         btn_edit = findViewById(R.id.btn_edit);
 
+        if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
+            btn_edit.setVisibility(View.INVISIBLE);
+            return;
+        }
         btn_edit.setOnClickListener(v -> {
             Intent i = new Intent(DetailsActivity.this, EditActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
