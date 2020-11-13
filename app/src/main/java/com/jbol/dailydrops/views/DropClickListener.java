@@ -6,24 +6,25 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.MainActivity;
+import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import java.util.ArrayList;
 
 public class DropClickListener implements View.OnClickListener {
     private RecyclerView recyclerView;
-    private ArrayList<SQLiteDropModel> SQLiteDropModelArrayList;
+    private ArrayList<GlobalDropModel> dropModelArrayList;
     private Context ctx;
 
-    public DropClickListener(Context ctx, RecyclerView recyclerView, ArrayList<SQLiteDropModel> SQLiteDropModelArrayList) {
+    public DropClickListener(Context ctx, RecyclerView recyclerView, ArrayList<GlobalDropModel> dropModelArrayList) {
         this.ctx = ctx;
         this.recyclerView = recyclerView;
-        this.SQLiteDropModelArrayList = SQLiteDropModelArrayList;
+        this.dropModelArrayList = dropModelArrayList;
 }
 
     @Override
     public void onClick(View v) {
         int itemPosition = recyclerView.getChildLayoutPosition(v);
-        SQLiteDropModel drop = SQLiteDropModelArrayList.get(itemPosition);
+        GlobalDropModel drop = dropModelArrayList.get(itemPosition);
         Log.d("dev", drop.getTitle());
 
         MainActivity.getInstance().showDetails(drop);
@@ -32,7 +33,7 @@ public class DropClickListener implements View.OnClickListener {
     }
 
     public void setSQLiteDropModelArrayList(ArrayList<SQLiteDropModel> SQLiteDropModelArrayList) {
-        this.SQLiteDropModelArrayList = SQLiteDropModelArrayList;
+//        this.SQLiteDropModelArrayList = SQLiteDropModelArrayList;
     }
 
 }

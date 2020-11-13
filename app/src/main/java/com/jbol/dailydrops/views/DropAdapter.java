@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.R;
+import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import java.util.ArrayList;
 
@@ -14,10 +15,10 @@ public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
 
     private Context context;
 
-    private ArrayList<SQLiteDropModel> drops;
+    private ArrayList<GlobalDropModel> drops;
     private DropClickListener dropClickListener;
 
-    public DropAdapter(Context context, ArrayList<SQLiteDropModel> drops, DropClickListener dropClickListener) {
+    public DropAdapter(Context context, ArrayList<GlobalDropModel> drops, DropClickListener dropClickListener) {
         this.context = context;
         this.drops = drops;
         this.dropClickListener = dropClickListener;
@@ -36,8 +37,8 @@ public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
 
     @Override
     public void onBindViewHolder(DropHolder holder, int position) {
-        SQLiteDropModel drops = this.drops.get(position);
-        holder.setDetails(drops);
+        GlobalDropModel drop = this.drops.get(position);
+        holder.setDetails(drop);
     }
 
     @Override

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.R;
+import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 
 import java.io.BufferedReader;
@@ -85,8 +86,8 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean deleteDrop(SQLiteDropModel drop) {
-        String queryString = "DELETE FROM " + SQLiteDataBaseInfo.DropTables.USER_DROPS_TABLE + " WHERE " + SQLiteDataBaseInfo.DropColumn.COLUMN_ID + " = " + drop.getId();
+    public boolean deleteDrop(int id) {
+        String queryString = "DELETE FROM " + SQLiteDataBaseInfo.DropTables.USER_DROPS_TABLE + " WHERE " + SQLiteDataBaseInfo.DropColumn.COLUMN_ID + " = " + id;
 
         Cursor cursor = sqldb.rawQuery(queryString, null);
 
@@ -97,8 +98,8 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean updateDrop(SQLiteDropModel newDrop) {
-        SQLiteDropModel oldDrop = getDropById(newDrop.getId());
+    public boolean updateDrop(GlobalDropModel newDrop) {
+        SQLiteDropModel oldDrop = getDropById(Integer.parseInt(newDrop.getId()));
 
         ContentValues cv = new ContentValues();
 
@@ -108,7 +109,7 @@ public class SQLiteDataBaseHelper extends SQLiteOpenHelper {
             cv.put(SQLiteDataBaseInfo.DropColumn.COLUMN_DROP_NOTE, newDrop.getNote()); }
         if (newDrop.getDate() != (oldDrop.getDate())) {
             cv.put(SQLiteDataBaseInfo.DropColumn.COLUMN_DROP_DATE, newDrop.getDate()); }
-        cv.put(SQLiteDataBaseInfo.DropColumn.COLUMN_DROP_HAS_IMAGE, newDrop.hasImage() ? 1 : 0);
+        cv.put(SQLiteDataBaseInfo.DropColumn.COLUMN_DROP_HAS_IMAGE, newDrop.getImage() != null ? 1 : 0);
 
         getWritableDatabase().update(SQLiteDataBaseInfo.DropTables.USER_DROPS_TABLE, cv, SQLiteDataBaseInfo.DropColumn.COLUMN_ID + "=" + newDrop.getId(), null);
 

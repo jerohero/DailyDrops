@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
+import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.FileService;
@@ -38,7 +39,7 @@ public class EditActivity extends AppCompatActivity {
 
     final Calendar dateCalendar = Calendar.getInstance();
 
-    private SQLiteDropModel drop;
+    private GlobalDropModel drop;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
@@ -53,7 +54,7 @@ public class EditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit);
 
         Intent intent = getIntent();
-        drop = (SQLiteDropModel) intent.getSerializableExtra("drop");
+        drop = (GlobalDropModel) intent.getSerializableExtra("drop");
 
         btn_save = findViewById(R.id.btn_save);
         et_title = findViewById(R.id.et_title);
@@ -75,10 +76,10 @@ public class EditActivity extends AppCompatActivity {
             showImageOptionDialog();
         });
 
-        if (!drop.hasImage()) {
+        if (drop.getImage() == null) {
             return;
         }
-        Bitmap image = FileService.loadImageFromStorage(this, drop.getId());
+        Bitmap image = FileService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
         iv_image.setImageBitmap(image);
     }
 
@@ -165,10 +166,10 @@ public class EditActivity extends AppCompatActivity {
             drop.setNote(et_note.getText().toString());
             drop.setDate(DateService.dateStringToEpochMilli(EditActivity.this, et_date.getText().toString()));
 
-            if (selectedImageBitmap != null && !drop.hasImage()) {
-                drop.setHasImage(true);
-            } else if (selectedImageBitmap == null && drop.hasImage()) {
-                drop.setHasImage(false);
+            if (selectedImageBitmap != null && drop.getImage() == null) {
+                drop.setImage(drop.getId());
+            } else if (selectedImageBitmap == null && drop.getImage() != null) {
+                drop.setImage(null);
             }
 
             boolean success = false;
@@ -185,8 +186,8 @@ public class EditActivity extends AppCompatActivity {
                 return;
             }
 
-            if (drop.hasImage()) {
-                FileService.saveToInternalStorage(this, selectedImageBitmap, drop.getId());
+            if (drop.getImage() != null) {
+                FileService.saveToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
             }
 
             backToDetails();

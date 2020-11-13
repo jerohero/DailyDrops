@@ -20,6 +20,7 @@ import com.jbol.dailydrops.database.FirebaseDataBaseHelper;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.FirebaseDropList;
 import com.jbol.dailydrops.models.FirebaseDropModel;
+import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
@@ -35,9 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private DropAdapter adapter;
-    private ArrayList<SQLiteDropModel> SQLiteDropModelArrayList;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList;
-    private ArrayList<Object> dropModelArrayList;
+    private ArrayList<GlobalDropModel> dropModelArrayList;
 
     private DatabaseReference fbDropsReference;
 
@@ -59,10 +59,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        SQLiteDropModelArrayList = new ArrayList<>();
-        DropClickListener dropClickListener = new DropClickListener(this, recyclerView, SQLiteDropModelArrayList);
+        dropModelArrayList = new ArrayList<>();
+        DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);
 
-        adapter = new DropAdapter(this, SQLiteDropModelArrayList, dropClickListener);
+        adapter = new DropAdapter(this, dropModelArrayList, dropClickListener);
         recyclerView.setAdapter(adapter);
         updateListData();
 
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         return instance;
     }
 
-    public void showDetails(SQLiteDropModel drop) {
+    public void showDetails(GlobalDropModel drop) {
         // Show details of clicked drop
         Intent i = new Intent(MainActivity.this, DetailsActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -141,10 +141,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateListData() {
-        List<SQLiteDropModel> drops = sqldbHelper.getAllDrops();
-        SQLiteDropModelArrayList.clear();
-        SQLiteDropModelArrayList.addAll(drops);
+//        List<SQLiteDropModel> drops = sqldbHelper.getAllDrops();
+//        SQLiteDropModelArrayList.clear();
+//        SQLiteDropModelArrayList.addAll(drops);
 //        customerClickListener.setCustomerModelArrayList(customerModelArrayList);
+
+        dropModelArrayList.clear();
+
+        List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDrops();
+        for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
+            dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+        }
+
         adapter.notifyDataSetChanged();
     }
 }

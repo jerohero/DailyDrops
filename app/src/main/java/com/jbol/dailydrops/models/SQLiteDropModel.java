@@ -1,5 +1,7 @@
 package com.jbol.dailydrops.models;
 
+import android.provider.Settings;
+
 import com.google.gson.Gson;
 import java.io.Serializable;
 
@@ -11,7 +13,8 @@ public class SQLiteDropModel implements Serializable {
     private boolean hasImage;
 
     // default constructor
-    public SQLiteDropModel() {}
+    public SQLiteDropModel() {
+    }
 
     // constructor
     public SQLiteDropModel(int id, String title, String note, long date, boolean hasImage) {
