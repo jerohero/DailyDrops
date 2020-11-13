@@ -1,6 +1,7 @@
 package com.jbol.dailydrops;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         sqldbHelper = SQLiteDataBaseHelper.getHelper(MainActivity.this);
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         dropModelArrayList = new ArrayList<>();
         DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);

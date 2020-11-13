@@ -29,7 +29,7 @@ public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
         View view = LayoutInflater.from(context).inflate(R.layout.item_row, parent, false);
         view.setOnClickListener(dropClickListener);
 
-        view.setElevation(35f);
+        view.setElevation(10f);
 
         return new DropHolder(view);
     }
