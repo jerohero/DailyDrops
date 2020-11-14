@@ -2,26 +2,21 @@ package com.jbol.dailydrops.views;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.R;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.AsyncURLService;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
-
 import java.time.Instant;
 import java.time.format.FormatStyle;
 
 public class DropHolder extends RecyclerView.ViewHolder {
-
     private TextView txtTitle, txtDate;
     private CardView cv_card;
     private ImageView iv_image;

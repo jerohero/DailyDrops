@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.R;
 import com.jbol.dailydrops.models.GlobalDropModel;
-import com.jbol.dailydrops.models.SQLiteDropModel;
 import java.util.ArrayList;
 
 public class DropAdapter extends RecyclerView.Adapter<DropHolder> {

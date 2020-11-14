@@ -14,11 +14,9 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.jbol.dailydrops.services.AsyncURLService;
-
 import java.time.format.FormatStyle;
 
 public class DetailsActivity extends AppCompatActivity {
-
     private TextView tv_title, tv_date;
     private Button btn_delete, btn_edit, btn_back;
     private ImageView iv_image;

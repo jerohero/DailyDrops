@@ -27,7 +27,6 @@ public class SQLiteDropModel implements Serializable {
 
     @Override
     public String toString() {
-//        Log.d("dev", new GsonBuilder().setPrettyPrinting().create().toJson(this));
         return new Gson().toJson(this);
     }
 
@@ -43,16 +42,8 @@ public class SQLiteDropModel implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getNote() {
         return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     public long getDate() {
@@ -65,9 +56,5 @@ public class SQLiteDropModel implements Serializable {
 
     public boolean hasImage() {
         return hasImage;
-    }
-
-    public void setHasImage(boolean hasImage) {
-        this.hasImage = hasImage;
     }
 }

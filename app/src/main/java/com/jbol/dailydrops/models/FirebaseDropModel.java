@@ -1,9 +1,6 @@
 package com.jbol.dailydrops.models;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class FirebaseDropModel {
     private String id;
@@ -41,16 +38,8 @@ public class FirebaseDropModel {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getNote() {
         return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     public long getDate() {
@@ -65,7 +54,4 @@ public class FirebaseDropModel {
         return imagePath;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
 }

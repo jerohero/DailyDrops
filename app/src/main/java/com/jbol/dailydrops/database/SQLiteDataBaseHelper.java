@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.R;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

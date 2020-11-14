@@ -1,8 +1,5 @@
 package com.jbol.dailydrops.models;
 
-import android.graphics.Bitmap;
-import android.util.Log;
-
 import java.io.Serializable;
 
 public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel>{
@@ -76,10 +73,6 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
 
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getId() {

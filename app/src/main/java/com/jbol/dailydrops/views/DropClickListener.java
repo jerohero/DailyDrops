@@ -7,7 +7,6 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.models.GlobalDropModel;
-import com.jbol.dailydrops.models.SQLiteDropModel;
 import java.util.ArrayList;
 
 public class DropClickListener implements View.OnClickListener {
@@ -30,10 +29,6 @@ public class DropClickListener implements View.OnClickListener {
         MainActivity.getInstance().showDetails(drop);
 
         Toast.makeText(ctx, drop.getTitle(), Toast.LENGTH_SHORT).show();
-    }
-
-    public void setSQLiteDropModelArrayList(ArrayList<SQLiteDropModel> SQLiteDropModelArrayList) {
-//        this.SQLiteDropModelArrayList = SQLiteDropModelArrayList;
     }
 
 }

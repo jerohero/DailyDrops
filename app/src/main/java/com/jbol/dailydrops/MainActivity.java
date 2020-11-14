@@ -23,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.jbol.dailydrops.database.FirebaseDataBaseHelper;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.FirebaseDropList;
 import com.jbol.dailydrops.models.FirebaseDropModel;
@@ -39,7 +38,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private SQLiteDataBaseHelper sqldbHelper;
-    private FirebaseDataBaseHelper fbdbHelper;
 
     private RecyclerView recyclerView;
     private FloatingActionButton fab_add, fab_search;
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         tv_no_results = findViewById(R.id.tv_no_results);
-        tv_no_results.setVisibility(View.INVISIBLE);
+        tv_no_results.setVisibility(View.GONE);
 
         dropModelArrayList = new ArrayList<>();
         DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);
@@ -106,14 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
         cl_search_label = findViewById(R.id.cl_search_label);
         if (searchTerm.isEmpty()) {
-            cl_search_label.setVisibility(View.INVISIBLE);
+            cl_search_label.setVisibility(View.GONE);
         } else {
             String searchLabel = getResources().getString(R.string.searchLabel) + " \"" + searchTerm + "\"";
             tv_search_term.setText(searchLabel);
         }
 
         cl_search_label.setOnClickListener(v -> {
-            cl_search_label.setVisibility(View.INVISIBLE);
+            cl_search_label.setVisibility(View.GONE);
             searchTerm = "";
             updateListData();
         });
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                     tv_search_term.setText(searchLabel);
 
                 } else {
-                    cl_search_label.setVisibility(View.INVISIBLE);
+                    cl_search_label.setVisibility(View.GONE);
                     searchTerm = "";
                 }
 
@@ -186,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeFirebase() {
-        fbdbHelper = FirebaseDataBaseHelper.getHelper();
         fbDropsReference = FirebaseDatabase.getInstance().getReference();
 
         // Read from the database
@@ -254,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("FLIEPFLAP", "updateListData: " + tv_no_results.getText());
             tv_no_results.setVisibility(View.VISIBLE);
         } else if (tv_no_results.getVisibility() == View.VISIBLE) {
-            tv_no_results.setVisibility(View.INVISIBLE);
+            tv_no_results.setVisibility(View.GONE);
         }
 
         Collections.sort(dropModelArrayList);
