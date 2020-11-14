@@ -23,8 +23,7 @@
             android:contentDescription="Drop image"
             android:forceDarkAllowed="false"
             android:layerType="none"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="match_parent"

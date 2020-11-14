@@ -37,7 +37,7 @@ public class AddActivity extends AppCompatActivity {
     //Request code for camera
     private static final int CAMERA_REQUEST = 11;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
     SQLiteDataBaseHelper sqldbHelper;
 

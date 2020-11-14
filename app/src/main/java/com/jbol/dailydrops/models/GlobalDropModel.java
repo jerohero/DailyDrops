@@ -39,8 +39,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
 
     @Override
     public int compareTo(GlobalDropModel drop) {
-        if (getDate() == 0 || drop.getDate() == 0) { return 0; }
-        return (int) (getDate() - drop.getDate());
+        return Long.compare(this.date, drop.date);
     }
 
     public String getTitle() {
