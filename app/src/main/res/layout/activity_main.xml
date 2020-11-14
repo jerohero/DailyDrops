@@ -17,8 +17,8 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|end"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="16dp"
         app:backgroundTint="#FFB3B4"
         app:srcCompat="@drawable/add" />
@@ -32,8 +32,8 @@
         android:layout_gravity="bottom|end"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="17dp"
-        android:layout_marginBottom="9dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="0dp"
         app:backgroundTint="#FFB3B4"
         app:srcCompat="@drawable/search" />
 
@@ -41,5 +41,51 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_search_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_search_term"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FF8080"
+            android:padding="4dp"
+            android:text="Search term:"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="9dp"
+            android:layout_height="21dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="3.5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_search_term"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:srcCompat="@drawable/cross" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_no_results"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="97dp"
+        android:layout_marginEnd="98dp"
+        android:layout_marginBottom="377dp"
+        android:text="No results found..."
+        android:textAlignment="center"
+        android:textColor="#FFB3B4"
+        android:textSize="17sp" />
 
 </RelativeLayout>

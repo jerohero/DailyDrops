@@ -1,12 +1,20 @@
 package com.jbol.dailydrops;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.TextView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDataBaseHelper fbdbHelper;
 
     private RecyclerView recyclerView;
-    private FloatingActionButton fab_add;
+    private FloatingActionButton fab_add, fab_search;
+    private ConstraintLayout cl_search_label;
+    private TextView tv_no_results;
     private DropAdapter adapter;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
@@ -44,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
     private static MainActivity instance;
 
     private static Context context;
+
+    private static String searchTerm = "";
+
+    private static boolean showServerDrops = true;
+    private static boolean showLocalDrops = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
+        tv_no_results = findViewById(R.id.tv_no_results);
+        tv_no_results.setVisibility(View.INVISIBLE);
+
         dropModelArrayList = new ArrayList<>();
         DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);
 
@@ -73,12 +91,80 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, AddActivity.class);
             startActivity(i);
         });
+
+        initializeSearch();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         updateListData();
+    }
+
+    private void initializeSearch() {
+        TextView tv_search_term = findViewById(R.id.tv_search_term);
+
+        cl_search_label = findViewById(R.id.cl_search_label);
+        if (searchTerm.isEmpty()) {
+            cl_search_label.setVisibility(View.INVISIBLE);
+        } else {
+            String searchLabel = getResources().getString(R.string.searchLabel) + " \"" + searchTerm + "\"";
+            tv_search_term.setText(searchLabel);
+        }
+
+        cl_search_label.setOnClickListener(v -> {
+            cl_search_label.setVisibility(View.INVISIBLE);
+            searchTerm = "";
+            updateListData();
+        });
+
+        fab_search = findViewById(R.id.fab_search);
+
+        fab_search.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            View view = getLayoutInflater().inflate(R.layout.dialog_search, null);
+
+            EditText searchField = view.findViewById(R.id.et_search);
+            Button searchBtn = view.findViewById(R.id.btn_search);
+            CheckBox showServerCheck = view.findViewById(R.id.cb_show_server);
+            CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
+
+            showServerCheck.setChecked(showServerDrops);
+            showLocalCheck.setChecked(showLocalDrops);
+
+            builder.setView(view);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            searchBtn.setOnClickListener(v1 -> {
+                if (showServerCheck.isChecked()) {
+                    if (!showServerDrops) showServerDrops = true;
+                } else {
+                    if (showServerDrops) showServerDrops = false;
+                }
+
+                if (showLocalCheck.isChecked()) {
+                    if (!showLocalDrops) showLocalDrops = true;
+                } else {
+                    if (showLocalDrops) showLocalDrops = false;
+                }
+
+                if (!searchField.getText().toString().isEmpty()) {
+                    searchTerm = searchField.getText().toString();
+                    cl_search_label.setVisibility(View.VISIBLE);
+                    String searchLabel = getResources().getString(R.string.searchLabel) +  " \"" + searchTerm + "\"";
+                    tv_search_term.setText(searchLabel);
+
+                } else {
+                    cl_search_label.setVisibility(View.INVISIBLE);
+                    searchTerm = "";
+                }
+
+                dialog.dismiss();
+
+                updateListData();
+            });
+        });
     }
 
     private ArrayList<FirebaseDropModel> collectFirebaseDrops(Object snapshotValue) {
@@ -140,12 +226,35 @@ public class MainActivity extends AppCompatActivity {
 
         List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDrops();
 
-        for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
-            dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+        if (showLocalDrops) {
+            for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
+                if (
+                        searchTerm.isEmpty() ||
+                        sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                        sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                ) {
+                    dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+                }
+            }
         }
 
-        for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
-            dropModelArrayList.add(new GlobalDropModel(firebaseDropModel));
+        if (showServerDrops) {
+            for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
+                if (
+                        searchTerm.isEmpty() ||
+                        firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                        firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                ) {
+                    dropModelArrayList.add(new GlobalDropModel(firebaseDropModel));
+                }
+            }
+        }
+
+        if (dropModelArrayList.size() <= 0) {
+            Log.d("FLIEPFLAP", "updateListData: " + tv_no_results.getText());
+            tv_no_results.setVisibility(View.VISIBLE);
+        } else if (tv_no_results.getVisibility() == View.VISIBLE) {
+            tv_no_results.setVisibility(View.INVISIBLE);
         }
 
         Collections.sort(dropModelArrayList);

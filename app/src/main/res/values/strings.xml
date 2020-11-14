@@ -12,4 +12,5 @@
         <item>Choose photo from gallery</item>
         <item>Take picture with camera</item>
     </string-array>
+    <string name="searchLabel">Search term: </string>
 </resources>
