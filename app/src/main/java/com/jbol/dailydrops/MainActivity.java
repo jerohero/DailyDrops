@@ -2,13 +2,15 @@ package com.jbol.dailydrops;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDataBaseHelper fbdbHelper;
 
     private RecyclerView recyclerView;
+    private FloatingActionButton fab_add;
     private DropAdapter adapter;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
@@ -68,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         updateListData();
 
-        Button btn_addOne = findViewById(R.id.btn_addOne);
-        btn_addOne.setOnClickListener(v -> {
+        fab_add = findViewById(R.id.fab_add);
+        fab_add.setOnClickListener(v -> {
             Intent i = new Intent(MainActivity.this, AddActivity.class);
             startActivity(i);
         });
