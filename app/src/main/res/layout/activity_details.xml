@@ -1,59 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EAF5FF"
     tools:context=".DetailsActivity">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_top_bar">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="30dp">
 
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="355dp"
+            <ImageView
+                android:id="@+id/iv_image"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Jordan 1 Retro High Travis Scott"
-                android:textSize="24sp" />
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/dailydrops" />
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="%DATE%" />
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/roboto_light"
+                android:text="%DATE%"
+                android:textAlignment="center"
+                android:textSize="18sp" />
 
-            <ImageView
-                android:id="@+id/iv_image"
-                android:layout_width="match_parent"
-                android:layout_height="169dp"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
-
-            <Button
-                android:id="@+id/btn_edit"
+            <TextView
+                android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="116dp"
-                android:text="edit" />
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/roboto"
+                android:maxWidth="355dp"
+                android:text="%TITLE%"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="36sp" />
 
-            <Button
-                android:id="@+id/btn_delete"
+            <TextView
+                android:id="@+id/tv_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="delete" />
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/roboto_light"
+                android:maxWidth="300dp"
+                android:text="%NOTE%"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
-            <Button
-                android:id="@+id/btn_back"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="back" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ib_edit"
+                    android:layout_width="47dp"
+                    android:layout_height="44dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/roundcorner"
+                    android:padding="12dp"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/edit" />
+
+                <ImageButton
+                    android:id="@+id/ib_delete"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/roundcorner"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/trashcan" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/ic_launcher_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_back_btn"
+            android:layout_width="58dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            app:srcCompat="@drawable/arrow" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

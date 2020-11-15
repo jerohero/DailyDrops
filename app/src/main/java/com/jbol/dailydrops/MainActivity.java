@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         tv_no_results.setVisibility(View.GONE);
 
         dropModelArrayList = new ArrayList<>();
-        DropClickListener dropClickListener = new DropClickListener(this, recyclerView, dropModelArrayList);
+        DropClickListener dropClickListener = new DropClickListener(recyclerView, dropModelArrayList);
 
         adapter = new DropAdapter(this, dropModelArrayList, dropClickListener);
         recyclerView.setAdapter(adapter);

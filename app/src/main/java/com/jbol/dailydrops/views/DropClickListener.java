@@ -12,10 +12,8 @@ import java.util.ArrayList;
 public class DropClickListener implements View.OnClickListener {
     private RecyclerView recyclerView;
     private ArrayList<GlobalDropModel> dropModelArrayList;
-    private Context ctx;
 
-    public DropClickListener(Context ctx, RecyclerView recyclerView, ArrayList<GlobalDropModel> dropModelArrayList) {
-        this.ctx = ctx;
+    public DropClickListener(RecyclerView recyclerView, ArrayList<GlobalDropModel> dropModelArrayList) {
         this.recyclerView = recyclerView;
         this.dropModelArrayList = dropModelArrayList;
 }
@@ -27,8 +25,6 @@ public class DropClickListener implements View.OnClickListener {
         Log.d("dev", drop.getTitle());
 
         MainActivity.getInstance().showDetails(drop);
-
-        Toast.makeText(ctx, drop.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
 }
