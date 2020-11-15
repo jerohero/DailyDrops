@@ -2,6 +2,8 @@ package com.jbol.dailydrops.services;
 
 import android.content.Context;
 import android.widget.Toast;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -14,15 +16,9 @@ import java.util.Locale;
 public class DateService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
-    public static long dateStringToEpochMilli(Context ctx, String dateString) {
-        try {
-            Date date = sdf.parse(dateString);
-            return date != null ? date.getTime() : 0L;
-        } catch (Exception e) {
-            Toast.makeText(ctx, "An error occurred while parsing the date. Please try again.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        return 0L;
+    public static long dateStringToEpochMilli(Context ctx, String dateString) throws ParseException {
+        Date date = sdf.parse(dateString);
+        return date != null ? date.getTime() : 0L;
     }
 
     public static String EpochMilliToDateString(long epoch, FormatStyle formatStyle) {

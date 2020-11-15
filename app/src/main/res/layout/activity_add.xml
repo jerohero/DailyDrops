@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorLocal"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".AddActivity">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="625dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_top_bar">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="30dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_title"
@@ -62,36 +70,34 @@
                 android:id="@+id/til_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Date">
+                android:hint="@string/DropDate">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_date"
-                    android:enabled="true"
-                    android:textIsSelectable="true"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    />
+                    android:enabled="true"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:textIsSelectable="true"
+                    app:errorEnabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/btn_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="save" />
-
-            <Button
-                android:id="@+id/btn_add_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="add image" />
+            <ImageButton
+                android:id="@+id/ib_add_image"
+                android:layout_width="47dp"
+                android:layout_height="44dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/roundcorner"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/addimage" />
 
             <ImageView
                 android:id="@+id/iv_image"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
                 android:adjustViewBounds="true"
                 android:maxWidth="500dp"
                 android:scaleType="fitXY"
@@ -100,4 +106,62 @@
         </LinearLayout>
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/ic_launcher_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_back_btn"
+            android:layout_width="58dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            app:srcCompat="@drawable/arrow" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_add_drop"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/roundcorner"
+        android:clickable="true"
+        android:elevation="6dp"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="30dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/floppydisk" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:fontFamily="@font/roboto_medium"
+            android:text="ADD DROP"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</RelativeLayout>

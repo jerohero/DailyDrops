@@ -11,10 +11,13 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
@@ -22,15 +25,17 @@ import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class AddActivity extends AppCompatActivity {
-    Button btn_add, btn_add_image;
+    LinearLayout ll_add_drop;
     TextInputLayout til_title, til_note, til_date;
+    ImageButton ib_add_image;
     EditText et_date;
-    ImageView iv_image;
+    ImageView iv_image, iv_back_btn;
 
     final Calendar dateCalendar = Calendar.getInstance();
 
@@ -51,7 +56,7 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        btn_add = findViewById(R.id.btn_save);
+        ll_add_drop = findViewById(R.id.ll_add_drop);
         til_title = findViewById(R.id.til_title);
         til_note = findViewById(R.id.et_note);
 
@@ -60,6 +65,7 @@ public class AddActivity extends AppCompatActivity {
         initializeDatePicker();
         initializeImage();
         initializeAddBtn();
+        initializeBackBtn();
     }
 
     private void initializeDatePicker() {
@@ -81,9 +87,9 @@ public class AddActivity extends AppCompatActivity {
 
     private void initializeImage() {
         iv_image = findViewById(R.id.iv_image);
-        btn_add_image = findViewById(R.id.btn_add_image);
+        ib_add_image = findViewById(R.id.ib_add_image);
 
-        btn_add_image.setOnClickListener(v -> {
+        ib_add_image.setOnClickListener(v -> {
             showImageOptionDialog();
         });
     }
@@ -148,7 +154,7 @@ public class AddActivity extends AppCompatActivity {
     }
 
     private void initializeAddBtn() {
-        btn_add.setOnClickListener(v -> {
+        ll_add_drop.setOnClickListener(v -> {
             // Handle title
             String title = "";
             EditText et_title = til_title.getEditText();
@@ -174,8 +180,17 @@ public class AddActivity extends AppCompatActivity {
                 til_note.setError(getString(R.string.errorNoteCharacterLimit));
                 return;
             }
+            if (til_note.getError() != null) til_note.setError(null);
 
-
+            // Handle date
+            long date = 0L;
+            try {
+                DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString());
+            } catch (ParseException e) {
+                til_date.setError(getString(R.string.errorDateEmpty));
+                return;
+            }
+            if (til_date.getError() != null) til_date.setError(null);
 
             // Store drop
             SQLiteDropModel drop;
@@ -183,28 +198,31 @@ public class AddActivity extends AppCompatActivity {
             if (selectedImageBitmap != null) {
                 hasImage = true;
             }
-            try {
-                drop = new SQLiteDropModel(
-                        -1, title, note,
-                        DateService.dateStringToEpochMilli(AddActivity.this, til_date.getEditText().getText().toString()), hasImage);
 
-                Toast.makeText(AddActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
-            }
-            catch (Exception e) {
-                Toast.makeText(AddActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
-                drop = new SQLiteDropModel(-1, "error", "error", 0L, false);
-            }
+            drop = new SQLiteDropModel(-1, title, note, date, hasImage);
 
             SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
 
             boolean success = mSQLiteDataBaseHelper.addDrop(drop);
 
-            if (!success) { return; }
+            if (!success) {
+                Toast.makeText(AddActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             if (hasImage) {
                 int lastId = mSQLiteDataBaseHelper.getLastInsertedDropId();
                 ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
             }
+        });
+    }
+
+    private void initializeBackBtn() {
+        iv_back_btn = findViewById(R.id.iv_back_btn);
+
+        iv_back_btn.setOnClickListener(v -> {
+            Intent i = new Intent(this, MainActivity.class);
+            this.startActivity(i);
         });
     }
 }

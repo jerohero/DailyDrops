@@ -19,6 +19,7 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -164,7 +165,11 @@ public class EditActivity extends AppCompatActivity {
         btn_save.setOnClickListener(v -> {
             drop.setTitle(et_title.getText().toString());
             drop.setNote(et_note.getText().toString());
-            drop.setDate(DateService.dateStringToEpochMilli(EditActivity.this, et_date.getText().toString()));
+            try {
+                drop.setDate(DateService.dateStringToEpochMilli(EditActivity.this, et_date.getText().toString()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             if (selectedImageBitmap != null && drop.getImage() == null) {
                 drop.setImage(drop.getId());
