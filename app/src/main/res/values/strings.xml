@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Daily Drops</string>
-    <string name="DropTitle">Title*</string>
+    <string name="DropTitle">Title *</string>
     <string name="DropNote">Note</string>
-    <string name="DropDate">Date*</string>
+    <string name="DropDate">Date *</string>
     <string name="ViewAll">View all</string>
     <string name="Add">Add</string>
     <string name="Save">Save</string>
@@ -17,6 +17,7 @@
     <string name="errorTitleEmpty">Title can not be empty</string>
     <string name="errorNoteCharacterLimit">Note exceeds maximum character limit</string>
     <string name="errorDateEmpty">Date can not be empty</string>
+    <string name="errorInvalidDate">Date already passed</string>
     <string name="addDrop">ADD DROP</string>
     <string name="no_image_selected">No image selected..</string>
 

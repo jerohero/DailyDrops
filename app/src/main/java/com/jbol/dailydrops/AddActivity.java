@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import com.jbol.dailydrops.services.ImageService;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -62,7 +62,7 @@ public class AddActivity extends AppCompatActivity {
 
         ll_add_drop = findViewById(R.id.ll_add_drop);
         til_title = findViewById(R.id.til_title);
-        til_note = findViewById(R.id.et_note);
+        til_note = findViewById(R.id.til_note);
 
         sqldbHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
 
@@ -208,6 +208,11 @@ public class AddActivity extends AppCompatActivity {
                 til_date.setError(getString(R.string.errorDateEmpty));
                 return;
             }
+            long now = Instant.now().getEpochSecond() * 1000L;
+            if (date < now) {
+                til_date.setError(getString(R.string.errorInvalidDate));
+                return;
+            }
             if (til_date.getError() != null) til_date.setError(null);
 
             // Store drop
@@ -222,7 +227,6 @@ public class AddActivity extends AppCompatActivity {
             SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
 
             boolean success = mSQLiteDataBaseHelper.addDrop(drop);
-
             if (!success) {
                 Toast.makeText(AddActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
                 return;

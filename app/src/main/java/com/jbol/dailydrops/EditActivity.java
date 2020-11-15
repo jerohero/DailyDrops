@@ -56,7 +56,7 @@ public class EditActivity extends AppCompatActivity {
 
         btn_save = findViewById(R.id.btn_save);
         et_title = findViewById(R.id.et_title);
-        et_note = findViewById(R.id.et_note);
+        et_note = findViewById(R.id.til_note);
 
         sqldbHelper = SQLiteDataBaseHelper.getHelper(EditActivity.this);
 

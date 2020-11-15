@@ -30,66 +30,77 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingTop="30dp">
+            android:paddingTop="15dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
                 android:ems="10"
                 android:hint="@string/DropTitle"
                 app:counterEnabled="true"
                 app:counterMaxLength="50"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                app:hintTextAppearance="@style/TextInputLayoutHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:backgroundTintMode="src_in"
+                    android:fontFamily="@font/roboto"
                     android:inputType="textNoSuggestions|text"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/et_note"
+                android:id="@+id/til_note"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
                 android:ems="10"
-                android:gravity="start"
                 android:hint="@string/DropNote"
                 app:counterEnabled="true"
-                app:counterMaxLength="1000"
-                app:errorEnabled="true">
+                app:counterMaxLength="500"
+                app:errorEnabled="true"
+                app:hintTextAppearance="@style/TextInputLayoutHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine|textNoSuggestions|text" />
+                    android:backgroundTint="@color/colorPrimary"
+                    android:backgroundTintMode="src_in"
+                    android:fontFamily="@font/roboto"
+                    android:inputType="textMultiLine|textNoSuggestions|text"
+                    android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:ems="10"
                 android:hint="@string/DropDate"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:ems="10">
+                app:hintTextAppearance="@style/TextInputLayoutHint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:backgroundTintMode="src_in"
                     android:enabled="true"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
+                    android:fontFamily="@font/roboto"
                     android:textIsSelectable="true"
+                    android:textSize="20sp"
                     app:errorEnabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -139,6 +150,7 @@
                         android:id="@+id/tv_no_image"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="160dp"
                         android:text="@string/no_image_selected"
                         android:textAlignment="center"
                         android:textSize="18sp" />
@@ -171,6 +183,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center_vertical"
+            android:text="New drop"
+            android:textColor="@color/colorPink"
+            android:textSize="26sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.516" />
 
         <ImageView
             android:id="@+id/iv_back_btn"
