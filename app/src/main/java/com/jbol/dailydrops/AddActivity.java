@@ -9,16 +9,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.widget.Button;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import com.google.android.material.textfield.TextInputLayout;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.SQLiteDropModel;
@@ -31,11 +33,13 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class AddActivity extends AppCompatActivity {
-    LinearLayout ll_add_drop;
-    TextInputLayout til_title, til_note, til_date;
-    ImageButton ib_add_image;
-    EditText et_date;
-    ImageView iv_image, iv_back_btn;
+    private LinearLayout ll_add_drop;
+    private TextInputLayout til_title, til_note, til_date;
+    private ImageButton ib_add_image, ib_remove_image;
+    private EditText et_date;
+    private ImageView iv_image, iv_back_btn;
+    private TextView tv_no_image;
+
 
     final Calendar dateCalendar = Calendar.getInstance();
 
@@ -88,10 +92,24 @@ public class AddActivity extends AppCompatActivity {
     private void initializeImage() {
         iv_image = findViewById(R.id.iv_image);
         ib_add_image = findViewById(R.id.ib_add_image);
+        ib_remove_image = findViewById(R.id.ib_remove_image);
+        tv_no_image = findViewById(R.id.tv_no_image);
 
-        ib_add_image.setOnClickListener(v -> {
-            showImageOptionDialog();
-        });
+        ib_remove_image.setVisibility(View.GONE);
+        iv_image.setVisibility(View.GONE);
+
+        ib_add_image.setOnClickListener(v -> showImageOptionDialog());
+        ib_remove_image.setOnClickListener(v -> removeImage());
+    }
+
+    private void removeImage() {
+        selectedImageBitmap = null;
+        tv_no_image.setVisibility(View.VISIBLE);
+        iv_image.setVisibility(View.GONE);
+        ib_remove_image.setVisibility(View.GONE);
+        // Set top margin of button container back to 70dp
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) findViewById(R.id.ll_image_btn_container).getLayoutParams();
+        params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics()); // Convert 70dp to px
     }
 
     private void showImageOptionDialog(){
@@ -128,9 +146,8 @@ public class AddActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //Check if the intent was to pick image, was successful and an image was picked
+        // Handle gallery request
         if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
-            //Get selected image uri from phone gallery
             Uri selectedImage = data.getData();
 
             try {
@@ -138,18 +155,19 @@ public class AddActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            //Display selected photo in image view
-            iv_image.setImageBitmap(selectedImageBitmap);
         }
-        //Handle camera request
+        // Handle camera request
         else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
-
-            //We need a bitmap variable to store the photo
             selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+        }
+        iv_image.setImageBitmap(selectedImageBitmap);
 
-            //Display taken picture in image view
-            iv_image.setImageBitmap(selectedImageBitmap);
+        if (iv_image.getVisibility() != View.VISIBLE) {
+            tv_no_image.setVisibility(View.GONE);
+            iv_image.setVisibility(View.VISIBLE);
+            ib_remove_image.setVisibility(View.VISIBLE);
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) findViewById(R.id.ll_image_btn_container).getLayoutParams();
+            params.topMargin = 0;
         }
     }
 
@@ -183,9 +201,9 @@ public class AddActivity extends AppCompatActivity {
             if (til_note.getError() != null) til_note.setError(null);
 
             // Handle date
-            long date = 0L;
+            long date;
             try {
-                DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString());
+                date = DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString());
             } catch (ParseException e) {
                 til_date.setError(getString(R.string.errorDateEmpty));
                 return;

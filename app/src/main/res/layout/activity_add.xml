@@ -11,8 +11,15 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="625dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="50dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="-1dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +62,6 @@
                 android:ems="10"
                 android:gravity="start"
                 android:hint="@string/DropNote"
-                android:minHeight="100dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="1000"
                 app:errorEnabled="true">
@@ -70,7 +76,11 @@
                 android:id="@+id/til_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/DropDate">
+                android:hint="@string/DropDate"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:ems="10">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_date"
@@ -83,25 +93,72 @@
                     app:errorEnabled="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <ImageButton
-                android:id="@+id/ib_add_image"
-                android:layout_width="47dp"
-                android:layout_height="44dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/roundcorner"
-                android:padding="12dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/addimage" />
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                app:cardBackgroundColor="@color/colorPink">
 
-            <ImageView
-                android:id="@+id/iv_image"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="100dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="500dp"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ic_launcher_foreground" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingTop="15dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_image_btn_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="70dp"
+                        android:layout_marginBottom="15dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/ib_add_image"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/roundcorner_red"
+                            android:padding="11dp"
+                            android:scaleType="centerInside"
+                            app:srcCompat="@drawable/addimage" />
+
+                        <ImageButton
+                            android:id="@+id/ib_remove_image"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/roundcorner_red"
+                            android:padding="11dp"
+                            android:scaleType="centerInside"
+                            app:srcCompat="@drawable/eraser" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_no_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_image_selected"
+                        android:textAlignment="center"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:adjustViewBounds="true"
+                        android:maxWidth="500dp"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingBottom="80dp"
+                        android:scaleType="fitXY"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/dailydrops" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
     </ScrollView>
@@ -136,9 +193,9 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/roundcorner"
+        android:background="@drawable/roundcorner_lightred"
         android:clickable="true"
-        android:elevation="6dp"
+        android:elevation="5dp"
         android:focusable="true"
         android:orientation="horizontal"
         android:paddingLeft="20dp"
@@ -159,7 +216,7 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="10dp"
             android:fontFamily="@font/roboto_medium"
-            android:text="ADD DROP"
+            android:text="@string/addDrop"
             android:textColor="#000000"
             android:textSize="20sp" />
     </LinearLayout>

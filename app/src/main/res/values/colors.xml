@@ -6,5 +6,6 @@
     <color name="colorOnline">#F8FFEA</color>
     <color name="colorLocal">#EAF5FF</color>
     <color name="colorLightRed">#FFB3B4</color>
+    <color name="colorPink">#FFECEA</color>
 
 </resources>

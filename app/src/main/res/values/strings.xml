@@ -17,5 +17,7 @@
     <string name="errorTitleEmpty">Title can not be empty</string>
     <string name="errorNoteCharacterLimit">Note exceeds maximum character limit</string>
     <string name="errorDateEmpty">Date can not be empty</string>
+    <string name="addDrop">ADD DROP</string>
+    <string name="no_image_selected">No image selected..</string>
 
 </resources>

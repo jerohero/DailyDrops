@@ -118,7 +118,7 @@
         android:layout_marginEnd="98dp"
         android:layout_marginBottom="377dp"
         android:fontFamily="@font/roboto"
-        android:text="No results found..."
+        android:text="No results found.."
         android:textAlignment="center"
         android:textColor="#FFB3B4"
         android:textSize="17sp" />

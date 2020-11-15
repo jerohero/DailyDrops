@@ -176,8 +176,8 @@ public class MainActivity extends AppCompatActivity {
 
         Iterator<Map.Entry<String, FirebaseDropModel>> it = dropList.getDrops().entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, FirebaseDropModel> pair = (Map.Entry<String, FirebaseDropModel>)it.next();
-            FirebaseDropModel drop = (FirebaseDropModel) pair.getValue();
+            Map.Entry<String, FirebaseDropModel> pair = it.next();
+            FirebaseDropModel drop = pair.getValue();
             drops.add(drop);
             it.remove();
         }
