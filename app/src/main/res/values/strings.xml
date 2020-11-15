@@ -19,6 +19,10 @@
     <string name="errorDateEmpty">Date can not be empty</string>
     <string name="errorInvalidDate">Date already passed</string>
     <string name="addDrop">ADD DROP</string>
+    <string name="saveDrop">SAVE DROP</string>
     <string name="no_image_selected">No image selected..</string>
+    <string name="newDrop">New drop</string>
+    <string name="editDrop">Edit drop</string>
+
 
 </resources>

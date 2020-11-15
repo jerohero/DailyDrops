@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         fab_add = findViewById(R.id.fab_add);
         fab_add.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, AddActivity.class);
+            Intent i = new Intent(MainActivity.this, AddUpdateActivity.class);
             startActivity(i);
         });
 

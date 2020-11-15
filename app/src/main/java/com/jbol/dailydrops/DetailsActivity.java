@@ -4,15 +4,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
@@ -118,7 +115,7 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         ib_edit.setOnClickListener(v -> {
-            Intent i = new Intent(DetailsActivity.this, EditActivity.class);
+            Intent i = new Intent(DetailsActivity.this, AddUpdateActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.putExtra("drop", drop);
             DetailsActivity.this.startActivity(i);

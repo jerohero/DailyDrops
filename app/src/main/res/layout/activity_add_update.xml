@@ -7,7 +7,7 @@
     android:background="@color/colorLocal"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".AddActivity">
+    tools:context=".AddUpdateActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -46,6 +46,7 @@
                 app:hintTextAppearance="@style/TextInputLayoutHint">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
@@ -53,29 +54,6 @@
                     android:fontFamily="@font/roboto"
                     android:inputType="textNoSuggestions|text"
                     android:maxLines="1"
-                    android:textSize="20sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_note"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:ems="10"
-                android:hint="@string/DropNote"
-                app:counterEnabled="true"
-                app:counterMaxLength="500"
-                app:errorEnabled="true"
-                app:hintTextAppearance="@style/TextInputLayoutHint">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:backgroundTintMode="src_in"
-                    android:fontFamily="@font/roboto"
-                    android:inputType="textMultiLine|textNoSuggestions|text"
                     android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,6 +80,31 @@
                     android:textIsSelectable="true"
                     android:textSize="20sp"
                     app:errorEnabled="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="12dp"
+                android:ems="10"
+                android:hint="@string/DropNote"
+                app:counterEnabled="true"
+                app:counterMaxLength="500"
+                app:errorEnabled="true"
+                app:hintTextAppearance="@style/TextInputLayoutHint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:backgroundTintMode="src_in"
+                    android:fontFamily="@font/roboto"
+                    android:inputType="textMultiLine|textNoSuggestions|text"
+                    android:textSize="20sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.cardview.widget.CardView
@@ -185,12 +188,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tv_activity_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
-            android:text="New drop"
+            android:text="@string/newDrop"
             android:textColor="@color/colorPink"
             android:textSize="26sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -215,7 +218,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
-        android:id="@+id/ll_add_drop"
+        android:id="@+id/ll_save_drop"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
@@ -238,7 +241,7 @@
             android:src="@drawable/floppydisk" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/tv_save_drop_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
