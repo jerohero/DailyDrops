@@ -13,4 +13,9 @@
         <item>Take picture with camera</item>
     </string-array>
     <string name="searchLabel">Search term: </string>
+    <string name="errorTitleCharacterLimit">Title exceeds maximum character limit</string>
+    <string name="errorTitleEmpty">Title can not be empty</string>
+    <string name="errorNoteCharacterLimit">Note exceeds maximum character limit</string>
+
+
 </resources>

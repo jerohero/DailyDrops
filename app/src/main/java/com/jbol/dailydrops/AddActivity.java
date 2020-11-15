@@ -8,12 +8,15 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.textfield.TextInputLayout;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
@@ -25,7 +28,8 @@ import java.util.Locale;
 
 public class AddActivity extends AppCompatActivity {
     Button btn_add, btn_add_image;
-    EditText et_note, et_title, et_date;
+    TextInputLayout til_title, til_note, til_date;
+    EditText et_date;
     ImageView iv_image;
 
     final Calendar dateCalendar = Calendar.getInstance();
@@ -48,8 +52,8 @@ public class AddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add);
 
         btn_add = findViewById(R.id.btn_save);
-        et_title = findViewById(R.id.et_title);
-        et_note = findViewById(R.id.et_note);
+        til_title = findViewById(R.id.til_title);
+        til_note = findViewById(R.id.et_note);
 
         sqldbHelper = SQLiteDataBaseHelper.getHelper(AddActivity.this);
 
@@ -59,6 +63,7 @@ public class AddActivity extends AppCompatActivity {
     }
 
     private void initializeDatePicker() {
+        til_date = findViewById(R.id.til_date);
         et_date = findViewById(R.id.et_date);
         DatePickerDialog.OnDateSetListener date = (view, year, month, dayOfMonth) -> {
             dateCalendar.set(Calendar.YEAR, year);
@@ -144,6 +149,35 @@ public class AddActivity extends AppCompatActivity {
 
     private void initializeAddBtn() {
         btn_add.setOnClickListener(v -> {
+            // Handle title
+            String title = "";
+            EditText et_title = til_title.getEditText();
+            if (et_title != null && !TextUtils.isEmpty(et_title.getText())) {
+                title = et_title.getText().toString();
+            }
+            if (title.isEmpty()) {
+                til_title.setError(getString(R.string.errorTitleEmpty));
+                return;
+            } else if (title.length() > til_title.getCounterMaxLength()) {
+                til_title.setError(getString(R.string.errorTitleCharacterLimit));
+                return;
+            }
+            if (til_title.getError() != null) til_title.setError(null);
+
+            // Handle note
+            String note = "";
+            EditText et_note = til_note.getEditText();
+            if (et_note != null && !TextUtils.isEmpty(et_note.getText())) {
+                note = et_note.getText().toString();
+            }
+            if (note.length() > til_note.getCounterMaxLength()) {
+                til_note.setError(getString(R.string.errorNoteCharacterLimit));
+                return;
+            }
+
+
+
+            // Store drop
             SQLiteDropModel drop;
             boolean hasImage = false;
             if (selectedImageBitmap != null) {
@@ -151,8 +185,8 @@ public class AddActivity extends AppCompatActivity {
             }
             try {
                 drop = new SQLiteDropModel(
-                        -1, et_title.getText().toString(), et_note.getText().toString(),
-                        DateService.dateStringToEpochMilli(AddActivity.this, et_date.getText().toString()), hasImage);
+                        -1, title, note,
+                        DateService.dateStringToEpochMilli(AddActivity.this, til_date.getEditText().getText().toString()), hasImage);
 
                 Toast.makeText(AddActivity.this, drop.toString(), Toast.LENGTH_SHORT).show();
             }

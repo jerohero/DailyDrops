@@ -30,6 +30,8 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -223,6 +225,9 @@ public class MainActivity extends AppCompatActivity {
 
         List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDrops();
 
+        long day = 86400L;
+        long now = Instant.now().getEpochSecond() * 1000L;
+
         if (showLocalDrops) {
             for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
                 if (
@@ -230,7 +235,11 @@ public class MainActivity extends AppCompatActivity {
                         sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
                         sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
-                    dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+                    if (sqLiteDropModel.getDate() <= now - (day * 5)) {
+                        sqldbHelper.deleteDrop(sqLiteDropModel.getId()); // Delete drop if it released over five days ago
+                    } else {
+                        dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+                    }
                 }
             }
         }
@@ -242,7 +251,9 @@ public class MainActivity extends AppCompatActivity {
                         firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
                         firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
-                    dropModelArrayList.add(new GlobalDropModel(firebaseDropModel));
+                    if (firebaseDropModel.getDate() > now - (day * 5)) {
+                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over five days ago
+                    }
                 }
             }
         }
