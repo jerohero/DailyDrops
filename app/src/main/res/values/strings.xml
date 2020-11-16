@@ -26,6 +26,7 @@
     <string name="dailyDrops">Daily Drops</string>
     <string name="drawerClose">Close drawer</string>
     <string name="drawerOpen">Open drawer</string>
+    <string name="myCollection">My Collection</string>
 
 
 </resources>

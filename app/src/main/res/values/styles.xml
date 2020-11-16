@@ -7,5 +7,8 @@
     <style name="TextInputLayoutHint" parent="TextAppearance.Design.Hint">
         <item name="android:textSize">16sp</item>
     </style>
+    <style name="NavigationView">
+        <item name="android:textColorSecondary">@color/colorPrimary</item>
+    </style>
 
 </resources>

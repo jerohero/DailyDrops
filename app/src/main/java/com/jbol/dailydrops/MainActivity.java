@@ -133,9 +133,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
-            case R.id.nav_notebooks_id:
-            case R.id.nav_contact_id:
-            case R.id.nav_credits_id:
+            case R.id.nav_bookmarks:
+            case R.id.nav_contact:
+            case R.id.nav_credits:
                 getSupportFragmentManager().beginTransaction().replace(R.id.rl_content, new ContactFragment())
                         .commit();
                 closeDrawer();

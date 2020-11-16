@@ -4,24 +4,23 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_notebooks_id"
-            android:title="My Collection"
+            android:id="@+id/nav_bookmarks"
+            android:title="@string/myCollection"
             android:icon="@drawable/ic_book_black_24dp"
             />
     </group>
 
-    <item android:title="Other">
+    <item
+        android:title="Other">
         <menu>
             <item
-                android:id="@+id/nav_credits_id"
+                android:id="@+id/nav_credits"
                 android:icon="@drawable/ic_send_black_24dp"
                 android:title="Credits" />
             <item
-                android:id="@+id/nav_contact_id"
+                android:id="@+id/nav_contact"
                 android:icon="@drawable/ic_email_black_24dp"
                 android:title="Contact" />
         </menu>
     </item>
-
-
 </menu>
