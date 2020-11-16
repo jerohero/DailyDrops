@@ -23,6 +23,9 @@
     <string name="no_image_selected">No image selected..</string>
     <string name="newDrop">New drop</string>
     <string name="editDrop">Edit drop</string>
+    <string name="dailyDrops">Daily Drops</string>
+    <string name="drawerClose">Close drawer</string>
+    <string name="drawerOpen">Open drawer</string>
 
 
 </resources>

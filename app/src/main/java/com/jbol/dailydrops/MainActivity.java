@@ -1,21 +1,28 @@
 package com.jbol.dailydrops;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,7 +37,6 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,13 +44,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+//TODO
+// Make add/edit activity a fragment
+// Bookmark system
+// Like system
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private SQLiteDataBaseHelper sqldbHelper;
 
     private RecyclerView recyclerView;
     private FloatingActionButton fab_add, fab_search;
     private ConstraintLayout cl_search_label;
+    private DrawerLayout dl_drawer_layout;
     private TextView tv_no_results;
+
     private DropAdapter adapter;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
@@ -93,6 +106,54 @@ public class MainActivity extends AppCompatActivity {
         });
 
         initializeSearch();
+        initializeDrawer();
+    }
+
+    private void initializeDrawer() {
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_id);
+        dl_drawer_layout = findViewById(R.id.dl_drawer_layout);
+        NavigationView nav_view = findViewById(R.id.nav_view);
+
+        nav_view.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle drawerToggle;
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            drawerToggle = new ActionBarDrawerToggle(this, dl_drawer_layout, toolbar, R.string.drawerOpen, R.string.drawerClose);
+            dl_drawer_layout.addDrawerListener(drawerToggle);
+            drawerToggle.setDrawerIndicatorEnabled(true);
+            drawerToggle.syncState();
+        }
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.nav_notebooks_id:
+            case R.id.nav_contact_id:
+            case R.id.nav_credits_id:
+                getSupportFragmentManager().beginTransaction().replace(R.id.rl_content, new ContactFragment())
+                        .commit();
+                closeDrawer();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Checks if the navigation drawer is open -- If so, close it
+        if (dl_drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            dl_drawer_layout.closeDrawer(GravityCompat.START);
+        }
+        // If drawer is already close -- Do not override original functionality
+        else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -268,6 +329,12 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(dropModelArrayList);
 
         adapter.notifyDataSetChanged();
+    }
+
+    private void closeDrawer(){
+        if (dl_drawer_layout.isDrawerOpen(GravityCompat.START)){
+            dl_drawer_layout.closeDrawer(GravityCompat.START);
+        }
     }
 
 }
