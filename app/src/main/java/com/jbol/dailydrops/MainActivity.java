@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         while (it.hasNext()) {
             Map.Entry<String, FirebaseDropModel> pair = it.next();
             FirebaseDropModel drop = pair.getValue();
+            drop.setId(pair.getKey());
             drops.add(drop);
             it.remove();
         }

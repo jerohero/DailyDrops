@@ -3,6 +3,7 @@ package com.jbol.dailydrops;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -10,6 +11,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
@@ -18,12 +26,16 @@ import com.jbol.dailydrops.services.AsyncURLService;
 import java.time.format.FormatStyle;
 
 public class DetailsActivity extends AppCompatActivity {
-    private TextView tv_title, tv_date, tv_note;
-    private ImageButton ib_delete, ib_edit;
+    private TextView tv_title, tv_date, tv_note, tv_likes;
+    private ImageButton ib_delete, ib_edit, ib_like;
     private ImageView iv_image, iv_back_btn;
     private RelativeLayout cl_root;
 
     private GlobalDropModel drop;
+
+    long likes;
+
+    private DatabaseReference fbLikesRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,16 +59,62 @@ public class DetailsActivity extends AppCompatActivity {
         tv_note = findViewById(R.id.tv_note);
         tv_note.setText(drop.getNote());
 
+        tv_likes = findViewById(R.id.tv_likes);
+        ib_like = findViewById(R.id.ib_like);
+        iv_image = findViewById(R.id.iv_image);
+        tv_date = findViewById(R.id.tv_date);
+        ib_delete = findViewById(R.id.ib_delete);
+        iv_back_btn = findViewById(R.id.iv_back_btn);
+        ib_edit = findViewById(R.id.ib_edit);
+
+        initializeFirebase();
         initializeBackBtn();
         initializeDate();
         initializeDeleteBtn();
         initializeEditBtn();
         initializeImage();
+        initializeLikes();
+    }
+
+    private void initializeFirebase() {
+        if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) return;
+
+        fbLikesRef = FirebaseDatabase.getInstance().getReference().child("drops").child(drop.getId()).child("likes");
+
+        // Read from the database
+        fbLikesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) { return; }
+                likes = (long) dataSnapshot.getValue();
+                updateLikes(likes);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w("dev", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void updateLikes(long likes) {
+        tv_likes.setText(String.valueOf(likes));
+    }
+
+    private void initializeLikes() {
+        if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) {
+            ib_like.setVisibility(View.GONE);
+            tv_likes.setVisibility(View.GONE);
+            return;
+        }
+        ib_like.setOnClickListener(v -> {
+            fbLikesRef.setValue(likes + 1);
+            ib_like.setBackground(ContextCompat.getDrawable(this, R.drawable.roundcorner_grey));
+            ib_like.setOnClickListener(null);
+        });
     }
 
     private void initializeImage() {
-        iv_image = findViewById(R.id.iv_image);
-
         if (drop.getImage() == null) {
             iv_image.setVisibility(View.INVISIBLE);
             iv_image.setMaxHeight(100);
@@ -72,15 +130,11 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void initializeDate() {
-        tv_date = findViewById(R.id.tv_date);
-
         tv_date.setText(DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.FULL));
     }
 
     // Can only be executed if it's a local drop
     private void initializeDeleteBtn() {
-        ib_delete = findViewById(R.id.ib_delete);
-
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
             ib_delete.setVisibility(View.GONE);
             return;
@@ -99,16 +153,11 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void initializeBackBtn() {
-        iv_back_btn = findViewById(R.id.iv_back_btn);
-
-        iv_back_btn.setOnClickListener(v -> {
-            super.onBackPressed();
-        });
+        iv_back_btn.setOnClickListener(v ->
+                super.onBackPressed());
     }
 
     private void initializeEditBtn() {
-        ib_edit = findViewById(R.id.ib_edit);
-
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
             ib_edit.setVisibility(View.GONE);
             return;
