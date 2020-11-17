@@ -45,7 +45,10 @@ public class DropHolder extends RecyclerView.ViewHolder {
         adjustDateStyling();
         initializeLikes();
         initializeImage();
+        initializeColor();
+    }
 
+    private void initializeColor() {
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
             cv_card.setCardBackgroundColor(Color.parseColor("#f8ffea"));
         } else {
@@ -59,6 +62,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
             cl_likes_container.setVisibility(View.GONE);
             return;
         }
+        if (cl_likes_container.getVisibility() != View.VISIBLE) cl_likes_container.setVisibility(View.VISIBLE);
         tv_likes.setText(String.valueOf(drop.getLikes()));
     }
 

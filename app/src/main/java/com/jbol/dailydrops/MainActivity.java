@@ -388,7 +388,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Collections.sort(dropModelArrayList, Collections.reverseOrder(likesOrder));
         }
 
-
         adapter.notifyDataSetChanged();
     }
 
