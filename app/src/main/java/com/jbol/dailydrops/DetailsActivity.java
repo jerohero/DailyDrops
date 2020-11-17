@@ -115,10 +115,19 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         ib_edit.setOnClickListener(v -> {
-            Intent i = new Intent(DetailsActivity.this, AddUpdateActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.putExtra("drop", drop);
-            DetailsActivity.this.startActivity(i);
+//            Intent i = new Intent(DetailsActivity.this, AddUpdateActivity.class);
+//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            i.putExtra("drop", drop);
+//            DetailsActivity.this.startActivity(i);
+
+            AddUpdateActivity addUpdateFragment = new AddUpdateActivity();
+            AddUpdateActivity.newInstance(drop);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.cl_root, addUpdateFragment)
+                    .addToBackStack(DetailsActivity.class.getSimpleName())
+                    .commit();
+//            getSupportFragmentManager().beginTransaction().replace(R.id.add, new ContactFragment())
+//                    .commit();
         });
     }
 }

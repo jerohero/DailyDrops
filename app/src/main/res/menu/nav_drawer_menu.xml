@@ -4,23 +4,30 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_drops"
+            android:title="@string/drops"
+            android:icon="@drawable/ic_book_black_24dp" />
+        <item
             android:id="@+id/nav_bookmarks"
             android:title="@string/myCollection"
-            android:icon="@drawable/ic_book_black_24dp"
-            />
+            android:icon="@drawable/ic_book_black_24dp" />
+        <item
+            android:id="@+id/nav_hot"
+            android:title="@string/hot"
+            android:icon="@drawable/ic_book_black_24dp" />
     </group>
 
     <item
-        android:title="Other">
+        android:title="@string/other">
         <menu>
             <item
                 android:id="@+id/nav_credits"
                 android:icon="@drawable/ic_send_black_24dp"
-                android:title="Credits" />
+                android:title="@string/credits" />
             <item
                 android:id="@+id/nav_contact"
                 android:icon="@drawable/ic_email_black_24dp"
-                android:title="Contact" />
+                android:title="@string/contact" />
         </menu>
     </item>
 </menu>

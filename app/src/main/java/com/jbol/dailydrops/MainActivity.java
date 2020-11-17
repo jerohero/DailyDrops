@@ -133,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
+            case R.id.nav_drops:
+                break;
             case R.id.nav_bookmarks:
             case R.id.nav_contact:
             case R.id.nav_credits:
@@ -293,8 +295,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
                 if (
                         searchTerm.isEmpty() ||
-                        sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                        sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                                sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
                     if (sqLiteDropModel.getDate() <= now - (day * 5)) {
                         sqldbHelper.deleteDrop(sqLiteDropModel.getId()); // Delete drop if it released over five days ago
@@ -309,8 +311,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
                 if (
                         searchTerm.isEmpty() ||
-                        firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                        firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                                firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
                     if (firebaseDropModel.getDate() > now - (day * 5)) {
                         dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over five days ago

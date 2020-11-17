@@ -1,5 +1,6 @@
 package com.jbol.dailydrops;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -17,8 +19,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputLayout;
 import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
@@ -32,7 +38,9 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class AddUpdateActivity extends AppCompatActivity {
+import static android.app.Activity.RESULT_OK;
+
+public class AddUpdateActivity extends Fragment {
     private LinearLayout ll_save_drop;
     private TextInputLayout til_title, til_note, til_date;
     private ImageButton ib_add_image, ib_remove_image;
@@ -58,26 +66,47 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private boolean editMode;
 
+    private View v;
+    private Activity a;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_update);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_add_update, container, false);
+    }
 
-        Intent intent = getIntent();
-        drop = (GlobalDropModel) intent.getSerializableExtra("drop");
+    public static AddUpdateActivity newInstance(GlobalDropModel drop) {
+        Bundle args = new Bundle();
+        args.putSerializable("drop", drop);
+        
+        AddUpdateActivity fragment = new AddUpdateActivity();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        setContentView(R.layout.activity_add_update);
+        
+        v = getView();
+        a = getActivity();
+
+        Bundle args = getArguments();
+        if (args != null) {
+            drop = (GlobalDropModel) args.getSerializable("drop");
+        }
 
         editMode = drop != null; // Decides whether user is editing or adding a drop
 
-        tv_activity_title = findViewById(R.id.tv_activity_title);
-        ll_save_drop = findViewById(R.id.ll_save_drop);
-        tv_save_drop_label = findViewById(R.id.tv_save_drop_label);
-        til_title = findViewById(R.id.til_title);
-        et_title = findViewById(R.id.et_title);
-        til_note = findViewById(R.id.til_note);
-        et_note = findViewById(R.id.et_note);
+        tv_activity_title = v.findViewById(R.id.tv_activity_title);
+        ll_save_drop = v.findViewById(R.id.ll_save_drop);
+        tv_save_drop_label = v.findViewById(R.id.tv_save_drop_label);
+        til_title = v.findViewById(R.id.til_title);
+        et_title = v.findViewById(R.id.et_title);
+        til_note = v.findViewById(R.id.til_note);
+        et_note = v.findViewById(R.id.et_note);
 
-        sqldbHelper = SQLiteDataBaseHelper.getHelper(AddUpdateActivity.this);
+        sqldbHelper = SQLiteDataBaseHelper.getHelper(a);
 
         initializeDatePicker();
         initializeImage();
@@ -92,6 +121,39 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
     }
 
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_add_update);
+//
+//        Intent intent = getIntent();
+//        drop = (GlobalDropModel) intent.getSerializableExtra("drop");
+//
+//        editMode = drop != null; // Decides whether user is editing or adding a drop
+//
+//        tv_activity_title = v.findViewById(R.id.tv_activity_title);
+//        ll_save_drop = v.findViewById(R.id.ll_save_drop);
+//        tv_save_drop_label = v.findViewById(R.id.tv_save_drop_label);
+//        til_title = v.findViewById(R.id.til_title);
+//        et_title = v.findViewById(R.id.et_title);
+//        til_note = v.findViewById(R.id.til_note);
+//        et_note = v.findViewById(R.id.et_note);
+//
+//        sqldbHelper = SQLiteDataBaseHelper.getHelper(AddUpdateActivity.this);
+//
+//        initializeDatePicker();
+//        initializeImage();
+//        initializeBackBtn();
+//
+//        if (editMode) {
+//            initializeValues();
+//            initializeSaveEditBtn();
+//            tv_activity_title.setText(R.string.editDrop);
+//        } else {
+//            initializeAddDropBtn();
+//        }
+//    }
+
     private void initializeValues() {
         et_title.setText(drop.getTitle());
         et_note.setText(drop.getNote());
@@ -99,8 +161,8 @@ public class AddUpdateActivity extends AppCompatActivity {
     }
 
     private void initializeDatePicker() {
-        til_date = findViewById(R.id.til_date);
-        et_date = findViewById(R.id.et_date);
+        til_date = v.findViewById(R.id.til_date);
+        et_date = v.findViewById(R.id.et_date);
         DatePickerDialog.OnDateSetListener date = (view, year, month, dayOfMonth) -> {
             dateCalendar.set(Calendar.YEAR, year);
             dateCalendar.set(Calendar.MONTH, month);
@@ -110,16 +172,16 @@ public class AddUpdateActivity extends AppCompatActivity {
         };
 
         et_date.setOnClickListener(v ->
-                new DatePickerDialog(AddUpdateActivity.this, date, dateCalendar.get(Calendar.YEAR),
+                new DatePickerDialog(a, date, dateCalendar.get(Calendar.YEAR),
                         dateCalendar.get(Calendar.MONTH), dateCalendar.get(Calendar.DAY_OF_MONTH))
                         .show());
     }
 
     private void initializeImage() {
-        iv_image = findViewById(R.id.iv_image);
-        ib_add_image = findViewById(R.id.ib_add_image);
-        ib_remove_image = findViewById(R.id.ib_remove_image);
-        tv_no_image = findViewById(R.id.tv_no_image);
+        iv_image = v.findViewById(R.id.iv_image);
+        ib_add_image = v.findViewById(R.id.ib_add_image);
+        ib_remove_image = v.findViewById(R.id.ib_remove_image);
+        tv_no_image = v.findViewById(R.id.tv_no_image);
 
         ib_remove_image.setVisibility(View.GONE);
         iv_image.setVisibility(View.GONE);
@@ -131,7 +193,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             if (drop.getImage() == null) {
                 return;
             }
-            Bitmap image = ImageService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
+            Bitmap image = ImageService.loadImageFromStorage(a, Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
             showImageElements();
         }
@@ -143,13 +205,13 @@ public class AddUpdateActivity extends AppCompatActivity {
         iv_image.setVisibility(View.GONE);
         ib_remove_image.setVisibility(View.GONE);
         // Set top margin of button container back to 70dp
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) findViewById(R.id.ll_image_btn_container).getLayoutParams();
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.findViewById(R.id.ll_image_btn_container).getLayoutParams();
         params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics()); // Convert 70dp to px
     }
 
     private void showImageOptionDialog(){
         final String[] options = getResources().getStringArray(R.array.image_options);
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddUpdateActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setTitle(R.string.dialog_image_options)
                 .setItems(options, (dialog, which) -> {
                     switch (which){
@@ -177,36 +239,36 @@ public class AddUpdateActivity extends AppCompatActivity {
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Handle gallery request
-        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
-            Uri selectedImage = data.getData();
-
-            try {
-                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        // Handle camera request
-        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
-            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
-        }
-        iv_image.setImageBitmap(selectedImageBitmap);
-
-        if (iv_image.getVisibility() != View.VISIBLE) {
-            showImageElements();
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // Handle gallery request
+//        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
+//            Uri selectedImage = data.getData();
+//
+//            try {
+//                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(a.getContentResolver(), selectedImage));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        // Handle camera request
+//        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
+//            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+//        }
+//        iv_image.setImageBitmap(selectedImageBitmap);
+//
+//        if (iv_image.getVisibility() != View.VISIBLE) {
+//            showImageElements();
+//        }
+//    }
 
     private void showImageElements() {
         tv_no_image.setVisibility(View.GONE);
         iv_image.setVisibility(View.VISIBLE);
         ib_remove_image.setVisibility(View.VISIBLE);
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) findViewById(R.id.ll_image_btn_container).getLayoutParams();
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.findViewById(R.id.ll_image_btn_container).getLayoutParams();
         params.topMargin = 0;
     }
 
@@ -234,7 +296,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             // Handle date
             long date;
             try {
-                date = DateService.dateStringToEpochMilli(AddUpdateActivity.this, et_date.getText().toString());
+                date = DateService.dateStringToEpochMilli(a, et_date.getText().toString());
             } catch (ParseException e) {
                 til_date.setError(getString(R.string.errorDateEmpty));
                 return;
@@ -255,17 +317,17 @@ public class AddUpdateActivity extends AppCompatActivity {
 
             drop = new SQLiteDropModel(-1, title, note, date, hasImage);
 
-            SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddUpdateActivity.this);
+            SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(a);
 
             boolean success = mSQLiteDataBaseHelper.addDrop(drop);
             if (!success) {
-                Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
+                Toast.makeText(a, "Error creating drop", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (hasImage) {
                 int lastId = mSQLiteDataBaseHelper.getLastInsertedDropId();
-                ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
+                ImageService.saveImageToInternalStorage(a, selectedImageBitmap, lastId);
             }
 
             backToMain();
@@ -279,7 +341,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             drop.setTitle(et_title.getText().toString());
             drop.setNote(et_note.getText().toString());
             try {
-                drop.setDate(DateService.dateStringToEpochMilli(this, et_date.getText().toString()));
+                drop.setDate(DateService.dateStringToEpochMilli(a, et_date.getText().toString()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -292,11 +354,11 @@ public class AddUpdateActivity extends AppCompatActivity {
 
             boolean success = false;
             try {
-                success = SQLiteDataBaseHelper.getHelper(this).updateDrop(drop);
-                Toast.makeText(this, drop.toString(), Toast.LENGTH_SHORT).show();
+                success = SQLiteDataBaseHelper.getHelper(a).updateDrop(drop);
+                Toast.makeText(a, drop.toString(), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Error updating drop", Toast.LENGTH_SHORT).show();
+                Toast.makeText(a, "Error updating drop", Toast.LENGTH_SHORT).show();
             }
 
             if (!success) {
@@ -305,7 +367,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             }
 
             if (drop.getImage() != null) {
-                ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
+                ImageService.saveImageToInternalStorage(a, selectedImageBitmap, Integer.parseInt(drop.getId()));
             }
 
             backToDetails();
@@ -313,23 +375,23 @@ public class AddUpdateActivity extends AppCompatActivity {
     }
 
     private void initializeBackBtn() {
-        iv_back_btn = findViewById(R.id.iv_back_btn);
+        iv_back_btn = v.findViewById(R.id.iv_back_btn);
 
         iv_back_btn.setOnClickListener(v -> {
-            Intent i = new Intent(this, MainActivity.class);
+            Intent i = new Intent(a, MainActivity.class);
             this.startActivity(i);
         });
     }
 
     private void backToDetails() {
-        Intent i = new Intent(this, DetailsActivity.class);
+        Intent i = new Intent(a, DetailsActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         i.putExtra("drop", drop);
         MainActivity.getContext().startActivity(i);
     }
 
     private void backToMain() {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(a, MainActivity.class);
         MainActivity.getContext().startActivity(i);
     }
 }
