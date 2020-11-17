@@ -316,8 +316,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         iv_back_btn = findViewById(R.id.iv_back_btn);
 
         iv_back_btn.setOnClickListener(v -> {
-            Intent i = new Intent(this, MainActivity.class);
-            this.startActivity(i);
+            super.onBackPressed();
         });
     }
 

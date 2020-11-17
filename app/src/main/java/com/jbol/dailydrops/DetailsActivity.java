@@ -102,8 +102,7 @@ public class DetailsActivity extends AppCompatActivity {
         iv_back_btn = findViewById(R.id.iv_back_btn);
 
         iv_back_btn.setOnClickListener(v -> {
-            Intent i = new Intent(DetailsActivity.this, MainActivity.class);
-            DetailsActivity.this.startActivity(i);
+            super.onBackPressed();
         });
     }
 

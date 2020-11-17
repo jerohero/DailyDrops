@@ -26,7 +26,12 @@
     <string name="dailyDrops">Daily Drops</string>
     <string name="drawerClose">Close drawer</string>
     <string name="drawerOpen">Open drawer</string>
+    <string name="drops">Drops</string>
     <string name="myCollection">My Collection</string>
+    <string name="hot">Hot</string>
+    <string name="other">Other</string>
+    <string name="credits">Credits</string>
+    <string name="contact">Contact</string>
 
 
 </resources>
