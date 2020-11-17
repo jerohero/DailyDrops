@@ -50,7 +50,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
-    SQLiteDataBaseHelper sqldbHelper;
+    private SQLiteDataBaseHelper sqldbHelper;
 
     private Bitmap selectedImageBitmap;
 
@@ -257,14 +257,14 @@ public class AddUpdateActivity extends AppCompatActivity {
 
             SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddUpdateActivity.this);
 
-            boolean success = mSQLiteDataBaseHelper.addDrop(drop);
+            boolean success = mSQLiteDataBaseHelper.addDropToLocal(drop);
             if (!success) {
                 Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (hasImage) {
-                int lastId = mSQLiteDataBaseHelper.getLastInsertedDropId();
+                int lastId = mSQLiteDataBaseHelper.getLastInsertedDropIdFromLocal();
                 ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
             }
 
@@ -292,7 +292,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
             boolean success = false;
             try {
-                success = SQLiteDataBaseHelper.getHelper(this).updateDrop(drop);
+                success = SQLiteDataBaseHelper.getHelper(this).updateDropFromLocal(drop);
                 Toast.makeText(this, drop.toString(), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -315,9 +315,8 @@ public class AddUpdateActivity extends AppCompatActivity {
     private void initializeBackBtn() {
         iv_back_btn = findViewById(R.id.iv_back_btn);
 
-        iv_back_btn.setOnClickListener(v -> {
-            super.onBackPressed();
-        });
+        iv_back_btn.setOnClickListener(v ->
+                super.onBackPressed());
     }
 
     private void backToDetails() {

@@ -33,6 +33,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private GlobalDropModel drop;
 
+    private SQLiteDataBaseHelper sqldbHelper;
+
     long likes;
 
     private DatabaseReference fbLikesRef;
@@ -41,6 +43,8 @@ public class DetailsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        sqldbHelper = SQLiteDataBaseHelper.getHelper(DetailsActivity.this);
 
         Intent intent = getIntent();
         drop = (GlobalDropModel) intent.getSerializableExtra("drop");
@@ -107,11 +111,27 @@ public class DetailsActivity extends AppCompatActivity {
             tv_likes.setVisibility(View.GONE);
             return;
         }
+
+        boolean isLiked = sqldbHelper.dropIsLiked(drop.getId());
+
+        if (isLiked) {
+            disableLikeButton();
+            return;
+        }
         ib_like.setOnClickListener(v -> {
             fbLikesRef.setValue(likes + 1);
-            ib_like.setBackground(ContextCompat.getDrawable(this, R.drawable.roundcorner_grey));
-            ib_like.setOnClickListener(null);
+            boolean success = sqldbHelper.addDropToLikes(drop.getId());
+            if (!success) {
+                Toast.makeText(this, "Error occurred while liking drop. Please try again.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            disableLikeButton();
         });
+    }
+
+    private void disableLikeButton() {
+        ib_like.setBackground(ContextCompat.getDrawable(this, R.drawable.roundcorner_grey));
+        if (ib_like.hasOnClickListeners()) ib_like.setOnClickListener(null);
     }
 
     private void initializeImage() {
@@ -141,7 +161,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         ib_delete.setOnClickListener(v -> {
             SQLiteDataBaseHelper sqldbHelper = SQLiteDataBaseHelper.getHelper(DetailsActivity.this);
-            boolean success = sqldbHelper.deleteDrop(Integer.parseInt(drop.getId()));
+            boolean success = sqldbHelper.deleteDropFromLocal(Integer.parseInt(drop.getId()));
             if (!success) {
                 Toast.makeText(this, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
                 return;

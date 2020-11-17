@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void updateListData() {
         dropModelArrayList.clear();
 
-        List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDrops();
+        List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDropsFromLocal();
 
         long day = 86400L;
         long now = Instant.now().getEpochSecond() * 1000L;
@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
                     if (sqLiteDropModel.getDate() <= now - (day * 5)) {
-                        sqldbHelper.deleteDrop(sqLiteDropModel.getId()); // Delete drop if it released over five days ago
+                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over five days ago
                     } else {
                         dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
                     }

@@ -1,3 +1,7 @@
+CREATE TABLE user_likes (
+    id TEXT PRIMARY KEY
+);
+
 CREATE TABLE user_drops (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,

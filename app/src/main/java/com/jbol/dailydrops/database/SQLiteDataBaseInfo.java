@@ -2,11 +2,19 @@ package com.jbol.dailydrops.database;
 
 public class SQLiteDataBaseInfo {
 
-    public class DropTables {
+    public class LikesTable {
+        public static final String USER_LIKES_TABLE = "user_likes";
+    }
+
+    public class LikesColumn {
+        public static final String COLUMN_ID = "id";
+    }
+
+    public class DropsTable {
         public static final String USER_DROPS_TABLE = "user_drops";
     }
 
-    public class DropColumn {
+    public class DropsColumn {
         public static final String COLUMN_DROP_TITLE = "title";
         public static final String COLUMN_DROP_NOTE = "note";
         public static final String COLUMN_DROP_DATE = "date";
