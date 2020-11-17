@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toolbar;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -40,6 +42,7 @@ import com.jbol.dailydrops.views.DropClickListener;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout cl_search_label;
     private DrawerLayout dl_drawer_layout;
     private TextView tv_no_results;
+    private MaterialToolbar tb_toolbar;
 
     private DropAdapter adapter;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
@@ -73,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static boolean showServerDrops = true;
     private static boolean showLocalDrops = true;
 
+    private int listType;
+
+    public static final int defaultListType = 0;
+    public static final int hotListType = 1;
+    public static final int collectionListType = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instance = this;
 
         MainActivity.context = getApplicationContext();
+
+        Intent intent = getIntent();
+        listType = (int) intent.getIntExtra("listType", defaultListType);
+        initializeListType();
 
         initializeFirebase();
 
@@ -109,8 +123,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initializeDrawer();
     }
 
+    private void initializeListType() {
+        tb_toolbar = findViewById(R.id.tb_toolbar);
+        if (listType == hotListType) {
+            showServerDrops = true;
+            showLocalDrops = false;
+            tb_toolbar.setTitle("Hot drops");
+        } else if (listType == defaultListType) {
+            showServerDrops = true;
+            showLocalDrops = true;
+        } else if (listType == collectionListType) {
+            showServerDrops = true;
+            showLocalDrops = true;
+            tb_toolbar.setTitle("My Collection");
+        }
+    }
+
     private void initializeDrawer() {
-        MaterialToolbar toolbar = findViewById(R.id.toolbar_id);
+        MaterialToolbar toolbar = findViewById(R.id.tb_toolbar);
         dl_drawer_layout = findViewById(R.id.dl_drawer_layout);
         NavigationView nav_view = findViewById(R.id.nav_view);
 
@@ -132,8 +162,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Intent i;
         switch (menuItem.getItemId()){
+            case R.id.nav_drops:
+                i = new Intent(MainActivity.this, MainActivity.class);
+                i.putExtra("listType", defaultListType);
+                MainActivity.getContext().startActivity(i);
+                break;
             case R.id.nav_bookmarks:
+                i = new Intent(MainActivity.this, MainActivity.class);
+                i.putExtra("listType", collectionListType);
+                MainActivity.getContext().startActivity(i);
+                break;
+            case R.id.nav_hot:
+                i = new Intent(MainActivity.this, MainActivity.class);
+                i.putExtra("listType", hotListType);
+                MainActivity.getContext().startActivity(i);
+                break;
             case R.id.nav_contact:
             case R.id.nav_credits:
                 getSupportFragmentManager().beginTransaction().replace(R.id.rl_content, new ContactFragment())
@@ -189,6 +234,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Button searchBtn = view.findViewById(R.id.btn_search);
             CheckBox showServerCheck = view.findViewById(R.id.cb_show_server);
             CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
+
+            // If hotListType is active, only server drops are showed and this cannot be changed
+            if (listType == MainActivity.hotListType) {
+                showServerCheck.setChecked(true);
+                showLocalCheck.setChecked(false);
+                showServerCheck.setVisibility(View.GONE);
+                showLocalCheck.setVisibility(View.GONE);
+            }
 
             showServerCheck.setChecked(showServerDrops);
             showLocalCheck.setChecked(showLocalDrops);
@@ -327,7 +380,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tv_no_results.setVisibility(View.GONE);
         }
 
-        Collections.sort(dropModelArrayList);
+        if (listType == defaultListType || listType == collectionListType) {
+            Collections.sort(dropModelArrayList);
+        } else if (listType == hotListType) {
+            Comparator<GlobalDropModel> likesOrder =
+                    (o1, o2) -> (int) (o1.getLikes() - o2.getLikes());
+            Collections.sort(dropModelArrayList, Collections.reverseOrder(likesOrder));
+        }
+
 
         adapter.notifyDataSetChanged();
     }

@@ -12,6 +12,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
     private long date;
     private String image; // Drop's ID for offline (ex. 31 + .jpg), image link for online
     private String type;
+    private long likes;
 
     public GlobalDropModel(Object inputDrop) {
         if (inputDrop instanceof SQLiteDropModel) {
@@ -21,6 +22,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
             this.note = sqLiteDropModel.getNote();
             this.date = sqLiteDropModel.getDate();
             this.image = sqLiteDropModel.hasImage() ? String.valueOf(sqLiteDropModel.getId()) : null;
+            this.likes = 0;
             this.type = OFFLINE_TYPE;
         }
         else if (inputDrop instanceof FirebaseDropModel) {
@@ -30,6 +32,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
             this.note = firebaseDropModel.getNote();
             this.date = firebaseDropModel.getDate();
             this.image = firebaseDropModel.getImagePath();
+            this.likes = firebaseDropModel.getLikes();
             this.type = ONLINE_TYPE;
         }
     }
@@ -81,5 +84,13 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes;
     }
 }

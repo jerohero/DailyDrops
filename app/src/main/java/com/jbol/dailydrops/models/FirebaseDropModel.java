@@ -8,17 +8,19 @@ public class FirebaseDropModel {
     private String note;
     private long date;
     private String imagePath;
+    private long likes;
 
     // default constructor
     public FirebaseDropModel() {}
 
     // constructor
-    public FirebaseDropModel(String id, String title, String note, long date, String imagePath) {
+    public FirebaseDropModel(String id, String title, String note, long date, String imagePath, long likes) {
         this.id = id;
         this.title = title;
         this.note = note;
         this.date = date;
         this.imagePath = imagePath;
+        this.likes = likes;
     }
 
     @Override
@@ -54,4 +56,11 @@ public class FirebaseDropModel {
         return imagePath;
     }
 
+    public long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes;
+    }
 }
