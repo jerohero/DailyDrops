@@ -42,7 +42,8 @@
                         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                         app:popupTheme="@style/Theme.AppCompat.Light"
                         app:title="@string/dailyDrops"
-                        app:titleTextColor="@color/colorPink" />
+                        app:titleTextColor="@color/colorPink"
+                        app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
                 </com.google.android.material.appbar.AppBarLayout>
 

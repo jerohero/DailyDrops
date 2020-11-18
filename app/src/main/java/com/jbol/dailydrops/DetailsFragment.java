@@ -2,6 +2,7 @@ package com.jbol.dailydrops;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,10 +37,12 @@ import java.time.format.FormatStyle;
 
 public class DetailsFragment extends Fragment {
     private TextView tv_title, tv_date, tv_note, tv_likes;
-    private ImageButton ib_delete, ib_edit, ib_like, ib_bookmark;
+    private ImageButton ib_delete, ib_edit, ib_like;
+    private FloatingActionButton fab_bookmark;
     private ImageView iv_image, iv_back_btn;
-    private RelativeLayout cl_root;
+    private RelativeLayout rl_root;
     private ConstraintLayout cl_top_bar;
+    private LinearLayout ll_title_wrapper;
 
     private GlobalDropModel drop;
 
@@ -61,7 +66,7 @@ public class DetailsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_details, container, false);
 
-        cl_root = v.findViewById(R.id.rl_root);
+        rl_root = v.findViewById(R.id.rl_root);
         tv_title = v.findViewById(R.id.tv_title);
         tv_note = v.findViewById(R.id.tv_note);
         tv_likes = v.findViewById(R.id.tv_likes);
@@ -71,8 +76,9 @@ public class DetailsFragment extends Fragment {
         ib_delete = v.findViewById(R.id.ib_delete);
         iv_back_btn = v.findViewById(R.id.iv_back_btn);
         ib_edit = v.findViewById(R.id.ib_edit);
-        ib_bookmark = v.findViewById(R.id.ib_bookmark);
+        fab_bookmark = v.findViewById(R.id.fab_bookmark);
         cl_top_bar = v.findViewById(R.id.cl_top_bar);
+        ll_title_wrapper = v.findViewById(R.id.ll_title_wrapper);
 
         return v;
     }
@@ -93,9 +99,9 @@ public class DetailsFragment extends Fragment {
         }
 
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
-            cl_root.setBackgroundColor(getResources().getColor(R.color.colorOnline));
+            ll_title_wrapper.setBackgroundColor(getResources().getColor(R.color.colorOnline));
         } else {
-            cl_root.setBackgroundColor(getResources().getColor(R.color.colorLocal));
+            ll_title_wrapper.setBackgroundColor(getResources().getColor(R.color.colorLocal));
         }
 
         sqldbHelper = SQLiteDatabaseHelper.getHelper(activity);
@@ -153,19 +159,19 @@ public class DetailsFragment extends Fragment {
     }
 
     private void collectionBtnToAddToCollection() {
-        ib_bookmark.setBackground(ContextCompat.getDrawable(activity, R.drawable.roundcorner_lightred));
-        ib_bookmark.setOnClickListener(v -> {
+        fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.dark)));
+        fab_bookmark.setOnClickListener(v -> {
             sqldbHelper.addDropToCollection(drop.getId(), drop.getType());
-            Toast.makeText(activity, "Added current drop to My Collection.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Added drop to My Collection", Toast.LENGTH_SHORT).show();
             collectionBtnToRemoveFromCollection();
         });
     }
 
     private void collectionBtnToRemoveFromCollection() {
-        ib_bookmark.setBackground(ContextCompat.getDrawable(activity, R.drawable.roundcorner_very_red));
-        ib_bookmark.setOnClickListener(v -> {
+        fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightRed)));
+        fab_bookmark.setOnClickListener(v -> {
             sqldbHelper.deleteDropFromCollection(drop.getId(), drop.getType());
-            Toast.makeText(activity, "Removed current drop from My Collection.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Removed drop from My Collection", Toast.LENGTH_SHORT).show();
             collectionBtnToAddToCollection();
 
             // If drop is removed from collection while My Collection is active, update the list view

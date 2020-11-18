@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -236,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             View view = getLayoutInflater().inflate(R.layout.dialog_search, null);
 
             EditText searchField = view.findViewById(R.id.et_search);
-            Button searchBtn = view.findViewById(R.id.btn_search);
+            LinearLayout searchBtn = view.findViewById(R.id.ll_search);
             CheckBox showServerCheck = view.findViewById(R.id.cb_show_server);
             CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
 

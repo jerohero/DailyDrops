@@ -10,5 +10,10 @@
     <style name="NavigationView">
         <item name="android:textColorSecondary">@color/colorPrimary</item>
     </style>
+    <style name="Toolbar.TitleText" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:textSize">26sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+
 
 </resources>

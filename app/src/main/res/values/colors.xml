@@ -7,5 +7,8 @@
     <color name="colorLocal">#EAF5FF</color>
     <color name="colorLightRed">#FFB3B4</color>
     <color name="colorPink">#FFECEA</color>
+    <color name="black">#000000</color>
+    <color name="dark">#1E1E1E</color>
+
 
 </resources>
