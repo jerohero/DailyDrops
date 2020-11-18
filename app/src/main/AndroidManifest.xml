@@ -19,7 +19,7 @@
         </activity>
         <activity android:name=".AddUpdateActivity"/>
         <activity android:name=".DetailsActivity"/>
-        <activity android:name=".EditActivity"/>
+        <activity android:name=".StatisticsActivity"/>
 
         <meta-data
             android:name="preloaded_fonts"

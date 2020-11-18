@@ -20,8 +20,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toolbar;
-
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -32,11 +30,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
 import com.jbol.dailydrops.models.FirebaseDropList;
 import com.jbol.dailydrops.models.FirebaseDropModel;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
+import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.views.DropAdapter;
 import com.jbol.dailydrops.views.DropClickListener;
 import java.time.Instant;
@@ -50,10 +49,9 @@ import java.util.Map;
 //TODO
 // Make add/edit activity a fragment
 // Bookmark system
-// Like system
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private SQLiteDataBaseHelper sqldbHelper;
+    private SQLiteDatabaseHelper sqldbHelper;
 
     private RecyclerView recyclerView;
     private FloatingActionButton fab_add, fab_search;
@@ -98,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initializeFirebase();
 
-        sqldbHelper = SQLiteDataBaseHelper.getHelper(MainActivity.this);
+        sqldbHelper = SQLiteDatabaseHelper.getHelper(MainActivity.this);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -167,17 +165,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_drops:
                 i = new Intent(MainActivity.this, MainActivity.class);
                 i.putExtra("listType", defaultListType);
-                MainActivity.getContext().startActivity(i);
+                this.startActivity(i);
                 break;
             case R.id.nav_bookmarks:
                 i = new Intent(MainActivity.this, MainActivity.class);
                 i.putExtra("listType", collectionListType);
-                MainActivity.getContext().startActivity(i);
+                this.startActivity(i);
                 break;
             case R.id.nav_hot:
                 i = new Intent(MainActivity.this, MainActivity.class);
                 i.putExtra("listType", hotListType);
-                MainActivity.getContext().startActivity(i);
+                this.startActivity(i);
+                break;
+            case R.id.nav_stats:
+                i = new Intent(MainActivity.this, StatisticsActivity.class);
+                this.startActivity(i);
                 break;
             case R.id.nav_contact:
             case R.id.nav_credits:
@@ -340,8 +342,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDropsFromLocal();
 
-        long day = 86400L;
-        long now = Instant.now().getEpochSecond() * 1000L;
+        long day = DateService.getDayInEpochMilli();
+        long now = DateService.getNowInEpochMilli();
 
         if (showLocalDrops) {
             for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
@@ -374,7 +376,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (dropModelArrayList.size() <= 0) {
-            Log.d("FLIEPFLAP", "updateListData: " + tv_no_results.getText());
             tv_no_results.setVisibility(View.VISIBLE);
         } else if (tv_no_results.getVisibility() == View.VISIBLE) {
             tv_no_results.setVisibility(View.GONE);

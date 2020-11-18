@@ -6,7 +6,7 @@
         <item
             android:id="@+id/nav_drops"
             android:title="@string/drops"
-            android:icon="@drawable/ic_book_black_24dp" />
+            android:icon="@drawable/ic_tee_black_24dp" />
         <item
             android:id="@+id/nav_bookmarks"
             android:title="@string/myCollection"
@@ -21,13 +21,17 @@
         android:title="@string/other">
         <menu>
             <item
-                android:id="@+id/nav_credits"
-                android:icon="@drawable/ic_send_black_24dp"
-                android:title="@string/credits" />
+                android:id="@+id/nav_stats"
+                android:icon="@drawable/ic_statistics_black_24dp"
+                android:title="@string/statistics" />
             <item
                 android:id="@+id/nav_contact"
                 android:icon="@drawable/ic_email_black_24dp"
                 android:title="@string/contact" />
+            <item
+                android:id="@+id/nav_credits"
+                android:icon="@drawable/ic_send_black_24dp"
+                android:title="@string/credits" />
         </menu>
     </item>
 </menu>

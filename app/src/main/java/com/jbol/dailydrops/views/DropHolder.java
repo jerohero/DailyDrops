@@ -1,6 +1,5 @@
 package com.jbol.dailydrops.views;
 
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
@@ -40,7 +39,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         this.drop = drop;
 
         txtTitle.setText(drop.getTitle());
-        txtDate.setText(DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.MEDIUM));
+        txtDate.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.MEDIUM));
 
         adjustDateStyling();
         initializeLikes();
@@ -67,8 +66,8 @@ public class DropHolder extends RecyclerView.ViewHolder {
     }
 
     private void adjustDateStyling() {
-        long day = 86400L;
-        long now = Instant.now().getEpochSecond() * 1000L;
+        long day = DateService.getDayInEpochMilli();
+        long now = DateService.getNowInEpochMilli();
         if (drop.getDate() < now + day) {
             txtDate.setTextColor(Color.parseColor("#FF8688"));
         }

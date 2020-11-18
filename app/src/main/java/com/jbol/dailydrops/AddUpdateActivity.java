@@ -20,7 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputLayout;
-import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
@@ -50,7 +50,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
 
-    private SQLiteDataBaseHelper sqldbHelper;
+    private SQLiteDatabaseHelper sqldbHelper;
 
     private Bitmap selectedImageBitmap;
 
@@ -77,7 +77,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         til_note = findViewById(R.id.til_note);
         et_note = findViewById(R.id.et_note);
 
-        sqldbHelper = SQLiteDataBaseHelper.getHelper(AddUpdateActivity.this);
+        sqldbHelper = SQLiteDatabaseHelper.getHelper(AddUpdateActivity.this);
 
         initializeDatePicker();
         initializeImage();
@@ -234,7 +234,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             // Handle date
             long date;
             try {
-                date = DateService.dateStringToEpochMilli(AddUpdateActivity.this, et_date.getText().toString());
+                date = DateService.fullDateStringToEpochMilli(et_date.getText().toString());
             } catch (ParseException e) {
                 til_date.setError(getString(R.string.errorDateEmpty));
                 return;
@@ -255,16 +255,16 @@ public class AddUpdateActivity extends AppCompatActivity {
 
             drop = new SQLiteDropModel(-1, title, note, date, hasImage);
 
-            SQLiteDataBaseHelper mSQLiteDataBaseHelper = SQLiteDataBaseHelper.getHelper(AddUpdateActivity.this);
+            SQLiteDatabaseHelper mSQLiteDatabaseHelper = SQLiteDatabaseHelper.getHelper(AddUpdateActivity.this);
 
-            boolean success = mSQLiteDataBaseHelper.addDropToLocal(drop);
+            boolean success = mSQLiteDatabaseHelper.addDropToLocal(drop);
             if (!success) {
                 Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (hasImage) {
-                int lastId = mSQLiteDataBaseHelper.getLastInsertedDropIdFromLocal();
+                int lastId = mSQLiteDatabaseHelper.getLastInsertedDropIdFromLocal();
                 ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
             }
 
@@ -279,7 +279,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             drop.setTitle(et_title.getText().toString());
             drop.setNote(et_note.getText().toString());
             try {
-                drop.setDate(DateService.dateStringToEpochMilli(this, et_date.getText().toString()));
+                drop.setDate(DateService.fullDateStringToEpochMilli(et_date.getText().toString()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -292,7 +292,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
             boolean success = false;
             try {
-                success = SQLiteDataBaseHelper.getHelper(this).updateDropFromLocal(drop);
+                success = SQLiteDatabaseHelper.getHelper(this).updateDropFromLocal(drop);
                 Toast.makeText(this, drop.toString(), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();

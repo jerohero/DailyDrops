@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.jbol.dailydrops.database.SQLiteDataBaseHelper;
+import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
@@ -33,7 +33,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private GlobalDropModel drop;
 
-    private SQLiteDataBaseHelper sqldbHelper;
+    private SQLiteDatabaseHelper sqldbHelper;
 
     long likes;
 
@@ -44,7 +44,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        sqldbHelper = SQLiteDataBaseHelper.getHelper(DetailsActivity.this);
+        sqldbHelper = SQLiteDatabaseHelper.getHelper(DetailsActivity.this);
 
         Intent intent = getIntent();
         drop = (GlobalDropModel) intent.getSerializableExtra("drop");
@@ -150,7 +150,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void initializeDate() {
-        tv_date.setText(DateService.EpochMilliToDateString(drop.getDate(), FormatStyle.FULL));
+        tv_date.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.FULL));
     }
 
     // Can only be executed if it's a local drop
@@ -160,7 +160,7 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         ib_delete.setOnClickListener(v -> {
-            SQLiteDataBaseHelper sqldbHelper = SQLiteDataBaseHelper.getHelper(DetailsActivity.this);
+            SQLiteDatabaseHelper sqldbHelper = SQLiteDatabaseHelper.getHelper(DetailsActivity.this);
             boolean success = sqldbHelper.deleteDropFromLocal(Integer.parseInt(drop.getId()));
             if (!success) {
                 Toast.makeText(this, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
