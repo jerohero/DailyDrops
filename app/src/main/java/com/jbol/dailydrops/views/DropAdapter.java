@@ -25,10 +25,8 @@ public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
 
     @NonNull @Override
     public DropHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_row, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.drop_card, parent, false);
         view.setOnClickListener(dropClickListener);
-
-        view.setElevation(10f);
 
         return new DropHolder(view);
     }

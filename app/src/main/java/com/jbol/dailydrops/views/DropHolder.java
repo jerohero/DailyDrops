@@ -14,7 +14,6 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.AsyncURLService;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
-import java.time.Instant;
 import java.time.format.FormatStyle;
 
 public class DropHolder extends RecyclerView.ViewHolder {
