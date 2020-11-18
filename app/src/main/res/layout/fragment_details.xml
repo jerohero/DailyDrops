@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAF5FF"
-    tools:context=".DetailsActivity">
+    tools:context=".DetailsFragment">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -31,8 +31,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/dailydrops" />
+                android:minHeight="50dp"
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:id="@+id/tv_date"

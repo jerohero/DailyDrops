@@ -1,17 +1,23 @@
 package com.jbol.dailydrops;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,7 +31,7 @@ import com.jbol.dailydrops.services.ImageService;
 import com.jbol.dailydrops.services.AsyncURLService;
 import java.time.format.FormatStyle;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsFragment extends Fragment {
     private TextView tv_title, tv_date, tv_note, tv_likes;
     private ImageButton ib_delete, ib_edit, ib_like;
     private ImageView iv_image, iv_back_btn;
@@ -38,18 +44,49 @@ public class DetailsActivity extends AppCompatActivity {
     long likes;
 
     private DatabaseReference fbLikesRef;
+    
+    private Activity activity;
+
+    public static DetailsFragment newInstance(GlobalDropModel drop) {
+        DetailsFragment fragment = new DetailsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("drop", drop);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_details, container, false);
 
-        sqldbHelper = SQLiteDatabaseHelper.getHelper(DetailsActivity.this);
+        cl_root = v.findViewById(R.id.cl_root);
+        tv_title = v.findViewById(R.id.tv_title);
+        tv_note = v.findViewById(R.id.tv_note);
+        tv_likes = v.findViewById(R.id.tv_likes);
+        ib_like = v.findViewById(R.id.ib_like);
+        iv_image = v.findViewById(R.id.iv_image);
+        tv_date = v.findViewById(R.id.tv_date);
+        ib_delete = v.findViewById(R.id.ib_delete);
+        iv_back_btn = v.findViewById(R.id.iv_back_btn);
+        ib_edit = v.findViewById(R.id.ib_edit);
 
-        Intent intent = getIntent();
-        drop = (GlobalDropModel) intent.getSerializableExtra("drop");
+        return v;
+    }
 
-        cl_root = findViewById(R.id.cl_root);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        activity = getActivity();
+
+        if (getArguments() != null) {
+            drop = (GlobalDropModel) getArguments().getSerializable("drop");
+        }
+
+        if (drop == null) {
+            //todo handle error
+            return;
+        }
 
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
             cl_root.setBackgroundColor(getResources().getColor(R.color.colorOnline));
@@ -57,19 +94,10 @@ public class DetailsActivity extends AppCompatActivity {
             cl_root.setBackgroundColor(getResources().getColor(R.color.colorLocal));
         }
 
-        tv_title = findViewById(R.id.tv_title);
+        sqldbHelper = SQLiteDatabaseHelper.getHelper(activity);
+
         tv_title.setText(drop.getTitle());
-
-        tv_note = findViewById(R.id.tv_note);
         tv_note.setText(drop.getNote());
-
-        tv_likes = findViewById(R.id.tv_likes);
-        ib_like = findViewById(R.id.ib_like);
-        iv_image = findViewById(R.id.iv_image);
-        tv_date = findViewById(R.id.tv_date);
-        ib_delete = findViewById(R.id.ib_delete);
-        iv_back_btn = findViewById(R.id.iv_back_btn);
-        ib_edit = findViewById(R.id.ib_edit);
 
         initializeFirebase();
         initializeBackBtn();
@@ -78,6 +106,13 @@ public class DetailsActivity extends AppCompatActivity {
         initializeEditBtn();
         initializeImage();
         initializeLikes();
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     private void initializeFirebase() {
@@ -122,7 +157,7 @@ public class DetailsActivity extends AppCompatActivity {
             fbLikesRef.setValue(likes + 1);
             boolean success = sqldbHelper.addDropToLikes(drop.getId());
             if (!success) {
-                Toast.makeText(this, "Error occurred while liking drop. Please try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Error occurred while liking drop. Please try again.", Toast.LENGTH_SHORT).show();
                 return;
             }
             disableLikeButton();
@@ -130,7 +165,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void disableLikeButton() {
-        ib_like.setBackground(ContextCompat.getDrawable(this, R.drawable.roundcorner_grey));
+        ib_like.setBackground(ContextCompat.getDrawable(activity, R.drawable.roundcorner_grey));
         if (ib_like.hasOnClickListeners()) ib_like.setOnClickListener(null);
     }
 
@@ -142,10 +177,11 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
-            Bitmap image = ImageService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
+            Bitmap image = ImageService.loadImageFromStorage(activity, Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
-            new AsyncURLService(output -> iv_image.setImageBitmap(output)).execute(drop.getImage());
+            new AsyncURLService(output ->
+                    iv_image.setImageBitmap(output)).execute(drop.getImage());
         }
     }
 
@@ -160,21 +196,23 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         ib_delete.setOnClickListener(v -> {
-            SQLiteDatabaseHelper sqldbHelper = SQLiteDatabaseHelper.getHelper(DetailsActivity.this);
+            SQLiteDatabaseHelper sqldbHelper = SQLiteDatabaseHelper.getHelper(activity);
             boolean success = sqldbHelper.deleteDropFromLocal(Integer.parseInt(drop.getId()));
             if (!success) {
-                Toast.makeText(this, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            ImageService.deleteImageFromStorage(this, Integer.parseInt(drop.getId()));
-            Intent i = new Intent(DetailsActivity.this, MainActivity.class);
-            DetailsActivity.this.startActivity(i);
+            ImageService.deleteImageFromStorage(activity, Integer.parseInt(drop.getId()));
+            Intent i = new Intent(activity, MainActivity.class);
+            DetailsFragment.this.startActivity(i);
         });
     }
 
     private void initializeBackBtn() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
         iv_back_btn.setOnClickListener(v ->
-                super.onBackPressed());
+                fm.beginTransaction().remove(this).commit()
+        );
     }
 
     private void initializeEditBtn() {
@@ -183,10 +221,10 @@ public class DetailsActivity extends AppCompatActivity {
             return;
         }
         ib_edit.setOnClickListener(v -> {
-            Intent i = new Intent(DetailsActivity.this, AddUpdateActivity.class);
+            Intent i = new Intent(activity, AddUpdateActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.putExtra("drop", drop);
-            DetailsActivity.this.startActivity(i);
+            DetailsFragment.this.startActivity(i);
         });
     }
 }

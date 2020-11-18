@@ -320,7 +320,7 @@ public class AddUpdateActivity extends AppCompatActivity {
     }
 
     private void backToDetails() {
-        Intent i = new Intent(this, DetailsActivity.class);
+        Intent i = new Intent(this, DetailsFragment.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         i.putExtra("drop", drop);
         MainActivity.getContext().startActivity(i);

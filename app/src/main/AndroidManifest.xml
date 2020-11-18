@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddUpdateActivity"/>
-        <activity android:name=".DetailsActivity"/>
+        <activity android:name=".DetailsFragment"/>
         <activity android:name=".StatisticsActivity"/>
 
         <meta-data

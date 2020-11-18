@@ -198,7 +198,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         // If drawer is already close -- Do not override original functionality
         else {
-            super.onBackPressed();
+            int fragmentCount = getSupportFragmentManager().getBackStackEntryCount();
+
+            if (fragmentCount == 0) {
+                super.onBackPressed();
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
         }
     }
 
@@ -329,11 +335,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void showDetails(GlobalDropModel drop) {
-        // Show details of clicked drop
-        Intent i = new Intent(MainActivity.this, DetailsActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.putExtra("drop", drop);
-        MainActivity.getContext().startActivity(i);
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(drop);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.dl_drawer_layout, detailsFragment)
+                .addToBackStack(DetailsFragment.class.getSimpleName())
+                .commit();
     }
 
     private void updateListData() {
@@ -351,8 +357,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
                         sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
-                    if (sqLiteDropModel.getDate() <= now - (day * 5)) {
-                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over five days ago
+                    if (sqLiteDropModel.getDate() <= now - (day * 3)) {
+                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over three days ago
                     } else {
                         dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
                     }
@@ -367,8 +373,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
                         firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
-                    if (firebaseDropModel.getDate() > now - (day * 5)) {
-                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over five days ago
+                    if (firebaseDropModel.getDate() > now - (day * 3)) {
+                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over three days ago
                     }
                 }
             }
