@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.jbol.dailydrops.models.FirebaseDropModel;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import java.io.BufferedReader;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,6 +43,12 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                     + SQLiteDatabaseInfo.LikesColumn.COLUMN_ID + " TEXT PRIMARY KEY "
                     + ");";
 
+    private static final String CREATE_USER_COLLECTION_TABLE =
+            "CREATE TABLE " + SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE + " ("
+                    + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_ID + " TEXT PRIMARY KEY, "
+                    + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_TYPE + " TEXT NOT NULL "
+                    + ");";
+
 
     public SQLiteDatabaseHelper(Context context) {
         super(context, dbName, null, dbVersion);
@@ -56,27 +66,85 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_USER_DROPS_TABLE);
         db.execSQL(CREATE_USER_LIKES_TABLE);
-    }
-
-    private String convertStreamToString(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append("\n");
-        }
-
-        String sql = sb.toString();
-
-        return sql;
+        db.execSQL(CREATE_USER_COLLECTION_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String upgradeTableStatement = "DROP TABLE IF EXISTS " + SQLiteDatabaseInfo.DropsTable.USER_DROPS_TABLE;
-        db.execSQL(upgradeTableStatement);
+        String upgradeDropsTableStatement = "DROP TABLE IF EXISTS " + SQLiteDatabaseInfo.DropsTable.USER_DROPS_TABLE;
+        String upgradeLikesTableStatement = "DROP TABLE IF EXISTS " + SQLiteDatabaseInfo.LikesTable.USER_LIKES_TABLE;
+        String upgradeCollectionTableStatement = "DROP TABLE IF EXISTS " + SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE;
+
+        db.execSQL(upgradeDropsTableStatement);
+        db.execSQL(upgradeLikesTableStatement);
+        db.execSQL(upgradeCollectionTableStatement);
+
         onCreate(db);
     }
+
+    public boolean addDropToCollection(String dropId, String dropType) {
+        ContentValues cv = new ContentValues();
+
+        cv.put(SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_ID, dropId);
+        cv.put(SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_TYPE, dropType);
+
+        long insert = sqldb.insert(SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE, null, cv);
+        if (insert == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean dropIsInCollection(String dropId, String dropType) {
+        String queryString = "SELECT * FROM " + SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE
+                + " WHERE " + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_ID + " = '" + dropId + "'"
+                + " AND " + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_TYPE + " = '" + dropType + "'";
+        Cursor cursor = getReadableDatabase().rawQuery(queryString, null);
+
+        boolean inCollection = false;
+        if (cursor.moveToFirst()) {
+            inCollection = true;
+        }
+        cursor.close();
+        return inCollection;
+    }
+
+    public boolean deleteDropFromCollection(String dropId, String dropType) {
+        String queryString = "DELETE FROM " + SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE
+                + " WHERE " + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_ID + " = '" + dropId + "'"
+                + " AND " + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_TYPE + " = '" + dropType + "'";
+        Cursor cursor = sqldb.rawQuery(queryString, null);
+
+        if (cursor.moveToFirst()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public HashMap<String, String> getAllCollectionDrops() {
+        HashMap<String, String> idToType = new HashMap<>();
+
+        String queryString = "SELECT * FROM " + SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE;
+        Cursor cursor = getReadableDatabase().rawQuery(queryString, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String id = cursor.getString(0);
+                String type = cursor.getString(1);
+
+                idToType.put(id, type);
+            } while (cursor.moveToNext());
+        } else {
+            Log.d("dev", "Table is empty.");
+        }
+
+        cursor.close();
+        return idToType;
+    }
+
+
 
     public boolean addDropToLikes(String dropId) {
         ContentValues cv = new ContentValues();
@@ -92,7 +160,6 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean dropIsLiked(String dropId) {
-//        String queryString = String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE id LIKE %s", SQLiteDataBaseInfo.LikesTable.USER_LIKES_TABLE, dropId);
         String queryString = "SELECT * FROM " + SQLiteDatabaseInfo.LikesTable.USER_LIKES_TABLE + " WHERE id = '" + dropId + "'";
         Cursor cursor = getReadableDatabase().rawQuery(queryString, null);
 
@@ -103,6 +170,9 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return isLiked;
     }
+
+
+
 
     public boolean addDropToLocal(SQLiteDropModel drop) {
         ContentValues cv = new ContentValues();

@@ -41,13 +41,10 @@ import com.jbol.dailydrops.views.DropClickListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-//TODO
-// Make add/edit activity a fragment
-// Bookmark system
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private SQLiteDatabaseHelper sqldbHelper;
@@ -61,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DropAdapter adapter;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
+    private ArrayList<SQLiteDropModel> sqLiteDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
 
     private DatabaseReference fbDropsReference;
@@ -93,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listType = (int) intent.getIntExtra("listType", defaultListType);
         initializeListType();
 
-        initializeFirebase();
+        addDropsListener();
 
         sqldbHelper = SQLiteDatabaseHelper.getHelper(MainActivity.this);
 
@@ -307,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return drops;
     }
 
-    private void initializeFirebase() {
+    private void addDropsListener() {
         fbDropsReference = FirebaseDatabase.getInstance().getReference();
 
         // Read from the database
@@ -342,20 +340,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .commit();
     }
 
-    private void updateListData() {
-        dropModelArrayList.clear();
+    private void fetchCollection() {
+        HashMap<String, String> idToType = sqldbHelper.getAllCollectionDrops();
 
-        List<SQLiteDropModel> sqLiteDropModels = sqldbHelper.getAllDropsFromLocal();
+        Iterator<Map.Entry<String, String>> it = idToType.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> pair = it.next();
 
+            String dropType = pair.getValue();
+            String dropId = pair.getKey();
+            if (dropType.equals(GlobalDropModel.ONLINE_TYPE) && showServerDrops) {
+                for (FirebaseDropModel firebaseDrop : firebaseDropModelArrayList) {
+                    if (firebaseDrop.getId().equals(dropId)) {
+                        if (    searchTerm.isEmpty() ||
+                                firebaseDrop.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                firebaseDrop.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                        ) {
+                            dropModelArrayList.add(new GlobalDropModel(firebaseDrop));
+                        }
+                        break;
+                    }
+                }
+            } else if (dropType.equals(GlobalDropModel.OFFLINE_TYPE) && showLocalDrops) {
+                for (SQLiteDropModel sqLiteDrop : sqLiteDropModelArrayList) {
+                    if (sqLiteDrop.getId() == Integer.parseInt(dropId)) {
+                        if (    searchTerm.isEmpty() ||
+                                sqLiteDrop.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                sqLiteDrop.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                        ) {
+                            dropModelArrayList.add(new GlobalDropModel(sqLiteDrop));
+                        }
+                        break;
+                    }
+                }
+            }
+            it.remove();
+        }
+    }
+
+    private void fetchDrops() {
         long day = DateService.getDayInEpochMilli();
         long now = DateService.getNowInEpochMilli();
 
         if (showLocalDrops) {
-            for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
+            for (SQLiteDropModel sqLiteDropModel : sqLiteDropModelArrayList) {
                 if (
                         searchTerm.isEmpty() ||
-                        sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                        sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                                sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
                     if (sqLiteDropModel.getDate() <= now - (day * 3)) {
                         sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over three days ago
@@ -370,14 +402,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
                 if (
                         searchTerm.isEmpty() ||
-                        firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                        firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                                firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
                     if (firebaseDropModel.getDate() > now - (day * 3)) {
                         dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over three days ago
                     }
                 }
             }
+        }
+    }
+
+    public int getActiveListType() {
+        return listType;
+    }
+
+    public void updateListData() {
+        dropModelArrayList.clear();
+
+        sqLiteDropModelArrayList = (ArrayList<SQLiteDropModel>) sqldbHelper.getAllDropsFromLocal();
+
+        if (listType == collectionListType) {
+            fetchCollection();
+        } else {
+            fetchDrops();
         }
 
         if (dropModelArrayList.size() <= 0) {

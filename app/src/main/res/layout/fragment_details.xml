@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cl_root"
+    android:id="@+id/rl_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAF5FF"
@@ -114,6 +114,16 @@
                     android:padding="12dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/heart" />
+
+                <ImageButton
+                    android:id="@+id/ib_bookmark"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/roundcorner_lightred"
+                    android:padding="11dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_bookmark_black_24dp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -123,6 +133,12 @@
         android:id="@+id/cl_top_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
         android:background="@color/ic_launcher_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

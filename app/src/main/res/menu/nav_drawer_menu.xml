@@ -10,7 +10,7 @@
         <item
             android:id="@+id/nav_bookmarks"
             android:title="@string/myCollection"
-            android:icon="@drawable/ic_book_black_24dp" />
+            android:icon="@drawable/ic_bookmarks_black_24dp" />
         <item
             android:id="@+id/nav_hot"
             android:title="@string/hot"

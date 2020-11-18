@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -33,9 +34,10 @@ import java.time.format.FormatStyle;
 
 public class DetailsFragment extends Fragment {
     private TextView tv_title, tv_date, tv_note, tv_likes;
-    private ImageButton ib_delete, ib_edit, ib_like;
+    private ImageButton ib_delete, ib_edit, ib_like, ib_bookmark;
     private ImageView iv_image, iv_back_btn;
     private RelativeLayout cl_root;
+    private ConstraintLayout cl_top_bar;
 
     private GlobalDropModel drop;
 
@@ -59,7 +61,7 @@ public class DetailsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_details, container, false);
 
-        cl_root = v.findViewById(R.id.cl_root);
+        cl_root = v.findViewById(R.id.rl_root);
         tv_title = v.findViewById(R.id.tv_title);
         tv_note = v.findViewById(R.id.tv_note);
         tv_likes = v.findViewById(R.id.tv_likes);
@@ -69,6 +71,8 @@ public class DetailsFragment extends Fragment {
         ib_delete = v.findViewById(R.id.ib_delete);
         iv_back_btn = v.findViewById(R.id.iv_back_btn);
         ib_edit = v.findViewById(R.id.ib_edit);
+        ib_bookmark = v.findViewById(R.id.ib_bookmark);
+        cl_top_bar = v.findViewById(R.id.cl_top_bar);
 
         return v;
     }
@@ -106,6 +110,7 @@ public class DetailsFragment extends Fragment {
         initializeEditBtn();
         initializeImage();
         initializeLikes();
+        initializeCollection();
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -132,6 +137,40 @@ public class DetailsFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError error) {
                 Log.w("dev", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void initializeCollection() {
+        boolean inCollection = sqldbHelper.dropIsInCollection(drop.getId(), drop.getType());
+
+        if (inCollection) {
+            collectionBtnToRemoveFromCollection();
+            return;
+        }
+
+        collectionBtnToAddToCollection();
+    }
+
+    private void collectionBtnToAddToCollection() {
+        ib_bookmark.setBackground(ContextCompat.getDrawable(activity, R.drawable.roundcorner_lightred));
+        ib_bookmark.setOnClickListener(v -> {
+            sqldbHelper.addDropToCollection(drop.getId(), drop.getType());
+            Toast.makeText(activity, "Added current drop to My Collection.", Toast.LENGTH_SHORT).show();
+            collectionBtnToRemoveFromCollection();
+        });
+    }
+
+    private void collectionBtnToRemoveFromCollection() {
+        ib_bookmark.setBackground(ContextCompat.getDrawable(activity, R.drawable.roundcorner_very_red));
+        ib_bookmark.setOnClickListener(v -> {
+            sqldbHelper.deleteDropFromCollection(drop.getId(), drop.getType());
+            Toast.makeText(activity, "Removed current drop from My Collection.", Toast.LENGTH_SHORT).show();
+            collectionBtnToAddToCollection();
+
+            // If drop is removed from collection while My Collection is active, update the list view
+            if (MainActivity.getInstance().getActiveListType() == MainActivity.collectionListType) {
+                MainActivity.getInstance().updateListData();
             }
         });
     }
@@ -213,6 +252,11 @@ public class DetailsFragment extends Fragment {
         iv_back_btn.setOnClickListener(v ->
                 fm.beginTransaction().remove(this).commit()
         );
+
+        // For some reason this part of the fragment is 'transparent',
+        // meaning that the user could click through it. This avoids that.
+        cl_top_bar.setSoundEffectsEnabled(false);
+        cl_top_bar.setOnClickListener(v -> { });
     }
 
     private void initializeEditBtn() {
