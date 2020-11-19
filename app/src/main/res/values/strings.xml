@@ -52,5 +52,7 @@
     <string name="titlePlaceholder">%TITLE%</string>
     <string name="notePlaceholder">%NOTE%</string>
     <string name="deleteDrop">Delete drop</string>
+    <string name="time">Time</string>
+    <string name="timePlaceholder">%TIME%</string>
 
 </resources>

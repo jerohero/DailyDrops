@@ -439,10 +439,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void closeDrawer(){
-        if (dl_drawer_layout.isDrawerOpen(GravityCompat.START)){
-            dl_drawer_layout.closeDrawer(GravityCompat.START);
-        }
-    }
-
 }

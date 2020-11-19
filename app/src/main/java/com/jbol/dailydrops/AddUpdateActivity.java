@@ -2,6 +2,7 @@ package com.jbol.dailydrops;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
@@ -37,14 +38,14 @@ public class AddUpdateActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 11; //Request code for camera
 
     private LinearLayout ll_save_drop;
-    private TextInputLayout til_title, til_note, til_date;
+    private TextInputLayout til_title, til_note, til_date, til_time;
     private ImageButton ib_remove_image;
-    private EditText et_date, et_title, et_note;
+    private EditText et_date, et_title, et_note, et_time;
     private ImageView iv_image;
     private TextView tv_no_image, tv_save_drop_label, tv_activity_title;
 
-    private final Calendar dateCalendar = Calendar.getInstance();
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+    private final Calendar calendar = Calendar.getInstance();
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     private SQLiteDatabaseHelper sqldbHelper;
     private Bitmap selectedImageBitmap;
     private GlobalDropModel drop;
@@ -66,6 +67,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         loadViews();
 
         initializeDatePicker();
+        initializeTimePicker();
         initializeImage();
         initializeBackBtn();
 
@@ -173,6 +175,14 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
         if (til_date.getError() != null) til_date.setError(null);
 
+        // Handle time
+        long time;
+        try {
+            time = DateService.timeStringToEpochMilli(et_time.getText().toString());
+        } catch (ParseException e) {
+            time = 0;
+        }
+
         // Store drop
         SQLiteDropModel drop;
         boolean hasImage = false;
@@ -180,7 +190,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             hasImage = true;
         }
 
-        drop = new SQLiteDropModel(-1, title, note, date, hasImage);
+        drop = new SQLiteDropModel(-1, title, note, date, time, hasImage);
 
         boolean success = sqldbHelper.addDropToLocal(drop);
         if (!success) {
@@ -209,23 +219,39 @@ public class AddUpdateActivity extends AppCompatActivity {
     private void initializeValues() {
         et_title.setText(drop.getTitle());
         et_note.setText(drop.getNote());
-        et_date.setText(sdf.format(drop.getDate()));
+        et_date.setText(dateFormat.format(drop.getDate()));
     }
 
     private void initializeDatePicker() {
         til_date = findViewById(R.id.til_date);
         et_date = findViewById(R.id.et_date);
         DatePickerDialog.OnDateSetListener date = (view, year, month, dayOfMonth) -> {
-            dateCalendar.set(Calendar.YEAR, year);
-            dateCalendar.set(Calendar.MONTH, month);
-            dateCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            et_date.setText(sdf.format(dateCalendar.getTime()));
+            et_date.setText(dateFormat.format(calendar.getTime()));
         };
 
         et_date.setOnClickListener(v ->
-                new DatePickerDialog(AddUpdateActivity.this, date, dateCalendar.get(Calendar.YEAR),
-                        dateCalendar.get(Calendar.MONTH), dateCalendar.get(Calendar.DAY_OF_MONTH))
+                new DatePickerDialog(this, date, calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+                        .show());
+    }
+    
+    private void initializeTimePicker() {
+        til_time = findViewById(R.id.til_time);
+        et_time = findViewById(R.id.et_time);
+        TimePickerDialog.OnTimeSetListener time = (view, hourOfDay, minute) -> {
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+
+            et_time.setText(timeFormat.format(calendar.getTime()));
+        };
+
+        et_time.setOnClickListener(v ->
+                new TimePickerDialog(this, time, calendar.get(Calendar.HOUR_OF_DAY), Calendar.MINUTE,true)
                         .show());
     }
 
@@ -301,17 +327,15 @@ public class AddUpdateActivity extends AppCompatActivity {
     }
 
     private void initializeAddDropBtn() {
-        ll_save_drop.setOnClickListener(v -> {
-            addDrop();
-        });
+        ll_save_drop.setOnClickListener(v ->
+                addDrop());
     }
 
     private void initializeSaveEditBtn() {
         tv_save_drop_label.setText(getString(R.string.saveDrop));
 
-        ll_save_drop.setOnClickListener(v -> {
-            saveEditDrop();
-        });
+        ll_save_drop.setOnClickListener(v ->
+                saveEditDrop());
     }
 
     private void initializeBackBtn() {

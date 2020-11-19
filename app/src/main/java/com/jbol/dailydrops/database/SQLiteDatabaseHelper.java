@@ -24,6 +24,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_TITLE + " TEXT NOT NULL, "
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_NOTE + " TEXT, "
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE + " INTEGER NOT NULL, "
+                    + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_TIME + " INTEGER NOT NULL, "
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_HAS_IMAGE + " INT NOT NULL "
                     + ");";
     private static final String CREATE_USER_LIKES_TABLE =
@@ -162,6 +163,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_TITLE, drop.getTitle());
         cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_NOTE, drop.getNote());
         cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE, drop.getDate());
+        cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_TIME, drop.getTime());
         cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_HAS_IMAGE, drop.hasImage() ? 1 : 0);
 
         long insert = sqldb.insert(SQLiteDatabaseInfo.DropsTable.USER_DROPS_TABLE, null, cv);
@@ -197,6 +199,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
             cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_NOTE, newDrop.getNote()); }
         if (newDrop.getDate() != (oldDrop.getDate())) {
             cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE, newDrop.getDate()); }
+        if (newDrop.getTime() != (oldDrop.getTime())) {
+            cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE, newDrop.getTime()); }
         cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_HAS_IMAGE, newDrop.getImage() != null ? 1 : 0);
 
         getWritableDatabase().update(SQLiteDatabaseInfo.DropsTable.USER_DROPS_TABLE, cv, SQLiteDatabaseInfo.DropsColumn.COLUMN_ID + "=" + newDrop.getId(), null);
@@ -215,9 +219,10 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
             String title = cursor.getString(1);
             String note = cursor.getString(2);
             long date = cursor.getLong(3);
-            boolean hasImage = cursor.getInt(4) == 1;
+            long time = cursor.getLong(4);
+            boolean hasImage = cursor.getInt(5) == 1;
 
-            drop = new SQLiteDropModel(id, title, note, date, hasImage);
+            drop = new SQLiteDropModel(id, title, note, date, time, hasImage);
         }
         cursor.close();
         return drop;
@@ -247,9 +252,10 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                 String title = cursor.getString(1);
                 String note = cursor.getString(2);
                 long date = cursor.getLong(3);
-                boolean hasImage = cursor.getInt(4) == 1;
+                long time = cursor.getLong(4);
+                boolean hasImage = cursor.getInt(5) == 1;
 
-                SQLiteDropModel newDrop = new SQLiteDropModel(id, title, note, date, hasImage);
+                SQLiteDropModel newDrop = new SQLiteDropModel(id, title, note, date, time, hasImage);
                     returnList.add(newDrop);
             } while (cursor.moveToNext());
         } else {

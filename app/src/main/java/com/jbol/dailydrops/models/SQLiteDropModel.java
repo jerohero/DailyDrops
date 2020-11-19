@@ -8,6 +8,7 @@ public class SQLiteDropModel implements Serializable {
     private String title;
     private String note;
     private long date;
+    private long time;
     private boolean hasImage;
 
     // default constructor
@@ -15,11 +16,12 @@ public class SQLiteDropModel implements Serializable {
     }
 
     // constructor
-    public SQLiteDropModel(int id, String title, String note, long date, boolean hasImage) {
+    public SQLiteDropModel(int id, String title, String note, long date, long time, boolean hasImage) {
         this.id = id;
         this.title = title;
         this.note = note;
         this.date = date;
+        this.time = time;
         this.hasImage = hasImage;
     }
 
@@ -46,6 +48,10 @@ public class SQLiteDropModel implements Serializable {
 
     public long getDate() {
         return date;
+    }
+
+    public long getTime() {
+        return time;
     }
 
     public boolean hasImage() {

@@ -35,7 +35,7 @@ import java.time.format.FormatStyle;
 public class DetailsFragment extends Fragment {
     public static String DROP_SERIALIZABLE_STRING = "drop";
 
-    private TextView tv_title, tv_date, tv_note, tv_likes;
+    private TextView tv_title, tv_date, tv_note, tv_likes, tv_time;
     private ImageButton ib_delete, ib_edit, ib_like;
     private FloatingActionButton fab_bookmark;
     private ImageView iv_image, iv_back_btn;
@@ -59,6 +59,7 @@ public class DetailsFragment extends Fragment {
         ib_like = v.findViewById(R.id.ib_like);
         iv_image = v.findViewById(R.id.iv_image);
         tv_date = v.findViewById(R.id.tv_date);
+        tv_time = v.findViewById(R.id.tv_time);
         ib_delete = v.findViewById(R.id.ib_delete);
         iv_back_btn = v.findViewById(R.id.iv_back_btn);
         ib_edit = v.findViewById(R.id.ib_edit);
@@ -97,7 +98,7 @@ public class DetailsFragment extends Fragment {
 
         initializeFirebase();
         initializeBackBtn();
-        initializeDate();
+        initializeDateAndTime();
         initializeDeleteBtn();
         initializeEditBtn();
         initializeImage();
@@ -253,8 +254,13 @@ public class DetailsFragment extends Fragment {
         }
     }
 
-    private void initializeDate() {
+    private void initializeDateAndTime() {
         tv_date.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.FULL));
+        if (drop.getTime() <= 0) {
+            tv_time.setVisibility(View.GONE);
+            return;
+        }
+        tv_time.setText(DateService.epochMilliToHHMM(drop.getTime()));
     }
 
     private void initializeDeleteBtn() {

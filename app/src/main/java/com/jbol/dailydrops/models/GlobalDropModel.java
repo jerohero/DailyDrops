@@ -10,6 +10,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
     private String title;
     private String note;
     private long date;
+    private long time = 0;
     private String image; // Drop's ID for offline (ex. 31 + .jpg), image link for online
     private String type;
     private long likes;
@@ -21,6 +22,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
             this.title = sqLiteDropModel.getTitle();
             this.note = sqLiteDropModel.getNote();
             this.date = sqLiteDropModel.getDate();
+            this.time = sqLiteDropModel.getTime();
             this.image = sqLiteDropModel.hasImage() ? String.valueOf(sqLiteDropModel.getId()) : null;
             this.likes = 0;
             this.type = OFFLINE_TYPE;
@@ -90,4 +92,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
         return likes;
     }
 
+    public long getTime() {
+        return time;
+    }
 }
