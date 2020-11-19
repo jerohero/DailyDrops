@@ -39,9 +39,9 @@ public class DropHolder extends RecyclerView.ViewHolder {
         txtTitle.setText(drop.getTitle());
         txtDate.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.MEDIUM));
 
-        adjustDateStyling();
         initializeLikes();
         initializeImage();
+        adjustDateStyling();
         initializeColor();
     }
 
@@ -74,8 +74,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
                 String newText = txtDate.getText() + " (today)";
                 txtDate.setText(newText);
             }
-            String newText = txtDate.getText() + " (exceeded)";
-            txtDate.setText(newText);
+            cv_card.setAlpha(0.75f);
         }
     }
 

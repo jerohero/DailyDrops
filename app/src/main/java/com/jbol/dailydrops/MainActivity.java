@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dl_drawer_layout, detailsFragment)
                 .addToBackStack(DetailsFragment.class.getSimpleName())
-                .commitAllowingStateLoss();
+                .commit();
     }
 
     // Settings that are unique to each list type

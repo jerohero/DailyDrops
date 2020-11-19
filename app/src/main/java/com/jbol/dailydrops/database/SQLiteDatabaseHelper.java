@@ -179,10 +179,10 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             cursor.close();
-            return true;
+            return false;
         } else {
             cursor.close();
-            return false;
+            return true;
         }
     }
 

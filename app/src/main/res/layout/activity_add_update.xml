@@ -231,7 +231,7 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/roundcorner_lightred"
         android:clickable="true"
-        android:elevation="5dp"
+        android:elevation="3dp"
         android:focusable="true"
         android:orientation="horizontal"
         android:paddingLeft="20dp"
