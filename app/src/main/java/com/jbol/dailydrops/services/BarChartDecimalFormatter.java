@@ -5,11 +5,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import java.text.DecimalFormat;
 
-/**
- * Removes decimals that automatically appear on MPAndroid bar charts
- * https://stackoverflow.com/a/44800697/11391965
- */
-
+// Removes decimals that automatically appear on MPAndroid bar charts
+// https://stackoverflow.com/a/44800697/11391965
 public class BarChartDecimalFormatter implements ValueFormatter {
     private DecimalFormat format;
 

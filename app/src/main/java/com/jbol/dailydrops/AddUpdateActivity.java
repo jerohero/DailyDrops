@@ -33,29 +33,21 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class AddUpdateActivity extends AppCompatActivity {
+    private static final int GALLERY_REQUEST = 9; //Request code gallery
+    private static final int CAMERA_REQUEST = 11; //Request code for camera
+
     private LinearLayout ll_save_drop;
     private TextInputLayout til_title, til_note, til_date;
-    private ImageButton ib_add_image, ib_remove_image;
+    private ImageButton ib_remove_image;
     private EditText et_date, et_title, et_note;
-    private ImageView iv_image, iv_back_btn;
+    private ImageView iv_image;
     private TextView tv_no_image, tv_save_drop_label, tv_activity_title;
 
-
-    final Calendar dateCalendar = Calendar.getInstance();
-
-    //Request code gallery
-    private static final int GALLERY_REQUEST = 9;
-    //Request code for camera
-    private static final int CAMERA_REQUEST = 11;
-
+    private final Calendar dateCalendar = Calendar.getInstance();
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-
     private SQLiteDatabaseHelper sqldbHelper;
-
     private Bitmap selectedImageBitmap;
-
     private GlobalDropModel drop;
-
     private boolean editMode;
 
 
@@ -65,19 +57,13 @@ public class AddUpdateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_update);
 
         Intent intent = getIntent();
-        drop = (GlobalDropModel) intent.getSerializableExtra("drop");
+        drop = (GlobalDropModel) intent.getSerializableExtra(DetailsFragment.DROP_SERIALIZABLE_STRING);
 
         editMode = drop != null; // Decides whether user is editing or adding a drop
 
-        tv_activity_title = findViewById(R.id.tv_activity_title);
-        ll_save_drop = findViewById(R.id.ll_save_drop);
-        tv_save_drop_label = findViewById(R.id.tv_save_drop_label);
-        til_title = findViewById(R.id.til_title);
-        et_title = findViewById(R.id.et_title);
-        til_note = findViewById(R.id.til_note);
-        et_note = findViewById(R.id.et_note);
-
         sqldbHelper = SQLiteDatabaseHelper.getHelper(AddUpdateActivity.this);
+
+        loadViews();
 
         initializeDatePicker();
         initializeImage();
@@ -90,6 +76,135 @@ public class AddUpdateActivity extends AppCompatActivity {
         } else {
             initializeAddDropBtn();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Handle gallery request
+        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
+            Uri selectedImage = data.getData();
+
+            try {
+                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
+            } catch (IOException e) {
+                Toast.makeText(this, "An error occurred while loading the selected file. Is it a valid image?", Toast.LENGTH_SHORT).show();
+            }
+        }
+        // Handle camera request
+        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
+            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+        }
+        iv_image.setImageBitmap(selectedImageBitmap);
+
+        if (iv_image.getVisibility() != View.VISIBLE) {
+            showImageElements();
+        }
+    }
+
+    private void saveEditDrop() {
+        drop.setTitle(et_title.getText().toString());
+        drop.setNote(et_note.getText().toString());
+        try {
+            drop.setDate(DateService.fullDateStringToEpochMilli(et_date.getText().toString()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (selectedImageBitmap != null && drop.getImage() == null) {
+            drop.setImage(drop.getId());
+        } else if (selectedImageBitmap == null && drop.getImage() != null) {
+            drop.setImage(null);
+        }
+
+        boolean success = false;
+        try {
+            success = sqldbHelper.updateDropFromLocal(drop);
+            Toast.makeText(this, drop.toString(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error updating drop", Toast.LENGTH_SHORT).show();
+        }
+
+        if (!success) {
+            backToDetails();
+            return;
+        }
+
+        if (drop.getImage() != null) {
+            ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
+        }
+
+        backToDetails();
+    }
+
+    private void addDrop() {
+        // Handle title
+        String title = et_title.getText().toString();
+        if (title.isEmpty()) {
+            til_title.setError(getString(R.string.errorTitleEmpty));
+            return;
+        } else if (title.length() > til_title.getCounterMaxLength()) {
+            til_title.setError(getString(R.string.errorTitleCharacterLimit));
+            return;
+        }
+        if (til_title.getError() != null) til_title.setError(null);
+
+        // Handle note
+        String note = et_note.getText().toString();
+        if (note.length() > til_note.getCounterMaxLength()) {
+            til_note.setError(getString(R.string.errorNoteCharacterLimit));
+            return;
+        }
+        if (til_note.getError() != null) til_note.setError(null);
+
+        // Handle date
+        long date;
+        try {
+            date = DateService.fullDateStringToEpochMilli(et_date.getText().toString());
+        } catch (ParseException e) {
+            til_date.setError(getString(R.string.errorDateEmpty));
+            return;
+        }
+        long now = Instant.now().getEpochSecond() * 1000L;
+        if (date < now) {
+            til_date.setError(getString(R.string.errorInvalidDate));
+            return;
+        }
+        if (til_date.getError() != null) til_date.setError(null);
+
+        // Store drop
+        SQLiteDropModel drop;
+        boolean hasImage = false;
+        if (selectedImageBitmap != null) {
+            hasImage = true;
+        }
+
+        drop = new SQLiteDropModel(-1, title, note, date, hasImage);
+
+        boolean success = sqldbHelper.addDropToLocal(drop);
+        if (!success) {
+            Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (hasImage) {
+            int lastId = sqldbHelper.getLastInsertedDropIdFromLocal();
+            ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
+        }
+
+        backToMain();
+    }
+
+    private void loadViews() {
+        tv_activity_title = findViewById(R.id.tv_activity_title);
+        ll_save_drop = findViewById(R.id.ll_save_drop);
+        tv_save_drop_label = findViewById(R.id.tv_save_drop_label);
+        til_title = findViewById(R.id.til_title);
+        et_title = findViewById(R.id.et_title);
+        til_note = findViewById(R.id.til_note);
+        et_note = findViewById(R.id.et_note);
     }
 
     private void initializeValues() {
@@ -117,7 +232,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void initializeImage() {
         iv_image = findViewById(R.id.iv_image);
-        ib_add_image = findViewById(R.id.ib_add_image);
+        ImageButton ib_add_image = findViewById(R.id.ib_add_image);
         ib_remove_image = findViewById(R.id.ib_remove_image);
         tv_no_image = findViewById(R.id.tv_no_image);
 
@@ -125,7 +240,8 @@ public class AddUpdateActivity extends AppCompatActivity {
         iv_image.setVisibility(View.GONE);
 
         ib_add_image.setOnClickListener(v -> showImageOptionDialog());
-        ib_remove_image.setOnClickListener(v -> removeImage());
+        ib_remove_image.setOnClickListener(v ->
+                removeImage());
 
         if (editMode) {
             if (drop.getImage() == null) {
@@ -177,31 +293,6 @@ public class AddUpdateActivity extends AppCompatActivity {
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Handle gallery request
-        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
-            Uri selectedImage = data.getData();
-
-            try {
-                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        // Handle camera request
-        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
-            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
-        }
-        iv_image.setImageBitmap(selectedImageBitmap);
-
-        if (iv_image.getVisibility() != View.VISIBLE) {
-            showImageElements();
-        }
-    }
-
     private void showImageElements() {
         tv_no_image.setVisibility(View.GONE);
         iv_image.setVisibility(View.VISIBLE);
@@ -212,63 +303,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void initializeAddDropBtn() {
         ll_save_drop.setOnClickListener(v -> {
-            // Handle title
-            String title = et_title.getText().toString();
-            if (title.isEmpty()) {
-                til_title.setError(getString(R.string.errorTitleEmpty));
-                return;
-            } else if (title.length() > til_title.getCounterMaxLength()) {
-                til_title.setError(getString(R.string.errorTitleCharacterLimit));
-                return;
-            }
-            if (til_title.getError() != null) til_title.setError(null);
-
-            // Handle note
-            String note = et_note.getText().toString();
-            if (note.length() > til_note.getCounterMaxLength()) {
-                til_note.setError(getString(R.string.errorNoteCharacterLimit));
-                return;
-            }
-            if (til_note.getError() != null) til_note.setError(null);
-
-            // Handle date
-            long date;
-            try {
-                date = DateService.fullDateStringToEpochMilli(et_date.getText().toString());
-            } catch (ParseException e) {
-                til_date.setError(getString(R.string.errorDateEmpty));
-                return;
-            }
-            long now = Instant.now().getEpochSecond() * 1000L;
-            if (date < now) {
-                til_date.setError(getString(R.string.errorInvalidDate));
-                return;
-            }
-            if (til_date.getError() != null) til_date.setError(null);
-
-            // Store drop
-            SQLiteDropModel drop;
-            boolean hasImage = false;
-            if (selectedImageBitmap != null) {
-                hasImage = true;
-            }
-
-            drop = new SQLiteDropModel(-1, title, note, date, hasImage);
-
-            SQLiteDatabaseHelper mSQLiteDatabaseHelper = SQLiteDatabaseHelper.getHelper(AddUpdateActivity.this);
-
-            boolean success = mSQLiteDatabaseHelper.addDropToLocal(drop);
-            if (!success) {
-                Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (hasImage) {
-                int lastId = mSQLiteDatabaseHelper.getLastInsertedDropIdFromLocal();
-                ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
-            }
-
-            backToMain();
+            addDrop();
         });
     }
 
@@ -276,44 +311,12 @@ public class AddUpdateActivity extends AppCompatActivity {
         tv_save_drop_label.setText(getString(R.string.saveDrop));
 
         ll_save_drop.setOnClickListener(v -> {
-            drop.setTitle(et_title.getText().toString());
-            drop.setNote(et_note.getText().toString());
-            try {
-                drop.setDate(DateService.fullDateStringToEpochMilli(et_date.getText().toString()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            if (selectedImageBitmap != null && drop.getImage() == null) {
-                drop.setImage(drop.getId());
-            } else if (selectedImageBitmap == null && drop.getImage() != null) {
-                drop.setImage(null);
-            }
-
-            boolean success = false;
-            try {
-                success = SQLiteDatabaseHelper.getHelper(this).updateDropFromLocal(drop);
-                Toast.makeText(this, drop.toString(), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Error updating drop", Toast.LENGTH_SHORT).show();
-            }
-
-            if (!success) {
-                backToDetails();
-                return;
-            }
-
-            if (drop.getImage() != null) {
-                ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
-            }
-
-            backToDetails();
+            saveEditDrop();
         });
     }
 
     private void initializeBackBtn() {
-        iv_back_btn = findViewById(R.id.iv_back_btn);
+        ImageView iv_back_btn = findViewById(R.id.iv_back_btn);
 
         iv_back_btn.setOnClickListener(v ->
                 super.onBackPressed());
@@ -322,7 +325,7 @@ public class AddUpdateActivity extends AppCompatActivity {
     private void backToDetails() {
         Intent i = new Intent(this, DetailsFragment.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.putExtra("drop", drop);
+        i.putExtra(DetailsFragment.DROP_SERIALIZABLE_STRING, drop);
         MainActivity.getContext().startActivity(i);
     }
 
@@ -330,5 +333,5 @@ public class AddUpdateActivity extends AppCompatActivity {
         Intent i = new Intent(this, MainActivity.class);
         MainActivity.getContext().startActivity(i);
     }
-}
 
+}

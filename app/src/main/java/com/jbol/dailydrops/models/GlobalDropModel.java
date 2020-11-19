@@ -90,7 +90,4 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
         return likes;
     }
 
-    public void setLikes(long likes) {
-        this.likes = likes;
-    }
 }

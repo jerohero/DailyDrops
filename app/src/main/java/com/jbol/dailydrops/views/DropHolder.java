@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.R;
@@ -48,9 +49,9 @@ public class DropHolder extends RecyclerView.ViewHolder {
 
     private void initializeColor() {
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
-            cv_card.setCardBackgroundColor(Color.parseColor("#f8ffea"));
+            cv_card.setCardBackgroundColor(ResourcesCompat.getColor(MainActivity.getContext().getResources(), R.color.colorOnline, null));
         } else {
-            cv_card.setCardBackgroundColor(Color.parseColor("#eaf5ff"));
+            cv_card.setCardBackgroundColor(ResourcesCompat.getColor(MainActivity.getContext().getResources(), R.color.colorLocal, null));
         }
     }
 
@@ -58,9 +59,12 @@ public class DropHolder extends RecyclerView.ViewHolder {
         // Don't show likes for local drops and online drops with 0 likes
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) {
             cl_likes_container.setVisibility(View.GONE);
+
             return;
         }
-        if (cl_likes_container.getVisibility() != View.VISIBLE) cl_likes_container.setVisibility(View.VISIBLE);
+        if (cl_likes_container.getVisibility() != View.VISIBLE)
+            cl_likes_container.setVisibility(View.VISIBLE);
+
         tv_likes.setText(String.valueOf(drop.getLikes()));
     }
 
@@ -78,6 +82,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         if (drop.getImage() == null) {
             iv_image.setImageResource(R.drawable.dailydrops);
             iv_image.setImageAlpha(70);
+
             return;
         }
         iv_image.setImageAlpha(255);
@@ -86,7 +91,15 @@ public class DropHolder extends RecyclerView.ViewHolder {
             Bitmap image = ImageService.loadImageFromStorage(MainActivity.getContext(), Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
-            new AsyncURLService(output -> iv_image.setImageBitmap(output)).execute(drop.getImage());
+            new AsyncURLService(output -> {
+                if (output == null) {
+                    iv_image.setImageDrawable(ResourcesCompat.getDrawable(MainActivity.getContext().getResources(), R.drawable.dailydrops, null));
+                    iv_image.setImageAlpha(70);
+
+                    return;
+                }
+                iv_image.setImageBitmap(output);
+            }).execute(drop.getImage());
         }
     }
 

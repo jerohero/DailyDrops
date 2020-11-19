@@ -12,16 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,37 +33,26 @@ import com.jbol.dailydrops.services.AsyncURLService;
 import java.time.format.FormatStyle;
 
 public class DetailsFragment extends Fragment {
+    public static String DROP_SERIALIZABLE_STRING = "drop";
+
     private TextView tv_title, tv_date, tv_note, tv_likes;
     private ImageButton ib_delete, ib_edit, ib_like;
     private FloatingActionButton fab_bookmark;
     private ImageView iv_image, iv_back_btn;
-    private RelativeLayout rl_root;
     private ConstraintLayout cl_top_bar;
     private LinearLayout ll_title_wrapper;
 
-    private GlobalDropModel drop;
-
     private SQLiteDatabaseHelper sqldbHelper;
-
-    long likes;
-
     private DatabaseReference fbLikesRef;
-    
     private Activity activity;
+    private GlobalDropModel drop;
+    private long likes;
 
-    public static DetailsFragment newInstance(GlobalDropModel drop) {
-        DetailsFragment fragment = new DetailsFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("drop", drop);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_details, container, false);
 
-        rl_root = v.findViewById(R.id.rl_root);
         tv_title = v.findViewById(R.id.tv_title);
         tv_note = v.findViewById(R.id.tv_note);
         tv_likes = v.findViewById(R.id.tv_likes);
@@ -90,11 +76,11 @@ public class DetailsFragment extends Fragment {
         activity = getActivity();
 
         if (getArguments() != null) {
-            drop = (GlobalDropModel) getArguments().getSerializable("drop");
+            drop = (GlobalDropModel) getArguments().getSerializable(DROP_SERIALIZABLE_STRING);
         }
-
         if (drop == null) {
-            //todo handle error
+            Toast.makeText(activity, "An error occurred while loading this drop", Toast.LENGTH_SHORT).show();
+            exitFragment();
             return;
         }
 
@@ -117,8 +103,6 @@ public class DetailsFragment extends Fragment {
         initializeImage();
         initializeLikes();
         initializeCollection();
-
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -126,12 +110,50 @@ public class DetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public static DetailsFragment newInstance(GlobalDropModel drop) {
+        DetailsFragment fragment = new DetailsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(DROP_SERIALIZABLE_STRING, drop);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private void deleteDrop() {
+        SQLiteDatabaseHelper sqldbHelper = SQLiteDatabaseHelper.getHelper(activity);
+        boolean success = sqldbHelper.deleteDropFromLocal(Integer.parseInt(drop.getId()));
+        if (!success) {
+            Toast.makeText(activity, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ImageService.deleteImageFromStorage(activity, Integer.parseInt(drop.getId()));
+        Intent i = new Intent(activity, MainActivity.class);
+        DetailsFragment.this.startActivity(i);
+    }
+
+    private void editDrop() {
+        Intent i = new Intent(activity, AddUpdateActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra(DROP_SERIALIZABLE_STRING, drop);
+        DetailsFragment.this.startActivity(i);
+    }
+
+    private void likeDrop() {
+        fbLikesRef.setValue(likes + 1);
+        boolean success = sqldbHelper.addDropToLikes(drop.getId());
+        if (!success) {
+            Toast.makeText(activity, "Error occurred while liking drop. Please try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        disableLikeButton();
+    }
+
+    // For reading value of drop's likes
     private void initializeFirebase() {
+        // Only server drops have likes
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) return;
 
         fbLikesRef = FirebaseDatabase.getInstance().getReference().child("drops").child(drop.getId()).child("likes");
 
-        // Read from the database
         fbLikesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -160,25 +182,34 @@ public class DetailsFragment extends Fragment {
 
     private void collectionBtnToAddToCollection() {
         fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.dark)));
-        fab_bookmark.setOnClickListener(v -> {
-            sqldbHelper.addDropToCollection(drop.getId(), drop.getType());
-            Toast.makeText(activity, "Added drop to My Collection", Toast.LENGTH_SHORT).show();
-            collectionBtnToRemoveFromCollection();
-        });
+        fab_bookmark.setOnClickListener(v ->
+                addDropToCollection());
+    }
+
+    private void addDropToCollection() {
+        sqldbHelper.addDropToCollection(drop.getId(), drop.getType());
+        Toast.makeText(activity, "Added drop to My Collection", Toast.LENGTH_SHORT).show();
+        collectionBtnToRemoveFromCollection();
     }
 
     private void collectionBtnToRemoveFromCollection() {
         fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightRed)));
-        fab_bookmark.setOnClickListener(v -> {
-            sqldbHelper.deleteDropFromCollection(drop.getId(), drop.getType());
-            Toast.makeText(activity, "Removed drop from My Collection", Toast.LENGTH_SHORT).show();
-            collectionBtnToAddToCollection();
+        fab_bookmark.setOnClickListener(v ->
+                deleteDropFromCollection());
+    }
 
-            // If drop is removed from collection while My Collection is active, update the list view
-            if (MainActivity.getInstance().getActiveListType() == MainActivity.COLLECTION_LIST_TYPE) {
-                MainActivity.getInstance().updateListData();
-            }
-        });
+    private void deleteDropFromCollection() {
+        boolean success = sqldbHelper.deleteDropFromCollection(drop.getId(), drop.getType());
+        if (!success) {
+            Toast.makeText(activity, "Drop couldn't be removed from My Collection, please try again", Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(activity, "Removed drop from My Collection", Toast.LENGTH_SHORT).show();
+        collectionBtnToAddToCollection();
+
+        // If drop is removed from collection while My Collection is active, update the list view
+        if (MainActivity.getInstance().getActiveListType() == MainActivity.COLLECTION_LIST_TYPE) {
+            MainActivity.getInstance().updateListData();
+        }
     }
 
     private void updateLikes(long likes) {
@@ -198,15 +229,8 @@ public class DetailsFragment extends Fragment {
             disableLikeButton();
             return;
         }
-        ib_like.setOnClickListener(v -> {
-            fbLikesRef.setValue(likes + 1);
-            boolean success = sqldbHelper.addDropToLikes(drop.getId());
-            if (!success) {
-                Toast.makeText(activity, "Error occurred while liking drop. Please try again.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            disableLikeButton();
-        });
+        ib_like.setOnClickListener(v ->
+                likeDrop());
     }
 
     private void disableLikeButton() {
@@ -234,33 +258,22 @@ public class DetailsFragment extends Fragment {
         tv_date.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.FULL));
     }
 
-    // Can only be executed if it's a local drop
     private void initializeDeleteBtn() {
+        // Delete button only shows for local drops
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
             ib_delete.setVisibility(View.GONE);
             return;
         }
-        ib_delete.setOnClickListener(v -> {
-            SQLiteDatabaseHelper sqldbHelper = SQLiteDatabaseHelper.getHelper(activity);
-            boolean success = sqldbHelper.deleteDropFromLocal(Integer.parseInt(drop.getId()));
-            if (!success) {
-                Toast.makeText(activity, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            ImageService.deleteImageFromStorage(activity, Integer.parseInt(drop.getId()));
-            Intent i = new Intent(activity, MainActivity.class);
-            DetailsFragment.this.startActivity(i);
-        });
+        ib_delete.setOnClickListener(v ->
+                deleteDrop());
     }
 
     private void initializeBackBtn() {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
         iv_back_btn.setOnClickListener(v ->
-                fm.beginTransaction().remove(this).commit()
-        );
+                exitFragment());
 
         // For some reason this part of the fragment is 'transparent',
-        // meaning that the user could click through it. This avoids that.
+        // meaning that the user could click through it -- this avoids that
         cl_top_bar.setSoundEffectsEnabled(false);
         cl_top_bar.setOnClickListener(v -> { });
     }
@@ -270,11 +283,12 @@ public class DetailsFragment extends Fragment {
             ib_edit.setVisibility(View.GONE);
             return;
         }
-        ib_edit.setOnClickListener(v -> {
-            Intent i = new Intent(activity, AddUpdateActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.putExtra("drop", drop);
-            DetailsFragment.this.startActivity(i);
-        });
+        ib_edit.setOnClickListener(v ->
+                editDrop());
+    }
+
+    private void exitFragment() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        fm.beginTransaction().remove(this).commit();
     }
 }

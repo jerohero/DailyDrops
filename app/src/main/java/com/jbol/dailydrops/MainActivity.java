@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.jbol.dailydrops.database.FirebaseDatabaseHelper;
 import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
 import com.jbol.dailydrops.models.FirebaseDropList;
 import com.jbol.dailydrops.models.FirebaseDropModel;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SQLiteDatabaseHelper sqldbHelper;
 
     private int listType;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -339,26 +341,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         updateListData();
     }
 
-    // Parse Firebase snapshot to a list of FirebaseDropModels
-    private ArrayList<FirebaseDropModel> collectFirebaseDrops(Object snapshotValue) {
-        ArrayList<FirebaseDropModel> drops = new ArrayList<>();
-
-        Gson gson = new Gson();
-        JsonElement jsonElement = gson.toJsonTree(snapshotValue);
-        FirebaseDropList dropList = gson.fromJson(jsonElement, FirebaseDropList.class);
-
-        Iterator<Map.Entry<String, FirebaseDropModel>> it = dropList.getDrops().entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, FirebaseDropModel> pair = it.next();
-            FirebaseDropModel drop = pair.getValue();
-            drop.setId(pair.getKey());
-            drops.add(drop);
-            it.remove();
-        }
-
-        return drops;
-    }
-
     // Allow reading drops from Firebase database
     private void initializeFirebaseListener() {
         DatabaseReference fbDropsReference = FirebaseDatabase.getInstance().getReference();
@@ -367,7 +349,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) { return; }
-                firebaseDropModelArrayList = collectFirebaseDrops(dataSnapshot.getValue());
+                FirebaseDatabaseHelper fbHelper = new FirebaseDatabaseHelper();
+                firebaseDropModelArrayList = fbHelper.collectFirebaseDrops(dataSnapshot.getValue());
                 updateListData();
             }
 

@@ -11,9 +11,7 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import java.util.ArrayList;
 
 public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
-
     private Context context;
-
     private ArrayList<GlobalDropModel> drops;
     private DropClickListener dropClickListener;
 
@@ -31,7 +29,6 @@ public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
         return new DropHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(DropHolder holder, int position) {
         GlobalDropModel drop = this.drops.get(position);
@@ -42,4 +39,5 @@ public class DropAdapter extends RecyclerView.Adapter<DropHolder> {
     public int getItemCount() {
         return drops.size();
     }
+
 }

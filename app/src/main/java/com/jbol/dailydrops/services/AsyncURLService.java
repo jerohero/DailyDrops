@@ -3,8 +3,8 @@ package com.jbol.dailydrops.services;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
+// https://stackoverflow.com/a/12575319/11391965
 public class AsyncURLService extends AsyncTask<String, Void, Bitmap> {
-
     public interface AsyncResponse {
         void processFinish(Bitmap output);
     }
@@ -25,5 +25,3 @@ public class AsyncURLService extends AsyncTask<String, Void, Bitmap> {
         return ImageService.getImageFromURL(strings[0]);
     }
 }
-
-// source: https://stackoverflow.com/a/12575319/11391965

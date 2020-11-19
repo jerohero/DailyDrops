@@ -1,9 +1,7 @@
 package com.jbol.dailydrops.views;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.models.GlobalDropModel;
@@ -16,7 +14,7 @@ public class DropClickListener implements View.OnClickListener {
     public DropClickListener(RecyclerView recyclerView, ArrayList<GlobalDropModel> dropModelArrayList) {
         this.recyclerView = recyclerView;
         this.dropModelArrayList = dropModelArrayList;
-}
+    }
 
     @Override
     public void onClick(View v) {

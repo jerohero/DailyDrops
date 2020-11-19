@@ -6,28 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.jbol.dailydrops.models.FirebaseDropModel;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
-
     private static SQLiteDatabase sqldb;
     private static SQLiteDatabaseHelper instance;
     private static final String dbName = "dailydrops.db";
     private static final int dbVersion = 1;
-
     private static final String CREATE_USER_DROPS_TABLE =
             "CREATE TABLE " + SQLiteDatabaseInfo.DropsTable.USER_DROPS_TABLE + " ("
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -36,31 +26,15 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE + " INTEGER NOT NULL, "
                     + SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_HAS_IMAGE + " INT NOT NULL "
                     + ");";
-
-
     private static final String CREATE_USER_LIKES_TABLE =
             "CREATE TABLE " + SQLiteDatabaseInfo.LikesTable.USER_LIKES_TABLE + " ("
                     + SQLiteDatabaseInfo.LikesColumn.COLUMN_ID + " TEXT PRIMARY KEY "
                     + ");";
-
     private static final String CREATE_USER_COLLECTION_TABLE =
             "CREATE TABLE " + SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE + " ("
                     + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_ID + " TEXT PRIMARY KEY, "
                     + SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_TYPE + " TEXT NOT NULL "
                     + ");";
-
-
-    public SQLiteDatabaseHelper(Context context) {
-        super(context, dbName, null, dbVersion);
-    }
-
-    public static synchronized SQLiteDatabaseHelper getHelper(Context context){
-        if (instance == null){
-            instance = new SQLiteDatabaseHelper(context);
-            sqldb = instance.getWritableDatabase();
-        }
-        return instance;
-    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -82,6 +56,18 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public SQLiteDatabaseHelper(Context context) {
+        super(context, dbName, null, dbVersion);
+    }
+
+    public static synchronized SQLiteDatabaseHelper getHelper(Context context){
+        if (instance == null){
+            instance = new SQLiteDatabaseHelper(context);
+            sqldb = instance.getWritableDatabase();
+        }
+        return instance;
+    }
+
     public boolean addDropToCollection(String dropId, String dropType) {
         ContentValues cv = new ContentValues();
 
@@ -89,11 +75,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         cv.put(SQLiteDatabaseInfo.CollectionColumn.COLUMN_DROP_TYPE, dropType);
 
         long insert = sqldb.insert(SQLiteDatabaseInfo.CollectionTable.USER_COLLECTION_TABLE, null, cv);
-        if (insert == -1) {
-            return false;
-        } else {
-            return true;
-        }
+        return insert != -1;
     }
 
     public boolean dropIsInCollection(String dropId, String dropType) {
@@ -196,8 +178,10 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = sqldb.rawQuery(queryString, null);
 
         if (cursor.moveToFirst()) {
+            cursor.close();
             return true;
         } else {
+            cursor.close();
             return false;
         }
     }

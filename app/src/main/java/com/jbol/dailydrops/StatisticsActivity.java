@@ -3,7 +3,6 @@ package com.jbol.dailydrops;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
@@ -15,28 +14,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.jbol.dailydrops.database.FirebaseDatabaseHelper;
 import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
-import com.jbol.dailydrops.models.FirebaseDropList;
 import com.jbol.dailydrops.models.FirebaseDropModel;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.BarChartDecimalFormatter;
 import com.jbol.dailydrops.services.DateService;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 public class StatisticsActivity extends AppCompatActivity {
     private ArrayList<GlobalDropModel> dropModels = new ArrayList<>();
-    private DatabaseReference fbDropsReference;
     private ArrayList<FirebaseDropModel> firebaseDropModels = new ArrayList<>();
-    private ArrayList<SQLiteDropModel> sqLiteDropModels = new ArrayList<>();
-
     private ArrayList<BarEntry> dropData = new ArrayList<>();
-
     private BarChart chart;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +37,6 @@ public class StatisticsActivity extends AppCompatActivity {
         chart = findViewById(R.id.barchart);
 
         initializeBackBtn();
-
         startProcess();
     }
 
@@ -89,7 +80,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void initializeDrops() {
-        sqLiteDropModels = (ArrayList<SQLiteDropModel>) SQLiteDatabaseHelper.getHelper(this).getAllDropsFromLocal();
+        ArrayList<SQLiteDropModel> sqLiteDropModels = (ArrayList<SQLiteDropModel>) SQLiteDatabaseHelper.getHelper(this).getAllDropsFromLocal();
 
         for (SQLiteDropModel sqLiteDropModel : sqLiteDropModels) {
             dropModels.add(new GlobalDropModel(sqLiteDropModel));
@@ -102,13 +93,14 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void initializeFirebase() {
-        fbDropsReference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference fbDropsReference = FirebaseDatabase.getInstance().getReference();
 
         fbDropsReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    firebaseDropModels = collectFirebaseDrops(dataSnapshot.getValue());
+                    FirebaseDatabaseHelper fbHelper = new FirebaseDatabaseHelper();
+                    firebaseDropModels = fbHelper.collectFirebaseDrops(dataSnapshot.getValue());
                 }
                 initializeDrops();
             }
@@ -120,29 +112,11 @@ public class StatisticsActivity extends AppCompatActivity {
         });
     }
 
-    private ArrayList<FirebaseDropModel> collectFirebaseDrops(Object snapshotValue) {
-        ArrayList<FirebaseDropModel> drops = new ArrayList<>();
-
-        Gson gson = new Gson();
-        JsonElement jsonElement = gson.toJsonTree(snapshotValue);
-        FirebaseDropList dropList = gson.fromJson(jsonElement, FirebaseDropList.class);
-
-        Iterator<Map.Entry<String, FirebaseDropModel>> it = dropList.getDrops().entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, FirebaseDropModel> pair = it.next();
-            FirebaseDropModel drop = pair.getValue();
-            drop.setId(pair.getKey());
-            drops.add(drop);
-            it.remove();
-        }
-
-        return drops;
-    }
-
     private void initializeBackBtn() {
         ImageView iv_back_btn = findViewById(R.id.iv_back_btn);
 
         iv_back_btn.setOnClickListener(v ->
                 super.onBackPressed());
     }
+
 }

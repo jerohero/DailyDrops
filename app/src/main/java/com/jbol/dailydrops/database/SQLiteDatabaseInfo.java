@@ -30,4 +30,5 @@ public class SQLiteDatabaseInfo {
         public static final String COLUMN_DROP_HAS_IMAGE = "has_image";
         public static final String COLUMN_ID = "id";
     }
+
 }

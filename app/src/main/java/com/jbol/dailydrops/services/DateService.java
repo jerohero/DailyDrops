@@ -1,8 +1,5 @@
 package com.jbol.dailydrops.services;
 
-import android.content.Context;
-import android.util.Log;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -20,7 +17,6 @@ public class DateService {
     private static SimpleDateFormat sdfDDMM = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
 
     private static String timeZone = "Europe/Amsterdam"; // https://en.m.wikipedia.org/wiki/List_of_tz_database_time_zones
-
 
     public static long fullDateStringToEpochMilli(String dateString) throws ParseException {
         Date date = sdfDDMMYYYY.parse(dateString);
@@ -42,7 +38,7 @@ public class DateService {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(epoch);
 
-        sdfDDMM.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
+        sdfDDMM.setTimeZone(TimeZone.getTimeZone(timeZone));
         return sdfDDMM.format(cal.getTime());
     }
 
@@ -53,4 +49,5 @@ public class DateService {
     public static long getNowInEpochMilli() {
         return Instant.now().getEpochSecond() * 1000L;
     }
+
 }

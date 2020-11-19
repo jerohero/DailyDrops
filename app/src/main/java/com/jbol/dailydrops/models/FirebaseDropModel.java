@@ -48,10 +48,6 @@ public class FirebaseDropModel {
         return date;
     }
 
-    public void setDate(long date) {
-        this.date = date;
-    }
-
     public String getImagePath() {
         return imagePath;
     }
@@ -60,7 +56,4 @@ public class FirebaseDropModel {
         return likes;
     }
 
-    public void setLikes(long likes) {
-        this.likes = likes;
-    }
 }

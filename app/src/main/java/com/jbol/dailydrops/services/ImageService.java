@@ -46,18 +46,21 @@ public class ImageService {
         catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
     public static boolean deleteImageFromStorage(Context ctx, int id) {
         File directory = getImagesDir(ctx);
         File imgFile = new File(directory, id + ".png");
+
         return imgFile.delete();
     }
 
     public static File getImagesDir(Context ctx) {
         ContextWrapper cw = new ContextWrapper(ctx);
         // path to /data/user/0/com.jbol.dailydrops/app_images
+
         return cw.getDir("images", Context.MODE_PRIVATE);
     }
 
@@ -68,10 +71,10 @@ public class ImageService {
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
+
             return BitmapFactory.decodeStream(input);
         } catch (IOException e) {
-            // Log exception
-            return null;
+            return null; // No image
         }
     }
 
