@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -44,40 +43,34 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private SQLiteDatabaseHelper sqldbHelper;
+    public static final String LIST_TYPE = "listType";
+    public static final int DEFAULT_LIST_TYPE = 0;
+    public static final int HOT_LIST_TYPE = 1;
+    public static final int COLLECTION_LIST_TYPE = 2;
 
-    private RecyclerView recyclerView;
-    private FloatingActionButton fab_add, fab_search;
+    private static MainActivity instance;
+    private static Context context;
+
+    private static String searchTerm = "";
+    private static boolean showServerDrops = true;
+    private static boolean showLocalDrops = true;
+
+    private FloatingActionButton fab_search;
     private ConstraintLayout cl_search_label;
     private DrawerLayout dl_drawer_layout;
-    private TextView tv_no_results;
-    private MaterialToolbar tb_toolbar;
+    private TextView tv_no_results, tv_search_term;
 
-    private DropAdapter adapter;
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
     private ArrayList<SQLiteDropModel> sqLiteDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
 
-    private DatabaseReference fbDropsReference;
-
-    private static MainActivity instance;
-
-    private static Context context;
-
-    private static String searchTerm = "";
-
-    private static boolean showServerDrops = true;
-    private static boolean showLocalDrops = true;
+    private DropAdapter adapter;
+    private SQLiteDatabaseHelper sqldbHelper;
 
     private int listType;
-
-    public static final int defaultListType = 0;
-    public static final int hotListType = 1;
-    public static final int collectionListType = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +82,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MainActivity.context = getApplicationContext();
 
         Intent intent = getIntent();
-        listType = (int) intent.getIntExtra("listType", defaultListType);
+        listType = intent.getIntExtra(LIST_TYPE, DEFAULT_LIST_TYPE);
         initializeListType();
 
-        addDropsListener();
+        initializeFirebaseListener();
 
         sqldbHelper = SQLiteDatabaseHelper.getHelper(MainActivity.this);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         tv_no_results = findViewById(R.id.tv_no_results);
@@ -109,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
         updateListData();
 
-        fab_add = findViewById(R.id.fab_add);
+        FloatingActionButton fab_add = findViewById(R.id.fab_add);
         fab_add.setOnClickListener(v -> {
             Intent i = new Intent(MainActivity.this, AddUpdateActivity.class);
             startActivity(i);
@@ -119,60 +112,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initializeDrawer();
     }
 
-    private void initializeListType() {
-        tb_toolbar = findViewById(R.id.tb_toolbar);
-        if (listType == hotListType) {
-            showServerDrops = true;
-            showLocalDrops = false;
-            tb_toolbar.setTitle("Hot drops");
-        } else if (listType == defaultListType) {
-            showServerDrops = true;
-            showLocalDrops = true;
-        } else if (listType == collectionListType) {
-            showServerDrops = true;
-            showLocalDrops = true;
-            tb_toolbar.setTitle("My Collection");
-        }
-    }
-
-    private void initializeDrawer() {
-        MaterialToolbar toolbar = findViewById(R.id.tb_toolbar);
-        dl_drawer_layout = findViewById(R.id.dl_drawer_layout);
-        NavigationView nav_view = findViewById(R.id.nav_view);
-
-        nav_view.setNavigationItemSelectedListener(this);
-
-        ActionBarDrawerToggle drawerToggle;
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            drawerToggle = new ActionBarDrawerToggle(this, dl_drawer_layout, toolbar, R.string.drawerOpen, R.string.drawerClose);
-            dl_drawer_layout.addDrawerListener(drawerToggle);
-            drawerToggle.setDrawerIndicatorEnabled(true);
-            drawerToggle.syncState();
-        }
-
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         Intent i;
         switch (menuItem.getItemId()){
             case R.id.nav_drops:
                 i = new Intent(MainActivity.this, MainActivity.class);
-                i.putExtra("listType", defaultListType);
+                i.putExtra(LIST_TYPE, DEFAULT_LIST_TYPE);
                 this.startActivity(i);
                 break;
             case R.id.nav_bookmarks:
                 i = new Intent(MainActivity.this, MainActivity.class);
-                i.putExtra("listType", collectionListType);
+                i.putExtra(LIST_TYPE, COLLECTION_LIST_TYPE);
                 this.startActivity(i);
                 break;
             case R.id.nav_hot:
                 i = new Intent(MainActivity.this, MainActivity.class);
-                i.putExtra("listType", hotListType);
+                i.putExtra(LIST_TYPE, HOT_LIST_TYPE);
                 this.startActivity(i);
                 break;
             case R.id.nav_stats:
@@ -191,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        //Checks if the navigation drawer is open -- If so, close it
+        // Checks if the navigation drawer is open -- If so, close it
         if (dl_drawer_layout.isDrawerOpen(GravityCompat.START)) {
             dl_drawer_layout.closeDrawer(GravityCompat.START);
         }
@@ -213,10 +169,98 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         updateListData();
     }
 
-    private void initializeSearch() {
-        TextView tv_search_term = findViewById(R.id.tv_search_term);
+    public static Context getContext() {
+        return context;
+    }
 
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    public int getActiveListType() {
+        return listType;
+    }
+
+    // Update the drop list that the user sees
+    public void updateListData() {
+        dropModelArrayList.clear();
+
+        sqLiteDropModelArrayList = (ArrayList<SQLiteDropModel>) sqldbHelper.getAllDropsFromLocal();
+
+        if (listType == COLLECTION_LIST_TYPE) {
+            fetchCollection();
+        } else {
+            fetchDrops();
+        }
+
+        if (dropModelArrayList.size() <= 0) {
+            tv_no_results.setVisibility(View.VISIBLE);
+        } else if (tv_no_results.getVisibility() == View.VISIBLE) {
+            tv_no_results.setVisibility(View.GONE);
+        }
+
+        if (listType == DEFAULT_LIST_TYPE || listType == COLLECTION_LIST_TYPE) {
+            Collections.sort(dropModelArrayList);
+        } else if (listType == HOT_LIST_TYPE) {
+            Comparator<GlobalDropModel> likesOrder =
+                    (o1, o2) -> (int) (o1.getLikes() - o2.getLikes());
+            Collections.sort(dropModelArrayList, Collections.reverseOrder(likesOrder));
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    // Show fragment with drop's details
+    public void showDetails(GlobalDropModel drop) {
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(drop);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.dl_drawer_layout, detailsFragment)
+                .addToBackStack(DetailsFragment.class.getSimpleName())
+                .commit();
+    }
+
+    // Settings that are unique to each list type
+    private void initializeListType() {
+        MaterialToolbar tb_toolbar = findViewById(R.id.tb_toolbar);
+        if (listType == HOT_LIST_TYPE) {
+            showServerDrops = true;
+            showLocalDrops = false;
+            tb_toolbar.setTitle("Hot drops");
+        } else if (listType == DEFAULT_LIST_TYPE) {
+            showServerDrops = true;
+            showLocalDrops = true;
+        } else if (listType == COLLECTION_LIST_TYPE) {
+            showServerDrops = true;
+            showLocalDrops = true;
+            tb_toolbar.setTitle("My Collection");
+        }
+    }
+
+    // Drawer is the menu with items that redirect the user to other pages
+    private void initializeDrawer() {
+        MaterialToolbar toolbar = findViewById(R.id.tb_toolbar);
+        dl_drawer_layout = findViewById(R.id.dl_drawer_layout);
+        NavigationView nav_view = findViewById(R.id.nav_view);
+
+        nav_view.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle drawerToggle;
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            drawerToggle = new ActionBarDrawerToggle(this, dl_drawer_layout, toolbar, R.string.drawerOpen, R.string.drawerClose);
+            dl_drawer_layout.addDrawerListener(drawerToggle);
+            drawerToggle.setDrawerIndicatorEnabled(true);
+            drawerToggle.syncState();
+        }
+    }
+
+    private void initializeSearch() {
+        tv_search_term = findViewById(R.id.tv_search_term);
         cl_search_label = findViewById(R.id.cl_search_label);
+
         if (searchTerm.isEmpty()) {
             cl_search_label.setVisibility(View.GONE);
         } else {
@@ -232,6 +276,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         fab_search = findViewById(R.id.fab_search);
 
+        openSearchDialog();
+    }
+
+    private void openSearchDialog() {
         fab_search.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             View view = getLayoutInflater().inflate(R.layout.dialog_search, null);
@@ -242,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
 
             // If hotListType is active, only server drops are showed and this cannot be changed
-            if (listType == MainActivity.hotListType) {
+            if (listType == MainActivity.HOT_LIST_TYPE) {
                 showServerCheck.setChecked(true);
                 showLocalCheck.setChecked(false);
                 showServerCheck.setVisibility(View.GONE);
@@ -257,36 +305,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             dialog.show();
 
             searchBtn.setOnClickListener(v1 -> {
-                if (showServerCheck.isChecked()) {
-                    if (!showServerDrops) showServerDrops = true;
-                } else {
-                    if (showServerDrops) showServerDrops = false;
-                }
-
-                if (showLocalCheck.isChecked()) {
-                    if (!showLocalDrops) showLocalDrops = true;
-                } else {
-                    if (showLocalDrops) showLocalDrops = false;
-                }
-
-                if (!searchField.getText().toString().isEmpty()) {
-                    searchTerm = searchField.getText().toString();
-                    cl_search_label.setVisibility(View.VISIBLE);
-                    String searchLabel = getResources().getString(R.string.searchLabel) +  " \"" + searchTerm + "\"";
-                    tv_search_term.setText(searchLabel);
-
-                } else {
-                    cl_search_label.setVisibility(View.GONE);
-                    searchTerm = "";
-                }
-
+                search(searchField.getText().toString(), showServerCheck.isChecked(), showLocalCheck.isChecked());
                 dialog.dismiss();
-
-                updateListData();
             });
         });
     }
 
+    // Execute when user gives search criteria and continues
+    private void search(String searchFieldInput, boolean showServer, boolean showLocal) {
+        if (showServer) {
+            if (!showServerDrops) showServerDrops = true;
+        } else {
+            if (showServerDrops) showServerDrops = false;
+        }
+
+        if (showLocal) {
+            if (!showLocalDrops) showLocalDrops = true;
+        } else {
+            if (showLocalDrops) showLocalDrops = false;
+        }
+
+        if (!searchFieldInput.isEmpty()) {
+            searchTerm = searchFieldInput;
+            cl_search_label.setVisibility(View.VISIBLE);
+            String searchLabel = getResources().getString(R.string.searchLabel) +  " \"" + searchTerm + "\"";
+            tv_search_term.setText(searchLabel);
+
+        } else {
+            cl_search_label.setVisibility(View.GONE);
+            searchTerm = "";
+        }
+
+        updateListData();
+    }
+
+    // Parse Firebase snapshot to a list of FirebaseDropModels
     private ArrayList<FirebaseDropModel> collectFirebaseDrops(Object snapshotValue) {
         ArrayList<FirebaseDropModel> drops = new ArrayList<>();
 
@@ -306,10 +359,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return drops;
     }
 
-    private void addDropsListener() {
-        fbDropsReference = FirebaseDatabase.getInstance().getReference();
+    // Allow reading drops from Firebase database
+    private void initializeFirebaseListener() {
+        DatabaseReference fbDropsReference = FirebaseDatabase.getInstance().getReference();
 
-        // Read from the database
         fbDropsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -320,27 +373,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.w("dev", "Failed to read value.", error.toException());
+                Log.w("dev", "Failed to read value from Firebase database.", error.toException());
             }
         });
     }
 
-    public static Context getContext() {
-        return MainActivity.context.getApplicationContext();
+    // Find all drops that match criteria
+    private void fetchDrops() {
+        long day = DateService.getDayInEpochMilli();
+        long now = DateService.getNowInEpochMilli();
+
+        if (showLocalDrops) {
+            for (SQLiteDropModel sqLiteDropModel : sqLiteDropModelArrayList) {
+                if (
+                        searchTerm.isEmpty() ||
+                                sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                ) {
+                    if (sqLiteDropModel.getDate() <= now - (day * 3)) {
+                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over three days ago
+                    } else {
+                        dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
+                    }
+                }
+            }
+        }
+
+        if (showServerDrops) {
+            for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
+                if (
+                        searchTerm.isEmpty() ||
+                                firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
+                ) {
+                    if (firebaseDropModel.getDate() > now - (day * 3)) {
+                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over three days ago
+                    }
+                }
+            }
+        }
     }
 
-    public static MainActivity getInstance() {
-        return instance;
-    }
-
-    public void showDetails(GlobalDropModel drop) {
-        DetailsFragment detailsFragment = DetailsFragment.newInstance(drop);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.dl_drawer_layout, detailsFragment)
-                .addToBackStack(DetailsFragment.class.getSimpleName())
-                .commit();
-    }
-
+    // Find all drops that the user stored in their collection
     private void fetchCollection() {
         HashMap<String, String> idToType = sqldbHelper.getAllCollectionDrops();
 
@@ -377,73 +451,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             it.remove();
         }
-    }
-
-    private void fetchDrops() {
-        long day = DateService.getDayInEpochMilli();
-        long now = DateService.getNowInEpochMilli();
-
-        if (showLocalDrops) {
-            for (SQLiteDropModel sqLiteDropModel : sqLiteDropModelArrayList) {
-                if (
-                        searchTerm.isEmpty() ||
-                                sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                                sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
-                ) {
-                    if (sqLiteDropModel.getDate() <= now - (day * 3)) {
-                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over three days ago
-                    } else {
-                        dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
-                    }
-                }
-            }
-        }
-
-        if (showServerDrops) {
-            for (FirebaseDropModel firebaseDropModel : firebaseDropModelArrayList) {
-                if (
-                        searchTerm.isEmpty() ||
-                                firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                                firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
-                ) {
-                    if (firebaseDropModel.getDate() > now - (day * 3)) {
-                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over three days ago
-                    }
-                }
-            }
-        }
-    }
-
-    public int getActiveListType() {
-        return listType;
-    }
-
-    public void updateListData() {
-        dropModelArrayList.clear();
-
-        sqLiteDropModelArrayList = (ArrayList<SQLiteDropModel>) sqldbHelper.getAllDropsFromLocal();
-
-        if (listType == collectionListType) {
-            fetchCollection();
-        } else {
-            fetchDrops();
-        }
-
-        if (dropModelArrayList.size() <= 0) {
-            tv_no_results.setVisibility(View.VISIBLE);
-        } else if (tv_no_results.getVisibility() == View.VISIBLE) {
-            tv_no_results.setVisibility(View.GONE);
-        }
-
-        if (listType == defaultListType || listType == collectionListType) {
-            Collections.sort(dropModelArrayList);
-        } else if (listType == hotListType) {
-            Comparator<GlobalDropModel> likesOrder =
-                    (o1, o2) -> (int) (o1.getLikes() - o2.getLikes());
-            Collections.sort(dropModelArrayList, Collections.reverseOrder(likesOrder));
-        }
-
-        adapter.notifyDataSetChanged();
     }
 
     private void closeDrawer(){

@@ -175,7 +175,7 @@ public class DetailsFragment extends Fragment {
             collectionBtnToAddToCollection();
 
             // If drop is removed from collection while My Collection is active, update the list view
-            if (MainActivity.getInstance().getActiveListType() == MainActivity.collectionListType) {
+            if (MainActivity.getInstance().getActiveListType() == MainActivity.COLLECTION_LIST_TYPE) {
                 MainActivity.getInstance().updateListData();
             }
         });
