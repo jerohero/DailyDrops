@@ -28,11 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.jbol.dailydrops.database.FirebaseDatabaseHelper;
 import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
-import com.jbol.dailydrops.models.FirebaseDropList;
 import com.jbol.dailydrops.models.FirebaseDropModel;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
@@ -137,11 +134,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 i = new Intent(MainActivity.this, StatisticsActivity.class);
                 this.startActivity(i);
                 break;
-            case R.id.nav_contact:
             case R.id.nav_credits:
-                getSupportFragmentManager().beginTransaction().replace(R.id.rl_content, new ContactFragment())
-                        .commit();
-                closeDrawer();
+                i = new Intent(MainActivity.this, CreditsActivity.class);
+                this.startActivity(i);
                 break;
         }
         return true;
@@ -216,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showDetails(GlobalDropModel drop) {
         DetailsFragment detailsFragment = DetailsFragment.newInstance(drop);
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.dl_drawer_layout, detailsFragment)
+                .replace(R.id.dl_drawer_layout, detailsFragment)
                 .addToBackStack(DetailsFragment.class.getSimpleName())
                 .commit();
     }
@@ -373,8 +368,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 sqLiteDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
                                 sqLiteDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
-                    if (sqLiteDropModel.getDate() <= now - (day * 3)) {
-                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over three days ago
+                    if (sqLiteDropModel.getDate() <= now - (day * 2)) {
+                        sqldbHelper.deleteDropFromLocal(sqLiteDropModel.getId()); // Delete drop if it released over two days ago
                     } else {
                         dropModelArrayList.add(new GlobalDropModel(sqLiteDropModel));
                     }
@@ -389,8 +384,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 firebaseDropModel.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
                                 firebaseDropModel.getNote().toLowerCase().contains(searchTerm.toLowerCase())
                 ) {
-                    if (firebaseDropModel.getDate() > now - (day * 3)) {
-                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over three days ago
+                    if (firebaseDropModel.getDate() > now - (day * 2)) {
+                        dropModelArrayList.add(new GlobalDropModel(firebaseDropModel)); // Don't show drops that released over two days ago
                     }
                 }
             }

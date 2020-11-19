@@ -1,6 +1,5 @@
 package com.jbol.dailydrops.views;
 
-import android.util.Log;
 import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.MainActivity;
@@ -20,7 +19,6 @@ public class DropClickListener implements View.OnClickListener {
     public void onClick(View v) {
         int itemPosition = recyclerView.getChildLayoutPosition(v);
         GlobalDropModel drop = dropModelArrayList.get(itemPosition);
-        Log.d("dev", drop.getTitle());
 
         MainActivity.getInstance().showDetails(drop);
     }

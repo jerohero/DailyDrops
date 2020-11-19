@@ -1,7 +1,6 @@
 package com.jbol.dailydrops.views;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +21,6 @@ public class DropHolder extends RecyclerView.ViewHolder {
     private CardView cv_card;
     private ImageView iv_image;
     private ConstraintLayout cl_likes_container;
-
     private GlobalDropModel drop;
 
     public DropHolder(View itemView) {
@@ -72,7 +70,12 @@ public class DropHolder extends RecyclerView.ViewHolder {
         long day = DateService.getDayInEpochMilli();
         long now = DateService.getNowInEpochMilli();
         if (drop.getDate() < now + day) {
-            txtDate.setTextColor(Color.parseColor("#FF8688"));
+            if (drop.getDate() > now - day) {
+                String newText = txtDate.getText() + " (today)";
+                txtDate.setText(newText);
+            }
+            String newText = txtDate.getText() + " (exceeded)";
+            txtDate.setText(newText);
         }
     }
 

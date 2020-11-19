@@ -134,9 +134,10 @@
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:background="@drawable/roundcorner_red"
-                            android:padding="11dp"
+                            android:padding="8dp"
                             android:scaleType="centerInside"
-                            app:srcCompat="@drawable/addimage" />
+                            android:tint="#FFFFFF"
+                            app:srcCompat="@drawable/ic_add_image_black_48dp" />
 
                         <ImageButton
                             android:id="@+id/ib_remove_image"
@@ -144,9 +145,9 @@
                             android:layout_height="60dp"
                             android:layout_marginStart="8dp"
                             android:background="@drawable/roundcorner_red"
-                            android:padding="11dp"
                             android:scaleType="centerInside"
-                            app:srcCompat="@drawable/eraser" />
+                            android:tint="#FFFFFF"
+                            app:srcCompat="@drawable/ic_eraser_black_48dp" />
                     </LinearLayout>
 
                     <TextView
@@ -200,20 +201,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.516" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/iv_back_btn"
-            android:layout_width="58dp"
-            android:layout_height="32dp"
+            android:layout_width="36dp"
+            android:layout_height="27dp"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="9dp"
+            app:tint="@color/colorPink"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1"
-            app:srcCompat="@drawable/arrow" />
+            app:layout_constraintVertical_bias="0.235"
+            app:srcCompat="@drawable/ic_left_black_24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -238,7 +239,8 @@
             android:layout_height="28dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="5dp"
-            android:src="@drawable/floppydisk" />
+            android:src="@drawable/ic_save_black_24dp"
+            app:tint="@color/black" />
 
         <TextView
             android:id="@+id/tv_save_drop_label"

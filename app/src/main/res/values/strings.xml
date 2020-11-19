@@ -34,5 +34,6 @@
     <string name="contact">Contact</string>
     <string name="statistics">Statistics</string>
     <string name="barChartTitle">Drops per day (over 14 days)</string>
+    <string name="emailAddress">jegbol01@gmail.com</string>
 
 </resources>
