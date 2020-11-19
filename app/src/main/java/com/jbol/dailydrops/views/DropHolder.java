@@ -83,9 +83,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         iv_image = itemView.findViewById(R.id.iv_image);
 
         if (drop.getImage() == null) {
-            iv_image.setImageResource(R.drawable.dailydrops);
-            iv_image.setImageAlpha(70);
-
+            setDefaultImage();
             return;
         }
         iv_image.setImageAlpha(255);
@@ -96,14 +94,18 @@ public class DropHolder extends RecyclerView.ViewHolder {
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
             new AsyncURLService(output -> {
                 if (output == null) {
-                    iv_image.setImageDrawable(ResourcesCompat.getDrawable(MainActivity.getContext().getResources(), R.drawable.dailydrops, null));
-                    iv_image.setImageAlpha(70);
-
+                    setDefaultImage();
                     return;
                 }
                 iv_image.setImageBitmap(output);
             }).execute(drop.getImage());
         }
+    }
+
+    private void setDefaultImage() {
+        iv_image.setImageDrawable(ResourcesCompat.getDrawable(MainActivity.getContext().getResources(), R.drawable.dailydrops, null));
+        iv_image.setImageAlpha(70);
+        iv_image.setPadding(20, 20, 20, 20);
     }
 
 }

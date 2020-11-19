@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DropAdapter adapter;
     private SQLiteDatabaseHelper sqldbHelper;
 
-    private int listType;
+    private int activeListType;
 
 
     @Override
@@ -81,8 +81,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MainActivity.context = getApplicationContext();
 
         Intent intent = getIntent();
-        listType = intent.getIntExtra(LIST_TYPE, DEFAULT_LIST_TYPE);
+
+        activeListType = intent.getIntExtra(LIST_TYPE, DEFAULT_LIST_TYPE);
         initializeListType();
+
+        // Drop is received in intent -- show details fragment
+        GlobalDropModel drop = (GlobalDropModel) intent.getSerializableExtra(DetailsFragment.DROP_SERIALIZABLE_STRING);
+        if (drop != null) {
+            showDetails(drop);
+        }
+
 
         initializeFirebaseListener();
 
@@ -134,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 i = new Intent(MainActivity.this, StatisticsActivity.class);
                 this.startActivity(i);
                 break;
-            case R.id.nav_credits:
-                i = new Intent(MainActivity.this, CreditsActivity.class);
+            case R.id.nav_info:
+                i = new Intent(MainActivity.this, InfoActivity.class);
                 this.startActivity(i);
                 break;
         }
@@ -175,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public int getActiveListType() {
-        return listType;
+        return activeListType;
     }
 
     // Update the drop list that the user sees
@@ -184,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         sqLiteDropModelArrayList = (ArrayList<SQLiteDropModel>) sqldbHelper.getAllDropsFromLocal();
 
-        if (listType == COLLECTION_LIST_TYPE) {
+        if (activeListType == COLLECTION_LIST_TYPE) {
             fetchCollection();
         } else {
             fetchDrops();
@@ -196,9 +204,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tv_no_results.setVisibility(View.GONE);
         }
 
-        if (listType == DEFAULT_LIST_TYPE || listType == COLLECTION_LIST_TYPE) {
+        if (activeListType == DEFAULT_LIST_TYPE || activeListType == COLLECTION_LIST_TYPE) {
             Collections.sort(dropModelArrayList);
-        } else if (listType == HOT_LIST_TYPE) {
+        } else if (activeListType == HOT_LIST_TYPE) {
             Comparator<GlobalDropModel> likesOrder =
                     (o1, o2) -> (int) (o1.getLikes() - o2.getLikes());
             Collections.sort(dropModelArrayList, Collections.reverseOrder(likesOrder));
@@ -213,20 +221,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dl_drawer_layout, detailsFragment)
                 .addToBackStack(DetailsFragment.class.getSimpleName())
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     // Settings that are unique to each list type
     private void initializeListType() {
         MaterialToolbar tb_toolbar = findViewById(R.id.tb_toolbar);
-        if (listType == HOT_LIST_TYPE) {
+        if (activeListType == HOT_LIST_TYPE) {
             showServerDrops = true;
             showLocalDrops = false;
             tb_toolbar.setTitle("Hot drops");
-        } else if (listType == DEFAULT_LIST_TYPE) {
+        } else if (activeListType == DEFAULT_LIST_TYPE) {
             showServerDrops = true;
             showLocalDrops = true;
-        } else if (listType == COLLECTION_LIST_TYPE) {
+        } else if (activeListType == COLLECTION_LIST_TYPE) {
             showServerDrops = true;
             showLocalDrops = true;
             tb_toolbar.setTitle("My Collection");
@@ -287,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
 
             // If hotListType is active, only server drops are showed and this cannot be changed
-            if (listType == MainActivity.HOT_LIST_TYPE) {
+            if (activeListType == MainActivity.HOT_LIST_TYPE) {
                 showServerCheck.setChecked(true);
                 showLocalCheck.setChecked(false);
                 showServerCheck.setVisibility(View.GONE);

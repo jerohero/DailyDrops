@@ -82,7 +82,7 @@
                 android:id="@+id/tv_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:autoLink="web"
                 android:fontFamily="@font/roboto_light"
                 android:maxWidth="300dp"
@@ -104,20 +104,20 @@
                     android:layout_height="44dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/roundcorner_lightred"
+                    android:contentDescription="@string/editDrop"
                     android:padding="12dp"
                     android:scaleType="centerInside"
-                    app:srcCompat="@drawable/ic_edit_black_24dp"
-                    android:contentDescription="@string/editDrop" />
+                    app:srcCompat="@drawable/ic_edit_black_24dp" />
 
                 <ImageButton
                     android:id="@+id/ib_delete"
                     android:layout_width="45dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/roundcorner_lightred"
+                    android:contentDescription="@string/deleteDrop"
                     android:padding="10dp"
                     android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/ic_delete_black_24dp"
-                    android:contentDescription="@string/deleteDrop" />
+                    app:srcCompat="@drawable/ic_delete_black_24dp" />
 
                 <TextView
                     android:id="@+id/tv_likes"
@@ -135,10 +135,10 @@
                     android:layout_width="45dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/roundcorner_lightred"
+                    android:contentDescription="@string/likeDrop"
                     android:padding="10dp"
                     android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/ic_heart_black_24dp"
-                    android:contentDescription="@string/likeDrop" />
+                    app:srcCompat="@drawable/ic_heart_black_24dp" />
 
             </LinearLayout>
 

@@ -121,7 +121,6 @@ public class AddUpdateActivity extends AppCompatActivity {
         boolean success = false;
         try {
             success = sqldbHelper.updateDropFromLocal(drop);
-            Toast.makeText(this, drop.toString(), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Error updating drop", Toast.LENGTH_SHORT).show();
@@ -323,10 +322,12 @@ public class AddUpdateActivity extends AppCompatActivity {
     }
 
     private void backToDetails() {
-        Intent i = new Intent(this, DetailsFragment.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        MainActivity mainActivity = MainActivity.getInstance();
+        Intent i = new Intent(this, MainActivity.class);
+        i.putExtra(MainActivity.LIST_TYPE, mainActivity.getActiveListType());
         i.putExtra(DetailsFragment.DROP_SERIALIZABLE_STRING, drop);
-        MainActivity.getContext().startActivity(i);
+
+        mainActivity.startActivity(i);
     }
 
     private void backToMain() {

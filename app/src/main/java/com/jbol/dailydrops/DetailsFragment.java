@@ -240,8 +240,7 @@ public class DetailsFragment extends Fragment {
 
     private void initializeImage() {
         if (drop.getImage() == null) {
-            iv_image.setVisibility(View.INVISIBLE);
-            iv_image.setMaxHeight(100);
+            iv_image.setVisibility(View.GONE);
             return;
         }
 
