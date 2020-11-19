@@ -35,5 +35,22 @@
     <string name="statistics">Statistics</string>
     <string name="barChartTitle">Drops per day (over 14 days)</string>
     <string name="emailAddress">jegbol01@gmail.com</string>
+    <string name="backButton">Back button</string>
+    <string name="addImage">Add image</string>
+    <string name="removeImage">Remove image</string>
+    <string name="searchTerm">Search term</string>
+    <string name="showServerDrops">Show server drops</string>
+    <string name="showYourDrops">Show your drops</string>
+    <string name="search">Search</string>
+    <string name="searchTermInfo">Search term:</string>
+    <string name="undoSearchCriteria">Undo search criteria</string>
+    <string name="noResultsFound">No results found..</string>
+    <string name="likeDrop">Like drop</string>
+    <string name="num0">0</string>
+    <string name="dropImage">Drop image</string>
+    <string name="datePlaceholder">%DATE%</string>
+    <string name="titlePlaceholder">%TITLE%</string>
+    <string name="notePlaceholder">%NOTE%</string>
+    <string name="deleteDrop">Delete drop</string>
 
 </resources>

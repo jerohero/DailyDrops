@@ -137,7 +137,8 @@
                             android:padding="8dp"
                             android:scaleType="centerInside"
                             android:tint="#FFFFFF"
-                            app:srcCompat="@drawable/ic_add_image_black_48dp" />
+                            app:srcCompat="@drawable/ic_add_image_black_48dp"
+                            android:contentDescription="@string/addImage" />
 
                         <ImageButton
                             android:id="@+id/ib_remove_image"
@@ -147,7 +148,8 @@
                             android:background="@drawable/roundcorner_red"
                             android:scaleType="centerInside"
                             android:tint="#FFFFFF"
-                            app:srcCompat="@drawable/ic_eraser_black_48dp" />
+                            app:srcCompat="@drawable/ic_eraser_black_48dp"
+                            android:contentDescription="@string/removeImage" />
                     </LinearLayout>
 
                     <TextView
@@ -171,7 +173,8 @@
                         android:paddingBottom="80dp"
                         android:scaleType="fitXY"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/dailydrops" />
+                        app:srcCompat="@drawable/dailydrops"
+                        android:contentDescription="@string/dropImage" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -214,7 +217,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.235"
-            app:srcCompat="@drawable/ic_left_black_24dp" />
+            app:srcCompat="@drawable/ic_left_black_24dp"
+            android:contentDescription="@string/backButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

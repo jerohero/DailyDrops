@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cv_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:adjustViewBounds="false"
-                android:contentDescription="Drop image"
+                android:contentDescription="@string/dropImage"
                 android:forceDarkAllowed="false"
                 android:layerType="none"
                 android:scaleType="centerCrop"
@@ -47,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6.5dp"
                     android:layout_marginEnd="3dp"
-                    android:text="0"
+                    android:text="@string/num0"
                     android:textColor="@color/colorPink"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/iv_heart"
@@ -61,11 +60,12 @@
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_marginEnd="3dp"
-                    android:tint="@color/colorPink"
+                    app:tint="@color/colorPink"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_heart_black_24dp" />
+                    app:srcCompat="@drawable/ic_heart_black_24dp"
+                    android:contentDescription="@string/likeDrop" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
