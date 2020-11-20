@@ -265,13 +265,8 @@ public class DetailsFragment extends Fragment {
             tv_time.setVisibility(View.GONE);
         } else {
             long dateAndTime = drop.getDate() + drop.getTime();
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+            
             HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime, FormatStyle.SHORT);
-
-            //TODO ?
-//            ZonedDateTime zdt = ZonedDateTime.ofInstant(dateOrTimeToString.get("date"))
 
             tv_date.setText(dateOrTimeToString.get("date"));
             tv_time.setText(dateOrTimeToString.get("time"));

@@ -200,7 +200,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         if (newDrop.getDate() != (oldDrop.getDate())) {
             cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE, newDrop.getDate()); }
         if (newDrop.getTime() != (oldDrop.getTime())) {
-            cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_DATE, newDrop.getTime()); }
+            cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_TIME, newDrop.getTime()); }
         cv.put(SQLiteDatabaseInfo.DropsColumn.COLUMN_DROP_HAS_IMAGE, newDrop.getImage() != null ? 1 : 0);
 
         getWritableDatabase().update(SQLiteDatabaseInfo.DropsTable.USER_DROPS_TABLE, cv, SQLiteDatabaseInfo.DropsColumn.COLUMN_ID + "=" + newDrop.getId(), null);
