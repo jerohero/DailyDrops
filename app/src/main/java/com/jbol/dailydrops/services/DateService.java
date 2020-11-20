@@ -1,5 +1,7 @@
 package com.jbol.dailydrops.services;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -64,13 +66,26 @@ public class DateService {
         return sdfDDMM.format(cal.getTime());
     }
 
-    public static HashMap<String, String> dateAndTimeEpochMilliToDDMMYYYY_HHMM(long dateAndTime) {
+    public static HashMap<String, String> dateAndTimeEpochMilliToDDMMYYYY_HHMM(long dateAndTime, FormatStyle dateFormatStyle) {
         HashMap<String, String> dateOrTimeToString = new HashMap<>();
-        
+
         Instant instant = Instant.ofEpochMilli(dateAndTime);
         ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-        dateOrTimeToString.put("date", zdt.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)));
+
+        dateOrTimeToString.put("date", zdt.format(DateTimeFormatter.ofLocalizedDate(dateFormatStyle)));
         dateOrTimeToString.put("time", zdt.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)));
+
+        return dateOrTimeToString;
+    }
+
+    public static HashMap<String, String> dateAndTimeEpochMilliToCustomDDMMYYYY_HHMM(long dateAndTime, DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter) {
+        HashMap<String, String> dateOrTimeToString = new HashMap<>();
+
+        Instant instant = Instant.ofEpochMilli(dateAndTime);
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+        dateOrTimeToString.put("date", dateFormatter.format(zdt));
+        dateOrTimeToString.put("time", timeFormatter.format(zdt));
 
         return dateOrTimeToString;
     }

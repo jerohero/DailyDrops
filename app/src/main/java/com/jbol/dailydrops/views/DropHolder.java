@@ -15,6 +15,7 @@ import com.jbol.dailydrops.services.AsyncURLService;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 
 public class DropHolder extends RecyclerView.ViewHolder {
     private TextView txtTitle, txtDate, tv_likes;
@@ -37,7 +38,16 @@ public class DropHolder extends RecyclerView.ViewHolder {
         this.drop = drop;
 
         txtTitle.setText(drop.getTitle());
-        txtDate.setText(DateService.epochMilliToUTCDateString(drop.getDate(), FormatStyle.MEDIUM, "UTC"));
+
+        if (drop.getTime() <= 0) {
+            txtDate.setText(DateService.epochMilliToUTCDateString(drop.getDate(), FormatStyle.MEDIUM, "UTC"));
+        } else {
+            long dateAndTime = drop.getDate() + drop.getTime();
+
+            HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime, FormatStyle.MEDIUM);
+
+            txtDate.setText(dateOrTimeToString.get("date"));
+        }
 
         initializeLikes();
         initializeImage();

@@ -31,7 +31,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -107,12 +110,87 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
     }
 
-    //TODO better handling
+    private void addDrop() {
+        String title;
+        try {
+            title = handleTitleInput();
+        } catch (ParseException e) {
+            til_title.setError(e.getMessage());
+            return;
+        }
+
+        String note;
+        try {
+            note = handleNoteInput();
+        } catch (ParseException e) {
+            til_note.setError(e.getMessage());
+            return;
+        }
+
+        long time = handleTimeInput();
+
+        long date;
+        try {
+            date = handleDateInput(time);
+        } catch (ParseException e) {
+            til_date.setError(e.getMessage());
+            return;
+        }
+
+        // Store drop
+        SQLiteDropModel drop;
+        boolean hasImage = false;
+        if (selectedImageBitmap != null) {
+            hasImage = true;
+        }
+
+        drop = new SQLiteDropModel(-1, title, note, date, time, hasImage);
+
+        boolean success = sqldbHelper.addDropToLocal(drop);
+        if (!success) {
+            Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (hasImage) {
+            int lastId = sqldbHelper.getLastInsertedDropIdFromLocal();
+            ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
+        }
+
+        backToMain();
+    }
+
     private void saveEditDrop() {
-        drop.setTitle(et_title.getText().toString());
-        drop.setNote(et_note.getText().toString());
-//        drop.setTime(et_time.getText().toString());
-        drop.setDate(DateService.fullDateStringToEpochMilli(et_date.getText().toString(), ZoneId.systemDefault()));
+        String title;
+        try {
+            title = handleTitleInput();
+        } catch (ParseException e) {
+            til_title.setError(e.getMessage());
+            return;
+        }
+
+        String note;
+        try {
+            note = handleNoteInput();
+        } catch (ParseException e) {
+            til_note.setError(e.getMessage());
+            return;
+        }
+
+        long time = handleTimeInput();
+
+        long date;
+        try {
+            date = handleDateInput(time);
+        } catch (ParseException e) {
+            til_date.setError(e.getMessage());
+            return;
+        }
+
+        drop.setTitle(title);
+        drop.setNote(note);
+        drop.setTime(time);
+        drop.setDate(date);
 
         if (selectedImageBitmap != null && drop.getImage() == null) {
             drop.setImage(drop.getId());
@@ -140,30 +218,30 @@ public class AddUpdateActivity extends AppCompatActivity {
         backToDetails();
     }
 
-    private void addDrop() {
-        // Handle title
+    private String handleTitleInput() throws ParseException {
         String title = et_title.getText().toString();
         if (title.isEmpty()) {
-            til_title.setError(getString(R.string.errorTitleEmpty));
-            return;
+            throw new ParseException(getString(R.string.errorTitleEmpty), 0);
         } else if (title.length() > til_title.getCounterMaxLength()) {
-            til_title.setError(getString(R.string.errorTitleCharacterLimit));
-            return;
+            throw new ParseException(getString(R.string.errorTitleCharacterLimit), 0);
         }
         if (til_title.getError() != null) til_title.setError(null);
 
-        // Handle note
+        return title;
+    }
+
+    private String handleNoteInput() throws ParseException {
         String note = et_note.getText().toString();
         if (note.length() > til_note.getCounterMaxLength()) {
-            til_note.setError(getString(R.string.errorNoteCharacterLimit));
-            return;
+            throw new ParseException(getString(R.string.errorNoteCharacterLimit), 0);
         }
         if (til_note.getError() != null) til_note.setError(null);
 
-        // Handle date and time
-        String timeInput = et_time.getText().toString();
-        String dateInput = et_date.getText().toString();
+        return note;
+    }
 
+    private long handleTimeInput() {
+        String timeInput = et_time.getText().toString();
         long time;
         try {
             time = DateService.timeStringToEpochMilli(timeInput);
@@ -171,10 +249,15 @@ public class AddUpdateActivity extends AppCompatActivity {
             time = 0;
         }
 
+        return time;
+    }
+
+    private long handleDateInput(long time) throws ParseException {
+        String dateInput = et_date.getText().toString();
         if (dateInput.isEmpty()) {
-            til_date.setError(getString(R.string.errorDateEmpty));
-            return;
+            throw new ParseException(getString(R.string.errorDateEmpty), 0);
         }
+
         long date;
         if (time <= 0) {
             date = DateService.fullDateStringToEpochMilli(dateInput, ZoneId.of("UTC"));
@@ -183,32 +266,40 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
         long now = Instant.now().getEpochSecond() * 1000L;
         if (date < now) {
-            til_date.setError(getString(R.string.errorInvalidDate));
-            return;
+            throw new ParseException(getString(R.string.errorInvalidDate), 0);
         }
         if (til_date.getError() != null) til_date.setError(null);
 
-        // Store drop
-        SQLiteDropModel drop;
-        boolean hasImage = false;
-        if (selectedImageBitmap != null) {
-            hasImage = true;
-        }
+        return date;
+    }
 
-        drop = new SQLiteDropModel(-1, title, note, date, time, hasImage);
+    private void removeImage() {
+        selectedImageBitmap = null;
+        tv_no_image.setVisibility(View.VISIBLE);
+        iv_image.setVisibility(View.GONE);
+        ib_remove_image.setVisibility(View.GONE);
+        // Set top margin of button container back to 70dp
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) findViewById(R.id.ll_image_btn_container).getLayoutParams();
+        params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics()); // Convert 70dp to px
+    }
 
-        boolean success = sqldbHelper.addDropToLocal(drop);
-        if (!success) {
-            Toast.makeText(AddUpdateActivity.this, "Error creating drop", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void showImageOptionDialog(){
+        final String[] options = getResources().getStringArray(R.array.image_options);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddUpdateActivity.this);
+        builder.setTitle(R.string.dialog_image_options)
+                .setItems(options, (dialog, which) -> {
+                    switch (which){
+                        case 0:
+                            getImageFromGallery();
+                            break;
+                        case 1:
+                            capturePictureFromCamera();
+                            break;
+                    }
+                });
 
-        if (hasImage) {
-            int lastId = sqldbHelper.getLastInsertedDropIdFromLocal();
-            ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
-        }
-
-        backToMain();
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void loadViews() {
@@ -224,7 +315,13 @@ public class AddUpdateActivity extends AppCompatActivity {
     private void initializeValues() {
         et_title.setText(drop.getTitle());
         et_note.setText(drop.getNote());
-        et_date.setText(dateFormat.format(drop.getDate()));
+
+        long dateAndTime = drop.getDate() + drop.getTime();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToCustomDDMMYYYY_HHMM(dateAndTime, dateFormatter, timeFormatter);
+        et_time.setText(dateOrTimeToString.get("time"));
+        et_date.setText(dateOrTimeToString.get("date"));
     }
 
     private void initializeDatePicker() {
@@ -256,7 +353,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         };
 
         et_time.setOnClickListener(v ->
-                new TimePickerDialog(this, time, calendar.get(Calendar.HOUR_OF_DAY), Calendar.MINUTE,true)
+                new TimePickerDialog(this, time, 0, 0,true)
                         .show());
     }
 
@@ -281,35 +378,6 @@ public class AddUpdateActivity extends AppCompatActivity {
             iv_image.setImageBitmap(image);
             showImageElements();
         }
-    }
-
-    private void removeImage() {
-        selectedImageBitmap = null;
-        tv_no_image.setVisibility(View.VISIBLE);
-        iv_image.setVisibility(View.GONE);
-        ib_remove_image.setVisibility(View.GONE);
-        // Set top margin of button container back to 70dp
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) findViewById(R.id.ll_image_btn_container).getLayoutParams();
-        params.topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics()); // Convert 70dp to px
-    }
-
-    private void showImageOptionDialog(){
-        final String[] options = getResources().getStringArray(R.array.image_options);
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddUpdateActivity.this);
-        builder.setTitle(R.string.dialog_image_options)
-                .setItems(options, (dialog, which) -> {
-                    switch (which){
-                        case 0:
-                            getImageFromGallery();
-                            break;
-                        case 1:
-                            capturePictureFromCamera();
-                            break;
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     private void getImageFromGallery(){

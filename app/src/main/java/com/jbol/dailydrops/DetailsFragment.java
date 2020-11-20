@@ -30,6 +30,10 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.jbol.dailydrops.services.AsyncURLService;
+
+import java.text.DateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 
@@ -262,7 +266,11 @@ public class DetailsFragment extends Fragment {
         } else {
             long dateAndTime = drop.getDate() + drop.getTime();
 
-            HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime, FormatStyle.SHORT);
+
+//            ZonedDateTime zdt = ZonedDateTime.ofInstant(dateOrTimeToString.get("date"))
 
             tv_date.setText(dateOrTimeToString.get("date"));
             tv_time.setText(dateOrTimeToString.get("time"));
