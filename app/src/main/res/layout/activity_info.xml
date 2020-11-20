@@ -135,12 +135,12 @@
                 android:id="@+id/tv_credits_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/roboto_medium"
+                android:layout_marginBottom="3dp"
+                android:fontFamily="@font/roboto"
                 android:foregroundTint="#FFFFFF"
                 android:gravity="center"
                 android:text="@string/specialThanksTo"
-                android:textColor="@color/dark"
+                android:textColor="#272727"
                 android:textSize="24sp" />
 
             <LinearLayout
@@ -152,6 +152,7 @@
                     android:id="@+id/textView5"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:fontFamily="@font/roboto_medium"
                     android:gravity="center"
                     android:text="@string/kismetprint"
                     android:textColor="@color/colorPrimary"
@@ -162,6 +163,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:autoLink="web"
+                    android:fontFamily="@font/roboto_medium"
                     android:gravity="center"
                     android:text="@string/kismetprintURL"
                     android:textColor="@color/colorPrimary"
@@ -174,12 +176,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/roboto_light"
                 android:foregroundTint="#FFFFFF"
                 android:gravity="center"
                 android:text="@string/forCreatingTheLogo"
-                android:textColor="@color/dark"
-                android:textSize="18sp" />
+                android:textColor="#424242"
+                android:textSize="19sp" />
         </LinearLayout>
 
     </LinearLayout>

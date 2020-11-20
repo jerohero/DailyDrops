@@ -33,6 +33,7 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
             this.title = firebaseDropModel.getTitle();
             this.note = firebaseDropModel.getNote();
             this.date = firebaseDropModel.getDate();
+            this.time = firebaseDropModel.getTime();
             this.image = firebaseDropModel.getImagePath();
             this.likes = firebaseDropModel.getLikes();
             this.type = ONLINE_TYPE;

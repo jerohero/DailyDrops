@@ -270,6 +270,7 @@ public class DetailsFragment extends Fragment {
 
             HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime, FormatStyle.SHORT);
 
+            //TODO ?
 //            ZonedDateTime zdt = ZonedDateTime.ofInstant(dateOrTimeToString.get("date"))
 
             tv_date.setText(dateOrTimeToString.get("date"));

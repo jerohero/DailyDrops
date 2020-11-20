@@ -7,6 +7,7 @@ public class FirebaseDropModel {
     private String title;
     private String note;
     private long date;
+    private long time;
     private String imagePath;
     private long likes;
 
@@ -14,11 +15,12 @@ public class FirebaseDropModel {
     public FirebaseDropModel() {}
 
     // constructor
-    public FirebaseDropModel(String id, String title, String note, long date, String imagePath, long likes) {
+    public FirebaseDropModel(String id, String title, String note, long date, long time, String imagePath, long likes) {
         this.id = id;
         this.title = title;
         this.note = note;
         this.date = date;
+        this.time = time;
         this.imagePath = imagePath;
         this.likes = likes;
     }
@@ -46,6 +48,10 @@ public class FirebaseDropModel {
 
     public long getDate() {
         return date;
+    }
+
+    public long getTime() {
+        return time;
     }
 
     public String getImagePath() {
