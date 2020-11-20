@@ -37,7 +37,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         this.drop = drop;
 
         txtTitle.setText(drop.getTitle());
-        txtDate.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.MEDIUM));
+        txtDate.setText(DateService.epochMilliToUTCDateString(drop.getDate(), FormatStyle.MEDIUM, "UTC"));
 
         initializeLikes();
         initializeImage();

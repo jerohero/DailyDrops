@@ -95,4 +95,8 @@ public class GlobalDropModel implements Serializable, Comparable<GlobalDropModel
     public long getTime() {
         return time;
     }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 }

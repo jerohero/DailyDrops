@@ -30,8 +30,10 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class AddUpdateActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST = 9; //Request code gallery
@@ -105,14 +107,12 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
     }
 
+    //TODO better handling
     private void saveEditDrop() {
         drop.setTitle(et_title.getText().toString());
         drop.setNote(et_note.getText().toString());
-        try {
-            drop.setDate(DateService.fullDateStringToEpochMilli(et_date.getText().toString()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+//        drop.setTime(et_time.getText().toString());
+        drop.setDate(DateService.fullDateStringToEpochMilli(et_date.getText().toString(), ZoneId.systemDefault()));
 
         if (selectedImageBitmap != null && drop.getImage() == null) {
             drop.setImage(drop.getId());
@@ -160,13 +160,26 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
         if (til_note.getError() != null) til_note.setError(null);
 
-        // Handle date
-        long date;
+        // Handle date and time
+        String timeInput = et_time.getText().toString();
+        String dateInput = et_date.getText().toString();
+
+        long time;
         try {
-            date = DateService.fullDateStringToEpochMilli(et_date.getText().toString());
+            time = DateService.timeStringToEpochMilli(timeInput);
         } catch (ParseException e) {
+            time = 0;
+        }
+
+        if (dateInput.isEmpty()) {
             til_date.setError(getString(R.string.errorDateEmpty));
             return;
+        }
+        long date;
+        if (time <= 0) {
+            date = DateService.fullDateStringToEpochMilli(dateInput, ZoneId.of("UTC"));
+        } else {
+            date = DateService.fullDateStringToEpochMilli(dateInput, ZoneId.systemDefault());
         }
         long now = Instant.now().getEpochSecond() * 1000L;
         if (date < now) {
@@ -174,14 +187,6 @@ public class AddUpdateActivity extends AppCompatActivity {
             return;
         }
         if (til_date.getError() != null) til_date.setError(null);
-
-        // Handle time
-        long time;
-        try {
-            time = DateService.timeStringToEpochMilli(et_time.getText().toString());
-        } catch (ParseException e) {
-            time = 0;
-        }
 
         // Store drop
         SQLiteDropModel drop;

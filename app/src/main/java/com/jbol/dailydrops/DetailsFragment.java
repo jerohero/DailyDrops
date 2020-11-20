@@ -31,6 +31,7 @@ import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.jbol.dailydrops.services.AsyncURLService;
 import java.time.format.FormatStyle;
+import java.util.HashMap;
 
 public class DetailsFragment extends Fragment {
     public static String DROP_SERIALIZABLE_STRING = "drop";
@@ -255,12 +256,17 @@ public class DetailsFragment extends Fragment {
     }
 
     private void initializeDateAndTime() {
-        tv_date.setText(DateService.epochMilliToFormatDateString(drop.getDate(), FormatStyle.FULL));
         if (drop.getTime() <= 0) {
+            tv_date.setText(DateService.epochMilliToUTCDateString(drop.getDate(), FormatStyle.FULL, "UTC"));
             tv_time.setVisibility(View.GONE);
-            return;
+        } else {
+            long dateAndTime = drop.getDate() + drop.getTime();
+
+            HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime);
+
+            tv_date.setText(dateOrTimeToString.get("date"));
+            tv_time.setText(dateOrTimeToString.get("time"));
         }
-        tv_time.setText(DateService.epochMilliToHHMM(drop.getTime()));
     }
 
     private void initializeDeleteBtn() {
