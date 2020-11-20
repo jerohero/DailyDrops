@@ -84,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
-                android:padding="0dp"
+                android:padding="1dp"
                 android:textAlignment="viewStart"
                 android:textColor="#111213"
                 android:textSize="20sp" />
@@ -97,7 +97,7 @@
                     android:id="@+id/tv_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/roboto_light"
                     android:textAlignment="viewEnd"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"

@@ -15,7 +15,7 @@ import java.net.URL;
 
 public class ImageService {
 
-    public static String saveImageToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
+    public static void saveImageToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
         File directory = getImagesDir(ctx);
         File imgFile = new File(directory,id + ".png");
 
@@ -33,8 +33,6 @@ public class ImageService {
                 e.printStackTrace();
             }
         }
-
-        return directory.getAbsolutePath();
     }
 
     public static Bitmap loadImageFromStorage(Context ctx, int id) {
@@ -59,9 +57,8 @@ public class ImageService {
 
     public static File getImagesDir(Context ctx) {
         ContextWrapper cw = new ContextWrapper(ctx);
-        // path to /data/user/0/com.jbol.dailydrops/app_images
 
-        return cw.getDir("images", Context.MODE_PRIVATE);
+        return cw.getDir("images", Context.MODE_PRIVATE); // path to /data/user/0/com.jbol.dailydrops/app_images
     }
 
     public static Bitmap getImageFromURL(String src) {

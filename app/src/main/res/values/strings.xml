@@ -30,7 +30,7 @@
     <string name="myCollection">My Collection</string>
     <string name="hot">Hot</string>
     <string name="other">Other</string>
-    <string name="info">Credits</string>
+    <string name="info">Info</string>
     <string name="contact">Contact</string>
     <string name="statistics">Statistics</string>
     <string name="barChartTitle">Drops per day (over 14 days)</string>
@@ -54,5 +54,14 @@
     <string name="deleteDrop">Delete drop</string>
     <string name="time">Time</string>
     <string name="timePlaceholder">%TIME%</string>
+    <string name="kismetprint">KISMETPRINT</string>
+    <string name="kismetprintURL">https://www.etsy.com/shop/KISMETPRINT</string>
+    <string name="forCreatingTheLogo">for creating the logo</string>
+    <string name="specialThanksTo">Special thanks to</string>
+    <string name="myEmail">jegbol01@gmail.com</string>
+    <string name="jeroenBol">Jeroen Bol</string>
+    <string name="getInTouch">Get in Touch</string>
+    <string name="personIcon">Person icon</string>
+    <string name="emailIcon">Email Icon</string>
 
 </resources>
