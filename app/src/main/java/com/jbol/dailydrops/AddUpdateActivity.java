@@ -317,12 +317,18 @@ public class AddUpdateActivity extends AppCompatActivity {
         et_title.setText(drop.getTitle());
         et_note.setText(drop.getNote());
 
-        long dateAndTime = drop.getDate() + drop.getTime();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToCustomDDMMYYYY_HHMM(dateAndTime, dateFormatter, timeFormatter);
-        et_time.setText(dateOrTimeToString.get("time"));
-        et_date.setText(dateOrTimeToString.get("date"));
+        if (drop.getTime() <= 0) {
+            et_date.setText(DateService.dateEpochMilliToUTCDDMMYYYY(drop.getDate()));
+        } else {
+            long dateAndTime = drop.getDate() + drop.getTime();
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToCustomDDMMYYYY_HHMM(dateAndTime, dateFormatter, timeFormatter);
+
+            et_date.setText(dateOrTimeToString.get("date"));
+            et_time.setText(dateOrTimeToString.get("time"));
+        }
     }
 
     private void initializeDatePicker() {

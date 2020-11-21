@@ -66,6 +66,14 @@ public class DateService {
         return sdfDDMM.format(cal.getTime());
     }
 
+    public static String dateEpochMilliToUTCDDMMYYYY(long date) {
+        Instant instant = Instant.ofEpochMilli(date);
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return dateFormatter.format(zdt);
+    }
+
     public static HashMap<String, String> dateAndTimeEpochMilliToDDMMYYYY_HHMM(long dateAndTime, FormatStyle dateFormatStyle) {
         HashMap<String, String> dateOrTimeToString = new HashMap<>();
 

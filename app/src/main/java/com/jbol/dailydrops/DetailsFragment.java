@@ -30,10 +30,6 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.jbol.dailydrops.services.AsyncURLService;
-
-import java.text.DateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 
@@ -187,7 +183,7 @@ public class DetailsFragment extends Fragment {
     }
 
     private void collectionBtnToAddToCollection() {
-        fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.dark)));
+        fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightRed)));
         fab_bookmark.setOnClickListener(v ->
                 addDropToCollection());
     }
@@ -199,7 +195,7 @@ public class DetailsFragment extends Fragment {
     }
 
     private void collectionBtnToRemoveFromCollection() {
-        fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightRed)));
+        fab_bookmark.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.dark)));
         fab_bookmark.setOnClickListener(v ->
                 deleteDropFromCollection());
     }
@@ -265,7 +261,7 @@ public class DetailsFragment extends Fragment {
             tv_time.setVisibility(View.GONE);
         } else {
             long dateAndTime = drop.getDate() + drop.getTime();
-            
+
             HashMap<String, String> dateOrTimeToString = DateService.dateAndTimeEpochMilliToDDMMYYYY_HHMM(dateAndTime, FormatStyle.SHORT);
 
             tv_date.setText(dateOrTimeToString.get("date"));

@@ -83,6 +83,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
             if (drop.getDate() > now - day) {
                 String newText = txtDate.getText() + " (today)";
                 txtDate.setText(newText);
+                return;
             }
             cv_card.setAlpha(0.75f);
         }
