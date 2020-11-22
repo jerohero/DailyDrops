@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+// https://www.journaldev.com/24041/android-recyclerview-load-more-endless-scrolling#code
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
     public static final String LIST_TYPE = "listType";
     public static final int DEFAULT_LIST_TYPE = 0;
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout cl_search_label;
     private DrawerLayout dl_drawer_layout;
     private TextView tv_no_results, tv_search_term;
+    private RecyclerView recyclerView;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -68,10 +72,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<SQLiteDropModel> sqLiteDropModelArrayList = new ArrayList<>();
     private ArrayList<GlobalDropModel> dropModelArrayList;
 
+    private ArrayList<GlobalDropModel> dropGridArrayList;
+
     private DropAdapter adapter;
     private SQLiteDatabaseHelper sqldbHelper;
 
     private int activeListType;
+
+    boolean isLoading = false;
 
 
     @Override
@@ -94,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showDetails(drop);
         }
 
+        recyclerView = findViewById(R.id.recyclerView);
 
         initializeFirebaseListener();
 
@@ -106,10 +115,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tv_no_results.setVisibility(View.GONE);
 
         dropModelArrayList = new ArrayList<>();
-        DropClickListener dropClickListener = new DropClickListener(recyclerView, dropModelArrayList);
 
-        adapter = new DropAdapter(this, dropModelArrayList, dropClickListener);
+        dropGridArrayList = new ArrayList<>();
+        DropClickListener dropClickListener = new DropClickListener(recyclerView, dropGridArrayList);
+
+        adapter = new DropAdapter(this, dropGridArrayList, dropClickListener);
         recyclerView.setAdapter(adapter);
+
         updateListData();
 
         FloatingActionButton fab_add = findViewById(R.id.fab_add);
@@ -120,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initializeSearch();
         initializeDrawer();
+
+        initScrollListener();
     }
 
     @Override
@@ -199,6 +213,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return activeListType;
     }
 
+
+    private void populateData() {
+        int max = 5;
+        if (max > dropModelArrayList.size()) {
+            max = dropModelArrayList.size();
+        }
+
+        int i = 0;
+        while (i < 4) {
+            dropGridArrayList.add(dropModelArrayList.get(i));
+            i++;
+        }
+        adapter.notifyDataSetChanged();
+    }
+
     // Update the drop list that the user sees
     public void updateListData() {
         dropModelArrayList.clear();
@@ -225,7 +254,80 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Collections.sort(dropModelArrayList, Collections.reverseOrder(likesOrder));
         }
 
-        adapter.notifyDataSetChanged();
+        if (dropModelArrayList.size() > 0 && dropModelArrayList.size() < 3) {
+            int i = 0;
+            while (i < 3) {
+                dropGridArrayList.add(dropModelArrayList.get(i));
+                i++;
+            }
+            loadMore();
+
+        }
+//        int max = 2;
+//        if (dropModelArrayList.size() < max) {
+//            max = dropModelArrayList.size();
+//        }
+//
+//        int i = 0;
+//        while (i < max) {
+//            dropGridArrayList.add(dropModelArrayList.get(i));
+//            i++;
+//        }
+//
+//        Log.d("fleip", "updateListData: " + dropModelArrayList.size());
+
+//        adapter.notifyDataSetChanged();
+    }
+
+    private void loadMore() {
+        dropGridArrayList.add(null);
+        adapter.notifyItemInserted(dropGridArrayList.size() - 1);
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            dropGridArrayList.remove(dropGridArrayList.size() - 1);
+            int scrollPosition = dropGridArrayList.size();
+            adapter.notifyItemRemoved(scrollPosition);
+            int currentSize = scrollPosition;
+            int nextLimit = currentSize + 3;
+
+            if (nextLimit > currentSize) {
+                nextLimit = currentSize;
+            }
+
+            while (currentSize - 1 < nextLimit) {
+                dropGridArrayList.add(dropModelArrayList.get(currentSize - 1));
+                currentSize++;
+            }
+
+            adapter.notifyDataSetChanged();
+            isLoading = false;
+        }, 2000);
+    }
+
+    private void initScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                GridLayoutManager linearLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == dropGridArrayList.size() - 1) {
+                        if (dropModelArrayList.size() > dropGridArrayList.size()) {
+                            loadMore();
+                            isLoading = true;
+                        }
+                    }
+                }
+            }
+        });
     }
 
     // Show fragment with drop's details

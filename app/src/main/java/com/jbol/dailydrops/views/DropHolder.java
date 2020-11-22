@@ -1,6 +1,7 @@
 package com.jbol.dailydrops.views;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +15,9 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.AsyncURLService;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 
@@ -101,6 +105,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
             Bitmap image = ImageService.loadImageFromStorage(MainActivity.getContext(), Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
+
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
             new AsyncURLService(output -> {
                 if (output == null) {
