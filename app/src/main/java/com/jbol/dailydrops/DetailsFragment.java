@@ -132,7 +132,7 @@ public class DetailsFragment extends Fragment {
             Toast.makeText(activity, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
             return;
         }
-        ImageService.deleteDropImageFromStorage(activity, Integer.parseInt(drop.getId()));
+        ImageService.deleteImageFromStorage(activity, Integer.parseInt(drop.getId()));
         Intent i = new Intent(activity, MainActivity.class);
         DetailsFragment.this.startActivity(i);
     }
@@ -252,7 +252,7 @@ public class DetailsFragment extends Fragment {
         }
 
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
-            Bitmap image = ImageService.loadDropImageFromStorage(activity, Integer.parseInt(drop.getImage()));
+            Bitmap image = ImageService.loadImageFromStorage(activity, Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
             new AsyncURLService(output ->

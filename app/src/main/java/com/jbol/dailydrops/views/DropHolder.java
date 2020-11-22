@@ -99,7 +99,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         iv_image.setImageAlpha(255);
 
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
-            Bitmap image = ImageService.loadDropImageFromStorage(MainActivity.getContext(), Integer.parseInt(drop.getImage()));
+            Bitmap image = ImageService.loadImageFromStorage(MainActivity.getContext(), Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
             new AsyncURLService(output -> {
