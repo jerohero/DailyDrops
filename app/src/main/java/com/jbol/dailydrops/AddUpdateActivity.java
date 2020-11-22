@@ -5,7 +5,10 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -27,24 +30,23 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
-import com.squareup.picasso.Callback;
+import com.sandrios.sandriosCamera.internal.SandriosCamera;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
+import com.sandrios.sandriosCamera.internal.ui.model.Media;
 import com.squareup.picasso.Picasso;
-
+import com.squareup.picasso.Target;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class AddUpdateActivity extends AppCompatActivity {
-    private static final int GALLERY_REQUEST = 9; //Request code gallery
-    private static final int CAMERA_REQUEST = 11; //Request code for camera
+    private static final int GALLERY_REQUEST = 9;
 
     private final Calendar calendar = Calendar.getInstance();
 
@@ -60,6 +62,7 @@ public class AddUpdateActivity extends AppCompatActivity {
     private Bitmap selectedImageBitmap;
     private GlobalDropModel drop;
     private boolean editMode;
+    private boolean imageChanged = false;
 
 
     @Override
@@ -105,12 +108,19 @@ public class AddUpdateActivity extends AppCompatActivity {
             }
         }
         // Handle camera request
-        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
-            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+        else if(requestCode == SandriosCamera.RESULT_CODE && resultCode == RESULT_OK && data != null){
+            if (data.getSerializableExtra(SandriosCamera.MEDIA) instanceof Media) {
+                Media media = (Media) data.getSerializableExtra(SandriosCamera.MEDIA);
+
+                if (media != null) {
+                    selectedImageBitmap = ImageService.rotateBitmap(media.getPath());
+                }
+            }
         }
 
         if (selectedImageBitmap != null) {
             iv_image.setImageBitmap(selectedImageBitmap);
+            imageChanged = true;
 
             if (iv_image.getVisibility() != View.VISIBLE) {
                 showImageElements();
@@ -219,7 +229,7 @@ public class AddUpdateActivity extends AppCompatActivity {
             return;
         }
 
-        if (drop.getImage() != null) {
+        if (drop.getImage() != null && imageChanged) {
             ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
         }
 
@@ -310,6 +320,20 @@ public class AddUpdateActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void getImageFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALLERY_REQUEST);
+    }
+
+    private void capturePictureFromCamera(){
+        SandriosCamera
+                .with()
+                .setShowPicker(false)
+                .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                .enableImageCropping(true)
+                .launchCamera(this);
+    }
+
     private void loadViews() {
         tv_activity_title = findViewById(R.id.tv_activity_title);
         ll_save_drop = findViewById(R.id.ll_save_drop);
@@ -390,20 +414,17 @@ public class AddUpdateActivity extends AppCompatActivity {
             }
             Picasso.get()
                     .load(ImageService.loadImageFileFromStorage(this, Integer.parseInt(drop.getImage())))
-                    .into(iv_image);
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            selectedImageBitmap = bitmap;
+                            iv_image.setImageBitmap(bitmap);
+                        }
+                        @Override public void onBitmapFailed(Exception e, Drawable errorDrawable) { }
+                        @Override public void onPrepareLoad(Drawable placeHolderDrawable) { }
+                    });
             showImageElements();
         }
-    }
-
-    private void getImageFromGallery(){
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, GALLERY_REQUEST);
-    }
-
-    private void capturePictureFromCamera(){
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
     private void showImageElements() {
@@ -416,7 +437,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void initializeAddDropBtn() {
         ll_save_drop.setOnClickListener(v -> {
-            ll_save_drop.setOnClickListener(null);
+//            ll_save_drop.setOnClickListener(null);
             addDrop();
         });
     }
@@ -425,7 +446,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         tv_save_drop_label.setText(getString(R.string.saveDrop));
 
         ll_save_drop.setOnClickListener(v -> {
-            ll_save_drop.setOnClickListener(null);
+//            ll_save_drop.setOnClickListener(null);
             saveEditDrop();
         });
     }
