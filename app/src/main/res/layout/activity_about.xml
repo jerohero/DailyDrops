@@ -70,7 +70,7 @@
                     android:fontFamily="@font/roboto_medium"
                     android:foregroundTint="#FFFFFF"
                     android:gravity="center"
-                    android:text="Daily Drops v1.0"
+                    android:text="@string/version"
                     android:textColor="#000000"
                     android:textSize="36sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -105,7 +105,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:padding="10dp"
-                        android:text="Want to contact us? Feel free to send a message!"
+                        android:text="@string/wantToContactUs"
                         android:textColor="@color/dark"
                         android:textSize="18sp" />
 
@@ -244,13 +244,33 @@
                     app:layout_constraintTop_toBottomOf="@id/linearLayout3">
 
                     <TextView
-                        android:id="@+id/textView7"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginBottom="10dp"
                         android:layout_weight="1"
-                        android:text="This app uses the following open-source libraries:"
+                        android:text="@string/licenseHeader"
                         android:textColor="@color/dark" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/picasso"
+                            android:textColor="@color/dark"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@string/picassoLicense" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -262,7 +282,7 @@
                             android:id="@+id/textView8"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Picasso"
+                            android:text="MPAndroidChart"
                             android:textColor="@color/dark"
                             android:textSize="24sp" />
 
@@ -270,9 +290,7 @@
                             android:id="@+id/textView10"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:inputType="textMultiLine"
-                            android:text='Copyright 2013 Square, Inc.\n \n Licensed under the Apache License, Version 2.0 (the "License");\n you may not use this file except in compliance with the License.\n You may obtain a copy of the License at\n \n    http://www.apache.org/licenses/LICENSE-2.0\n \n Unless required by applicable law or agreed to in writing, software\n distributed under the License is distributed on an "AS IS" BASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n See the License for the specific language governing permissions and\n limitations under the License.\n'
-                            tools:text='Copyright 2013 Square, Inc.\n \n Licensed under the Apache License, Version 2.0 (the "License");\n you may not use this file except in compliance with the License.\n You may obtain a copy of the License at\n \n    http://www.apache.org/licenses/LICENSE-2.0\n \n Unless required by applicable law or agreed to in writing, software\n distributed under the License is distributed on an "AS IS" BASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n See the License for the specific language governing permissions and\n limitations under the License.\n' />
+                            android:text='Copyright 2020 Philipp Jahoda\n \n Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at\n \n http://www.apache.org/licenses/LICENSE-2.0\n \n Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n' />
 
                     </LinearLayout>
                 </LinearLayout>

@@ -1,4 +1,5 @@
 <resources>
+    <string name="version">Daily Drops v1.0</string>
     <string name="app_name">Daily Drops</string>
     <string name="DropTitle">Title *</string>
     <string name="DropNote">Note</string>
@@ -64,5 +65,9 @@
     <string name="emailIcon">Email Icon</string>
     <string name="about">About</string>
     <string name="copyright">\@ 2020 Jeroen Bol</string>
+    <string name="picassoLicense">Copyright 2013 Square, Inc.\n \n Licensed under the Apache License, Version 2.0 (the License);\n you may not use this file except in compliance with the License.\n You may obtain a copy of the License at\n \n http://www.apache.org/licenses/LICENSE-2.0\n \n Unless required by applicable law or agreed to in writing, software\n distributed under the License is distributed on an AS ISBASIS,\n WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n See the License for the specific language governing permissions and\n limitations under the License.\n</string>
+    <string name="picasso">Picasso</string>
+    <string name="licenseHeader">This app uses the following open-source libraries:</string>
+    <string name="wantToContactUs">Want to contact us? Feel free to send a message!</string>
 
 </resources>
