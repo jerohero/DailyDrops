@@ -21,7 +21,10 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.BarChartDecimalFormatter;
 import com.jbol.dailydrops.services.DateService;
+
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class StatisticsActivity extends AppCompatActivity {
     private ArrayList<GlobalDropModel> dropModels = new ArrayList<>();
@@ -50,8 +53,8 @@ public class StatisticsActivity extends AppCompatActivity {
         long day = DateService.getDayInEpochMilli();
         long now = DateService.getNowInEpochMilli();
         for (int i = 0; i < 14; i++) {
-            String date = DateService.epochMilliToDDMM(now + (day * i));
-            int dropsCount = findDropsForDay(DateService.epochMilliToFullDateString(now + (day * i)));
+            String date = DateService.epochMilliToDefTimeZoneDDMM(now + (day * i));
+            int dropsCount = findDropsForDay(DateService.epochMilliToDefTimeZoneDDMMYYYY(now + (day * i)));
             dropData.add(new BarEntry(dropsCount, i));
             days.add(date);
         }
@@ -71,7 +74,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private int findDropsForDay(String day) {
         int dropCount = 0;
         for (GlobalDropModel drop : dropModels) {
-            String dropDate = DateService.epochMilliToFullDateString(drop.getDate());
+            String dropDate = DateService.epochMilliToDefTimeZoneDDMMYYYY(drop.getDate() + drop.getTime());;
             if (dropDate.equals(day)) {
                 dropCount = dropCount + 1;
             }

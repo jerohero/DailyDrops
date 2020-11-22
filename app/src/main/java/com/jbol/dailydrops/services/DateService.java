@@ -19,8 +19,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class DateService {
-    private static SimpleDateFormat sdfDDMMYYYY = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-    private static SimpleDateFormat sdfDDMM = new SimpleDateFormat("dd/MM", Locale.getDefault());
     private static SimpleDateFormat sdfHHMM = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     public static long fullDateStringToEpochMilli(String dateString, ZoneId timeZoneId) {
@@ -46,8 +44,11 @@ public class DateService {
         return time != null ? time.getTime() + epochOffset : 0L;
     }
 
-    public static String epochMilliToFullDateString(long epoch) {
-        return sdfDDMMYYYY.format(epoch);
+    public static String epochMilliToDefTimeZoneDDMMYYYY(long epoch) {
+        Instant instant = Instant.ofEpochMilli(epoch);
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return zdt.format(formatter);
     }
 
     // Is used when no time is given to the drop -- avoids having different dates for some timezones
@@ -58,12 +59,13 @@ public class DateService {
         return zdt.format(formatter);
     }
 
-    public static String epochMilliToDDMM(long epoch) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(epoch);
+    public static String epochMilliToDefTimeZoneDDMM(long epoch) {
+        Instant instant = Instant.ofEpochMilli(epoch);
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM");
 
-        sdfDDMM.setTimeZone(TimeZone.getDefault());
-        return sdfDDMM.format(cal.getTime());
+
+        return zdt.format(formatter);
     }
 
     public static String dateEpochMilliToUTCDDMMYYYY(long date) {

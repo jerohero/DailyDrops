@@ -51,7 +51,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
 
         initializeLikes();
         initializeImage();
-        adjustDateStyling();
+        initializeDate();
         initializeColor();
     }
 
@@ -76,7 +76,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
         tv_likes.setText(String.valueOf(drop.getLikes()));
     }
 
-    private void adjustDateStyling() {
+    private void initializeDate() {
         long day = DateService.getDayInEpochMilli();
         long now = DateService.getNowInEpochMilli();
         if (drop.getDate() < now + day) {
@@ -85,7 +85,7 @@ public class DropHolder extends RecyclerView.ViewHolder {
                 txtDate.setText(newText);
                 return;
             }
-            cv_card.setAlpha(0.75f);
+            cv_card.setAlpha(0.8f);
         }
     }
 
