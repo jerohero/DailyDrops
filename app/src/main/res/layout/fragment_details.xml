@@ -102,28 +102,28 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/ib_edit"
-                    android:layout_width="47dp"
-                    android:layout_height="44dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/roundcorner_lightred"
                     android:contentDescription="@string/editDrop"
-                    android:padding="12dp"
+                    android:padding="13dp"
                     android:scaleType="centerInside"
                     app:srcCompat="@drawable/ic_edit_black_24dp" />
 
                 <ImageButton
                     android:id="@+id/ib_delete"
-                    android:layout_width="45dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/roundcorner_lightred"
                     android:contentDescription="@string/deleteDrop"
-                    android:padding="10dp"
+                    android:padding="14dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_delete_black_24dp" />
 
@@ -136,15 +136,15 @@
                     android:text="@string/num0"
                     android:textColor="#000000"
                     android:textColorLink="#FFFFFF"
-                    android:textSize="33sp" />
+                    android:textSize="34sp" />
 
                 <ImageButton
                     android:id="@+id/ib_like"
-                    android:layout_width="45dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/roundcorner_lightred"
                     android:contentDescription="@string/likeDrop"
-                    android:padding="10dp"
+                    android:padding="15dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_heart_black_24dp" />
 

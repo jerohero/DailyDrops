@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jbol.dailydrops.database.FirebaseDatabaseHelper;
 import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
+import com.jbol.dailydrops.interfaces.DrawerLocker;
 import com.jbol.dailydrops.models.FirebaseDropModel;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
@@ -43,7 +44,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
     public static final String LIST_TYPE = "listType";
     public static final int DEFAULT_LIST_TYPE = 0;
     public static final int HOT_LIST_TYPE = 1;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ConstraintLayout cl_search_label;
     private DrawerLayout dl_drawer_layout;
     private TextView tv_no_results, tv_search_term;
+
+    private ActionBarDrawerToggle drawerToggle;
 
     private ArrayList<FirebaseDropModel> firebaseDropModelArrayList = new ArrayList<>();
     private ArrayList<SQLiteDropModel> sqLiteDropModelArrayList = new ArrayList<>();
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         Intent i;
+
         switch (menuItem.getItemId()){
             case R.id.nav_drops:
                 i = new Intent(MainActivity.this, MainActivity.class);
@@ -163,9 +167,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (fragmentCount == 0) {
                 super.onBackPressed();
             } else {
+                setDrawerEnabled(true);
                 getSupportFragmentManager().popBackStack();
             }
         }
+    }
+
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        dl_drawer_layout.setDrawerLockMode(lockMode);
+        drawerToggle.setDrawerIndicatorEnabled(enabled);
     }
 
     @Override
@@ -221,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.dl_drawer_layout, detailsFragment)
                 .addToBackStack(DetailsFragment.class.getSimpleName())
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     // Settings that are unique to each list type
@@ -249,7 +262,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         nav_view.setNavigationItemSelectedListener(this);
 
-        ActionBarDrawerToggle drawerToggle;
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 
@@ -438,5 +450,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             it.remove();
         }
     }
-
 }
