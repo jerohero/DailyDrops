@@ -436,6 +436,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void backToMain() {
         Intent i = new Intent(this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         MainActivity.getContext().startActivity(i);
     }
 
