@@ -22,7 +22,6 @@
                 android:id="@+id/iv_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:adjustViewBounds="false"
                 android:contentDescription="@string/dropImage"
                 android:forceDarkAllowed="false"
                 android:layerType="none"
@@ -85,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
                 android:padding="1dp"
-                android:textAlignment="viewStart"
+                android:textAlignment="center"
                 android:textColor="#111213"
                 android:textSize="20sp" />
 
@@ -98,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto_light"
-                    android:textAlignment="viewEnd"
+                    android:textAlignment="center"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

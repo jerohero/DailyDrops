@@ -85,7 +85,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_time"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="12dp"
@@ -160,11 +160,11 @@
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:background="@drawable/roundcorner_red"
+                            android:contentDescription="@string/addImage"
                             android:padding="8dp"
                             android:scaleType="centerInside"
                             android:tint="#FFFFFF"
-                            app:srcCompat="@drawable/ic_add_image_black_48dp"
-                            android:contentDescription="@string/addImage" />
+                            app:srcCompat="@drawable/ic_add_image_black_48dp" />
 
                         <ImageButton
                             android:id="@+id/ib_remove_image"
@@ -172,10 +172,10 @@
                             android:layout_height="60dp"
                             android:layout_marginStart="8dp"
                             android:background="@drawable/roundcorner_red"
+                            android:contentDescription="@string/removeImage"
                             android:scaleType="centerInside"
                             android:tint="#FFFFFF"
-                            app:srcCompat="@drawable/ic_eraser_black_48dp"
-                            android:contentDescription="@string/removeImage" />
+                            app:srcCompat="@drawable/ic_eraser_black_48dp" />
                     </LinearLayout>
 
                     <TextView
@@ -193,14 +193,14 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:adjustViewBounds="true"
+                        android:contentDescription="@string/dropImage"
                         android:maxWidth="500dp"
                         android:paddingLeft="20dp"
                         android:paddingRight="20dp"
                         android:paddingBottom="80dp"
                         android:scaleType="fitXY"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/dailydrops"
-                        android:contentDescription="@string/dropImage" />
+                        app:srcCompat="@drawable/dailydrops" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,23 +22,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
 import com.google.android.material.textfield.TextInputLayout;
 import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class AddUpdateActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST = 9; //Request code gallery
@@ -56,6 +58,8 @@ public class AddUpdateActivity extends AppCompatActivity {
     private Bitmap selectedImageBitmap;
     private GlobalDropModel drop;
     private boolean editMode;
+
+    private Uri cameraImgUri;
 
 
     @Override
@@ -91,7 +95,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Handle gallery request
-        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null){
+        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
 
             try {
@@ -101,13 +105,22 @@ public class AddUpdateActivity extends AppCompatActivity {
             }
         }
         // Handle camera request
-        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
-            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
+        else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null) {
+            try {
+                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), cameraImgUri));
+            } catch (IOException e) {
+                Log.d("fliep", "onActivityResult: ");
+            }
+//            selectedImageBitmap = BitmapFactory.decodeFile(cameraImgUri.getPath());
+//            selectedImageBitmap = (Bitmap) data.getExtras().get("data");
         }
-        iv_image.setImageBitmap(selectedImageBitmap);
 
-        if (iv_image.getVisibility() != View.VISIBLE) {
-            showImageElements();
+        if (selectedImageBitmap != null) {
+            iv_image.setImageBitmap(selectedImageBitmap);
+
+            if (iv_image.getVisibility() != View.VISIBLE) {
+                showImageElements();
+            }
         }
     }
 
@@ -154,8 +167,11 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
 
         if (hasImage) {
+            if (cameraImgUri != null) {
+                selectedImageBitmap = BitmapFactory.decodeFile(cameraImgUri.getPath());
+            }
             int lastId = sqldbHelper.getLastInsertedDropIdFromLocal();
-            ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
+            ImageService.saveDropImageToInternalStorage(this, selectedImageBitmap, lastId);
         }
 
         backToMain();
@@ -213,7 +229,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         }
 
         if (drop.getImage() != null) {
-            ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
+            ImageService.saveDropImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
         }
 
         backToDetails();
@@ -303,6 +319,31 @@ public class AddUpdateActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void getImageFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALLERY_REQUEST);
+    }
+
+    private void capturePictureFromCamera(){
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile;
+            try {
+                photoFile = ImageService.createCameraImageFile(this);
+            } catch (IOException e) {
+                Toast.makeText(this, "An error occurred while creating the file. Does your device have enough storage?", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            cameraImgUri = FileProvider.getUriForFile(this, "com.jbol.dailydrops.fileprovider", photoFile);
+
+//            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        }
+
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
     private void loadViews() {
         tv_activity_title = findViewById(R.id.tv_activity_title);
         ll_save_drop = findViewById(R.id.ll_save_drop);
@@ -381,21 +422,10 @@ public class AddUpdateActivity extends AppCompatActivity {
             if (drop.getImage() == null) {
                 return;
             }
-            Bitmap image = ImageService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
+            Bitmap image = ImageService.loadDropImageFromStorage(this, Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
             showImageElements();
         }
-    }
-
-    private void getImageFromGallery(){
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, GALLERY_REQUEST);
-    }
-
-    private void capturePictureFromCamera(){
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
     private void showImageElements() {
@@ -436,7 +466,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void backToMain() {
         Intent i = new Intent(this, MainActivity.class);
-        MainActivity.getContext().startActivity(i);
+        startActivity(i);
     }
 
 }

@@ -26,12 +26,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jbol.dailydrops.database.SQLiteDatabaseHelper;
+import com.jbol.dailydrops.interfaces.DrawerLocker;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.jbol.dailydrops.services.AsyncURLService;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
+
+import static com.jbol.dailydrops.MainActivity.COLLECTION_LIST_TYPE;
 
 public class DetailsFragment extends Fragment {
     public static String DROP_SERIALIZABLE_STRING = "drop";
@@ -86,6 +89,8 @@ public class DetailsFragment extends Fragment {
             return;
         }
 
+        ((DrawerLocker) activity).setDrawerEnabled(false);
+
         if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) {
             ll_title_wrapper.setBackgroundColor(getResources().getColor(R.color.colorOnline));
         } else {
@@ -127,7 +132,7 @@ public class DetailsFragment extends Fragment {
             Toast.makeText(activity, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();
             return;
         }
-        ImageService.deleteImageFromStorage(activity, Integer.parseInt(drop.getId()));
+        ImageService.deleteDropImageFromStorage(activity, Integer.parseInt(drop.getId()));
         Intent i = new Intent(activity, MainActivity.class);
         DetailsFragment.this.startActivity(i);
     }
@@ -209,7 +214,7 @@ public class DetailsFragment extends Fragment {
         collectionBtnToAddToCollection();
 
         // If drop is removed from collection while My Collection is active, update the list view
-        if (MainActivity.getInstance().getActiveListType() == MainActivity.COLLECTION_LIST_TYPE) {
+        if (MainActivity.getInstance().getActiveListType() == COLLECTION_LIST_TYPE) {
             MainActivity.getInstance().updateListData();
         }
     }
@@ -247,7 +252,7 @@ public class DetailsFragment extends Fragment {
         }
 
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
-            Bitmap image = ImageService.loadImageFromStorage(activity, Integer.parseInt(drop.getImage()));
+            Bitmap image = ImageService.loadDropImageFromStorage(activity, Integer.parseInt(drop.getImage()));
             iv_image.setImageBitmap(image);
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
             new AsyncURLService(output ->
@@ -299,7 +304,9 @@ public class DetailsFragment extends Fragment {
     }
 
     private void exitFragment() {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentManager fm = MainActivity.getInstance().getSupportFragmentManager();
         fm.beginTransaction().remove(this).commit();
+        MainActivity.getInstance().setDrawerEnabled(true);
     }
+
 }

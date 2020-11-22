@@ -1,9 +1,13 @@
 package com.jbol.dailydrops.services;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,11 +16,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ImageService {
 
-    public static void saveImageToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
-        File directory = getImagesDir(ctx);
+    static String currentPhotoPath;
+
+    public static File createCameraImageFile(Context ctx) throws IOException {
+        @SuppressLint("SimpleDateFormat")
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "DAILYDROPS_" + timeStamp + "_";
+        File storageDir = ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    public static void saveDropImageToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
+        File directory = getDropImagesDir(ctx);
         File imgFile = new File(directory,id + ".png");
 
         FileOutputStream fos = null;
@@ -35,8 +59,8 @@ public class ImageService {
         }
     }
 
-    public static Bitmap loadImageFromStorage(Context ctx, int id) {
-        File directory = getImagesDir(ctx);
+    public static Bitmap loadDropImageFromStorage(Context ctx, int id) {
+        File directory = getDropImagesDir(ctx);
         File imgFile = new File(directory, id + ".png");
         try {
             return BitmapFactory.decodeStream(new FileInputStream(imgFile));
@@ -48,14 +72,14 @@ public class ImageService {
         return null;
     }
 
-    public static boolean deleteImageFromStorage(Context ctx, int id) {
-        File directory = getImagesDir(ctx);
+    public static boolean deleteDropImageFromStorage(Context ctx, int id) {
+        File directory = getDropImagesDir(ctx);
         File imgFile = new File(directory, id + ".png");
 
         return imgFile.delete();
     }
 
-    public static File getImagesDir(Context ctx) {
+    public static File getDropImagesDir(Context ctx) {
         ContextWrapper cw = new ContextWrapper(ctx);
 
         return cw.getDir("images", Context.MODE_PRIVATE); // path to /data/user/0/com.jbol.dailydrops/app_images
