@@ -36,17 +36,9 @@ public class ImageService {
         }
     }
 
-    public static Bitmap loadImageFromStorage(Context ctx, int id) {
+    public static File loadImageFileFromStorage(Context ctx, int id) {
         File directory = getImagesDir(ctx);
-        File imgFile = new File(directory, id + ".png");
-        try {
-            return BitmapFactory.decodeStream(new FileInputStream(imgFile));
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new File(directory, id + ".png");
     }
 
     public static boolean deleteImageFromStorage(Context ctx, int id) {
@@ -60,20 +52,6 @@ public class ImageService {
         ContextWrapper cw = new ContextWrapper(ctx);
 
         return cw.getDir("images", Context.MODE_PRIVATE); // path to /data/user/0/com.jbol.dailydrops/app_images
-    }
-
-    public static Bitmap getImageFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-
-            return BitmapFactory.decodeStream(input);
-        } catch (IOException e) {
-            return null; // No image
-        }
     }
 
 }

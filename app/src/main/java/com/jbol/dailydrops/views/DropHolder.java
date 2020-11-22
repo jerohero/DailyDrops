@@ -1,6 +1,5 @@
 package com.jbol.dailydrops.views;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jbol.dailydrops.MainActivity;
 import com.jbol.dailydrops.R;
 import com.jbol.dailydrops.models.GlobalDropModel;
-import com.jbol.dailydrops.services.AsyncURLService;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 
@@ -99,16 +100,28 @@ public class DropHolder extends RecyclerView.ViewHolder {
         iv_image.setImageAlpha(255);
 
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
-            Bitmap image = ImageService.loadImageFromStorage(MainActivity.getContext(), Integer.parseInt(drop.getImage()));
-            iv_image.setImageBitmap(image);
+            Picasso.get()
+                    .load(ImageService.loadImageFileFromStorage(MainActivity.getContext(), Integer.parseInt(drop.getImage())))
+                    .resize(300, 300)
+                    .centerCrop()
+                    .into(iv_image, new Callback() {
+                        @Override public void onSuccess() { }
+                        @Override
+                        public void onError(Exception e) {
+                            setDefaultImage();
+                        }
+                    });
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
-            new AsyncURLService(output -> {
-                if (output == null) {
-                    setDefaultImage();
-                    return;
-                }
-                iv_image.setImageBitmap(output);
-            }).execute(drop.getImage());
+            Picasso.get()
+                    .load(drop.getImage())
+                    .resize(300, 300)
+                    .centerCrop().into(iv_image, new Callback() {
+                        @Override public void onSuccess() { }
+                        @Override
+                        public void onError(Exception e) {
+                            setDefaultImage();
+                        }
+                    });
         }
     }
 

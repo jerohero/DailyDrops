@@ -3,7 +3,6 @@ package com.jbol.dailydrops;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +29,8 @@ import com.jbol.dailydrops.interfaces.DrawerLocker;
 import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
-import com.jbol.dailydrops.services.AsyncURLService;
+import com.squareup.picasso.Picasso;
+
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 
@@ -252,11 +252,13 @@ public class DetailsFragment extends Fragment {
         }
 
         if (drop.getType().equals(GlobalDropModel.OFFLINE_TYPE)) { // Image is stored locally, so retrieve it from storage
-            Bitmap image = ImageService.loadImageFromStorage(activity, Integer.parseInt(drop.getImage()));
-            iv_image.setImageBitmap(image);
+            Picasso.get()
+                    .load(ImageService.loadImageFileFromStorage(activity, Integer.parseInt(drop.getImage())))
+                    .into(iv_image);
         } else if (drop.getType().equals(GlobalDropModel.ONLINE_TYPE)) { // Image is stored as a link, so retrieve it from internet
-            new AsyncURLService(output ->
-                    iv_image.setImageBitmap(output)).execute(drop.getImage());
+            Picasso.get()
+                    .load(drop.getImage())
+                    .into(iv_image);
         }
     }
 

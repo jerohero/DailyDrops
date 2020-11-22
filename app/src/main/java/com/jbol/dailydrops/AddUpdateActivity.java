@@ -27,6 +27,9 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -104,10 +107,13 @@ public class AddUpdateActivity extends AppCompatActivity {
         else if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK && data != null){
             selectedImageBitmap = (Bitmap) data.getExtras().get("data");
         }
-        iv_image.setImageBitmap(selectedImageBitmap);
 
-        if (iv_image.getVisibility() != View.VISIBLE) {
-            showImageElements();
+        if (selectedImageBitmap != null) {
+            iv_image.setImageBitmap(selectedImageBitmap);
+
+            if (iv_image.getVisibility() != View.VISIBLE) {
+                showImageElements();
+            }
         }
     }
 
@@ -381,8 +387,9 @@ public class AddUpdateActivity extends AppCompatActivity {
             if (drop.getImage() == null) {
                 return;
             }
-            Bitmap image = ImageService.loadImageFromStorage(this, Integer.parseInt(drop.getImage()));
-            iv_image.setImageBitmap(image);
+            Picasso.get()
+                    .load(ImageService.loadImageFileFromStorage(this, Integer.parseInt(drop.getImage())))
+                    .into(iv_image);
             showImageElements();
         }
     }
@@ -407,8 +414,11 @@ public class AddUpdateActivity extends AppCompatActivity {
     }
 
     private void initializeAddDropBtn() {
-        ll_save_drop.setOnClickListener(v ->
-                addDrop());
+        ll_save_drop.setOnClickListener(v -> {
+            for (int i = 0; i < 1000; i++) {
+                addDrop();
+            }
+        });
     }
 
     private void initializeSaveEditBtn() {
