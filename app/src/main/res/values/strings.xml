@@ -30,7 +30,6 @@
     <string name="myCollection">My Collection</string>
     <string name="hot">Hot</string>
     <string name="other">Other</string>
-    <string name="info">Info</string>
     <string name="contact">Contact</string>
     <string name="statistics">Statistics</string>
     <string name="barChartTitle">Drops per day (over 14 days)</string>
@@ -63,5 +62,7 @@
     <string name="getInTouch">Get in Touch</string>
     <string name="personIcon">Person icon</string>
     <string name="emailIcon">Email Icon</string>
+    <string name="about">About</string>
+    <string name="copyright">\@ 2020 Jeroen Bol</string>
 
 </resources>

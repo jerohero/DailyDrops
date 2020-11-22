@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddUpdateActivity"/>
-        <activity android:name=".InfoActivity"/>
+        <activity android:name=".AboutActivity"/>
         <activity android:name=".StatisticsActivity"/>
         <meta-data
             android:name="preloaded_fonts"

@@ -14,7 +14,6 @@ import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 

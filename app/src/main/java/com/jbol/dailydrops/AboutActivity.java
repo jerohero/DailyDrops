@@ -2,15 +2,14 @@ package com.jbol.dailydrops;
 
 import android.os.Bundle;
 import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-public class InfoActivity extends AppCompatActivity {
+public class AboutActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_info);
+        setContentView(R.layout.activity_about);
 
         initializeBackBtn();
     }

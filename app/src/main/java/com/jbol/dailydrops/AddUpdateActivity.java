@@ -46,6 +46,8 @@ public class AddUpdateActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST = 9; //Request code gallery
     private static final int CAMERA_REQUEST = 11; //Request code for camera
 
+    private final Calendar calendar = Calendar.getInstance();
+
     private LinearLayout ll_save_drop;
     private TextInputLayout til_title, til_note, til_date, til_time;
     private ImageButton ib_remove_image;
@@ -53,7 +55,6 @@ public class AddUpdateActivity extends AppCompatActivity {
     private ImageView iv_image;
     private TextView tv_no_image, tv_save_drop_label, tv_activity_title;
 
-    private final Calendar calendar = Calendar.getInstance();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
     private SQLiteDatabaseHelper sqldbHelper;
     private Bitmap selectedImageBitmap;
@@ -415,17 +416,18 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void initializeAddDropBtn() {
         ll_save_drop.setOnClickListener(v -> {
-            for (int i = 0; i < 1000; i++) {
-                addDrop();
-            }
+            ll_save_drop.setOnClickListener(null);
+            addDrop();
         });
     }
 
     private void initializeSaveEditBtn() {
         tv_save_drop_label.setText(getString(R.string.saveDrop));
 
-        ll_save_drop.setOnClickListener(v ->
-                saveEditDrop());
+        ll_save_drop.setOnClickListener(v -> {
+            ll_save_drop.setOnClickListener(null);
+            saveEditDrop();
+        });
     }
 
     private void initializeBackBtn() {
