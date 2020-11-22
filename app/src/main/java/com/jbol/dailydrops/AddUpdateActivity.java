@@ -437,7 +437,7 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void initializeAddDropBtn() {
         ll_save_drop.setOnClickListener(v -> {
-//            ll_save_drop.setOnClickListener(null);
+            ll_save_drop.setOnClickListener(null);
             addDrop();
         });
     }
@@ -446,7 +446,7 @@ public class AddUpdateActivity extends AppCompatActivity {
         tv_save_drop_label.setText(getString(R.string.saveDrop));
 
         ll_save_drop.setOnClickListener(v -> {
-//            ll_save_drop.setOnClickListener(null);
+            ll_save_drop.setOnClickListener(null);
             saveEditDrop();
         });
     }
