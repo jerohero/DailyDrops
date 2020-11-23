@@ -1,10 +1,11 @@
 package com.jbol.dailydrops;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,9 +171,7 @@ public class DetailsFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w("dev", "Failed to read value.", error.toException());
-            }
+            public void onCancelled(DatabaseError error) { /* data retrieval failed */ }
         });
     }
 
@@ -209,6 +208,7 @@ public class DetailsFragment extends Fragment {
         boolean success = sqldbHelper.deleteDropFromCollection(drop.getId(), drop.getType());
         if (!success) {
             Toast.makeText(activity, "Drop couldn't be removed from My Collection, please try again", Toast.LENGTH_SHORT).show();
+            return;
         }
         Toast.makeText(activity, "Removed drop from My Collection", Toast.LENGTH_SHORT).show();
         collectionBtnToAddToCollection();
@@ -283,7 +283,29 @@ public class DetailsFragment extends Fragment {
             return;
         }
         ib_delete.setOnClickListener(v ->
-                deleteDrop());
+                confirmDeletion());
+    }
+
+    private void confirmDeletion(){
+        final String[] options = getResources().getStringArray(R.array.delete_options);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        TextView title = new TextView(activity);
+        title.setText(R.string.dialog_delete_options);
+        title.setPadding(30, 30, 20, 30);
+        title.setTextSize(20F);
+        title.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        title.setTextColor(Color.WHITE);
+
+        builder.setCustomTitle(title)
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        deleteDrop();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void initializeBackBtn() {

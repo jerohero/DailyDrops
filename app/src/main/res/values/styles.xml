@@ -3,7 +3,7 @@
         <item name="colorPrimary">@color/ic_launcher_background</item>
         <item name="colorPrimaryDark">@color/ic_launcher_background</item>
         <item name="colorAccent">@color/ic_launcher_background</item>
-        <item name="android:navigationBarColor">@color/colorPink</item>
+        <item name="android:navigationBarColor">@color/dark</item>
     </style>
     <style name="TextInputLayoutHint" parent="TextAppearance.Design.Hint">
         <item name="android:textSize">16sp</item>

@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -304,7 +305,15 @@ public class AddUpdateActivity extends AppCompatActivity {
     private void showImageOptionDialog(){
         final String[] options = getResources().getStringArray(R.array.image_options);
         AlertDialog.Builder builder = new AlertDialog.Builder(AddUpdateActivity.this);
-        builder.setTitle(R.string.dialog_image_options)
+
+        TextView title = new TextView(this);
+        title.setText(R.string.dialog_image_options);
+        title.setPadding(30, 30, 20, 30);
+        title.setTextSize(20F);
+        title.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        title.setTextColor(Color.WHITE);
+
+        builder.setCustomTitle(title)
                 .setItems(options, (dialog, which) -> {
                     switch (which){
                         case 0:

@@ -293,38 +293,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         fab_search = findViewById(R.id.fab_search);
 
-        openSearchDialog();
+        fab_search.setOnClickListener(v ->
+                openSearchDialog());
     }
 
     private void openSearchDialog() {
-        fab_search.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            View view = getLayoutInflater().inflate(R.layout.dialog_search, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_search, null);
 
-            EditText searchField = view.findViewById(R.id.et_search);
-            LinearLayout searchBtn = view.findViewById(R.id.ll_search);
-            CheckBox showServerCheck = view.findViewById(R.id.cb_show_server);
-            CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
+        EditText searchField = view.findViewById(R.id.et_search);
+        LinearLayout searchBtn = view.findViewById(R.id.ll_search);
+        CheckBox showServerCheck = view.findViewById(R.id.cb_show_server);
+        CheckBox showLocalCheck = view.findViewById(R.id.cb_show_local);
 
-            // If hotListType is active, only server drops are showed and this cannot be changed
-            if (activeListType == MainActivity.HOT_LIST_TYPE) {
-                showServerCheck.setChecked(true);
-                showLocalCheck.setChecked(false);
-                showServerCheck.setVisibility(View.GONE);
-                showLocalCheck.setVisibility(View.GONE);
-            }
+        // If hotListType is active, only server drops are showed and this cannot be changed
+        if (activeListType == MainActivity.HOT_LIST_TYPE) {
+            showServerCheck.setChecked(true);
+            showLocalCheck.setChecked(false);
+            showServerCheck.setVisibility(View.GONE);
+            showLocalCheck.setVisibility(View.GONE);
+        }
 
-            showServerCheck.setChecked(showServerDrops);
-            showLocalCheck.setChecked(showLocalDrops);
+        showServerCheck.setChecked(showServerDrops);
+        showLocalCheck.setChecked(showLocalDrops);
 
-            builder.setView(view);
-            AlertDialog dialog = builder.create();
-            dialog.show();
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-            searchBtn.setOnClickListener(v1 -> {
-                search(searchField.getText().toString(), showServerCheck.isChecked(), showLocalCheck.isChecked());
-                dialog.dismiss();
-            });
+        searchBtn.setOnClickListener(v1 -> {
+            search(searchField.getText().toString(), showServerCheck.isChecked(), showLocalCheck.isChecked());
+            dialog.dismiss();
         });
     }
 
@@ -370,9 +369,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w("dev", "Failed to read value from Firebase database.", error.toException());
-            }
+            public void onCancelled(DatabaseError error) { /* data retrieval failed */ }
         });
     }
 

@@ -100,9 +100,9 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = sqldb.rawQuery(queryString, null);
 
         if (cursor.moveToFirst()) {
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
 
@@ -119,15 +119,11 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
                 idToType.put(id, type);
             } while (cursor.moveToNext());
-        } else {
-            Log.d("dev", "Table is empty.");
         }
 
         cursor.close();
         return idToType;
     }
-
-
 
     public boolean addDropToLikes(String dropId) {
         ContentValues cv = new ContentValues();
@@ -153,9 +149,6 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return isLiked;
     }
-
-
-
 
     public boolean addDropToLocal(SQLiteDropModel drop) {
         ContentValues cv = new ContentValues();
@@ -258,12 +251,9 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                 SQLiteDropModel newDrop = new SQLiteDropModel(id, title, note, date, time, hasImage);
                     returnList.add(newDrop);
             } while (cursor.moveToNext());
-        } else {
-            Log.d("dev", "Database is empty.");
         }
 
         cursor.close();
-//        db.close();
         return returnList;
     }
 

@@ -109,9 +109,7 @@ public class StatisticsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w("dev", "Failed to read value.", error.toException());
-            }
+            public void onCancelled(DatabaseError error) { /* data retrieval failed */ }
         });
     }
 
