@@ -31,7 +31,6 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.services.DateService;
 import com.jbol.dailydrops.services.ImageService;
 import com.squareup.picasso.Picasso;
-
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 
@@ -128,6 +127,7 @@ public class DetailsFragment extends Fragment {
 
     private void deleteDrop() {
         SQLiteDatabaseHelper sqldbHelper = SQLiteDatabaseHelper.getHelper(activity);
+        sqldbHelper.deleteDropFromCollection(drop.getId(), GlobalDropModel.OFFLINE_TYPE);
         boolean success = sqldbHelper.deleteDropFromLocal(Integer.parseInt(drop.getId()));
         if (!success) {
             Toast.makeText(activity, "Drop couldn't be deleted. Please try again.", Toast.LENGTH_SHORT).show();

@@ -1,7 +1,6 @@
 package com.jbol.dailydrops;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.BarChart;
@@ -21,10 +20,7 @@ import com.jbol.dailydrops.models.GlobalDropModel;
 import com.jbol.dailydrops.models.SQLiteDropModel;
 import com.jbol.dailydrops.services.BarChartDecimalFormatter;
 import com.jbol.dailydrops.services.DateService;
-
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class StatisticsActivity extends AppCompatActivity {
     private ArrayList<GlobalDropModel> dropModels = new ArrayList<>();

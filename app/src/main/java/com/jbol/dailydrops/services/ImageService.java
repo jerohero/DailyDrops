@@ -17,6 +17,7 @@ import java.io.IOException;
 
 public class ImageService {
 
+    // https://stackoverflow.com/a/17674787/11391965
     public static void saveImageToInternalStorage(Context ctx, Bitmap bitmapImage, int id){
         File directory = getImagesDir(ctx);
         File imgFile = new File(directory,id + ".jpeg");

@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showDetails(drop);
         }
 
-
         initializeFirebaseListener();
 
         sqldbHelper = SQLiteDatabaseHelper.getHelper(MainActivity.this);
@@ -358,12 +357,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Allow reading drops from Firebase database
     private void initializeFirebaseListener() {
         DatabaseReference fbDropsReference = FirebaseDatabase.getInstance().getReference();
+        FirebaseDatabaseHelper fbHelper = new FirebaseDatabaseHelper();
 
         fbDropsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) { return; }
-                FirebaseDatabaseHelper fbHelper = new FirebaseDatabaseHelper();
                 firebaseDropModelArrayList = fbHelper.collectFirebaseDrops(dataSnapshot.getValue());
                 updateListData();
             }

@@ -11,6 +11,7 @@ import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -103,7 +104,11 @@ public class AddUpdateActivity extends AppCompatActivity {
             Uri selectedImage = data.getData();
 
             try {
-                selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
+                if (Build.VERSION.SDK_INT >= 29) {
+                    selectedImageBitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(this.getContentResolver(), selectedImage));
+                } else {
+                    selectedImageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                }
             } catch (IOException e) {
                 Toast.makeText(this, "An error occurred while loading the selected file. Is it a valid image?", Toast.LENGTH_SHORT).show();
             }
@@ -171,6 +176,8 @@ public class AddUpdateActivity extends AppCompatActivity {
             return;
         }
 
+        ll_save_drop.setOnClickListener(null); // For forbidding user to spam save button while processing
+
         if (hasImage) {
             int lastId = sqldbHelper.getLastInsertedDropIdFromLocal();
             ImageService.saveImageToInternalStorage(this, selectedImageBitmap, lastId);
@@ -229,6 +236,8 @@ public class AddUpdateActivity extends AppCompatActivity {
             backToDetails();
             return;
         }
+
+        ll_save_drop.setOnClickListener(null); // For forbidding user to spam save button while processing
 
         if (drop.getImage() != null && imageChanged) {
             ImageService.saveImageToInternalStorage(this, selectedImageBitmap, Integer.parseInt(drop.getId()));
@@ -446,7 +455,6 @@ public class AddUpdateActivity extends AppCompatActivity {
 
     private void initializeAddDropBtn() {
         ll_save_drop.setOnClickListener(v -> {
-            ll_save_drop.setOnClickListener(null);
             addDrop();
         });
     }
@@ -455,7 +463,6 @@ public class AddUpdateActivity extends AppCompatActivity {
         tv_save_drop_label.setText(getString(R.string.saveDrop));
 
         ll_save_drop.setOnClickListener(v -> {
-            ll_save_drop.setOnClickListener(null);
             saveEditDrop();
         });
     }
